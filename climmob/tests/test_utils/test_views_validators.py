@@ -1,3 +1,4 @@
+import importlib
 import json
 import unittest
 from unittest.mock import MagicMock, patch, call, ANY
@@ -10,14 +11,20 @@ from pyramid.httpexceptions import (
 )
 
 from climmob.tests.test_utils.common import BaseTest
+from climmob.utility.project import ProjectAccessType, ProjectStatus
 from climmob.views.classes import apiView, privateView
 from climmob.views.validators import FieldValidation, TextField
+from climmob.views.validators.ActionOnlyForProjectOwnerValidator import (
+    ActionOnlyForProjectOwnerValidator,
+)
 from climmob.views.validators.BaseValidator import BaseValidator
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 from climmob.views.validators.assessment import AssessmentExistsValidator
 from climmob.views.validators.field.FieldValidator import FieldValidator
-from climmob.views.validators.project import CanEditProjectValidator
-
+from climmob.views.validators.project import (
+    CanEditProjectValidator,
+)
+from climmob.views.validators.project.ProjectOpenValidator import ProjectOpenValidator
 from climmob.views.validators.question.QuestionMinMaxValidator import (
     QuestionMinMaxValidator,
 )
@@ -71,6 +78,15 @@ class TestProjectExistsValidator(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             validator = ProjectExistsValidator(view)
+
+    def test_run_api_bad_request(self):
+        self.view = MagicMock(spec=apiView)
+        self.view.request = MagicMock()
+        self.view.request.method = "POST"
+        self.view.body = "{"
+
+        with self.assertRaises(HTTPBadRequest):
+            ProjectExistsValidator(self.view)
 
 
 class TestProjectExistsValidatorRun(unittest.TestCase):
@@ -719,3 +735,171 @@ class TestNotLoggedInValidator(BaseTest):
         self.validator.run()
         self.view.get_policy.assert_called_once()
         self.get_mock("getUserData").assert_not_called()
+
+
+class TestActionOnlyForProjectOwnerValidator(unittest.TestCase):
+    def setUp(self):
+        class FakePrivateView(privateView):
+            pass
+
+        self.view = MagicMock(spec=FakePrivateView)
+        self.view.context = MagicMock()
+        self.view.context.active_project_id = 1
+        self.view.user = MagicMock()
+        self.view.user.login = "test_user"
+        self.view.request = MagicMock()
+
+    def test_extract_sets_project_id(self):
+        validator = ActionOnlyForProjectOwnerValidator(self.view)
+        self.assertEqual(validator.project_id, 1)
+
+    def test_extract_raises_type_error_if_not_private_view(self):
+        not_private_view = MagicMock()
+        not_private_view.context.active_project_id = 1
+        with self.assertRaises(TypeError):
+            ActionOnlyForProjectOwnerValidator(not_private_view)
+
+    @patch(
+        "climmob.views.validators.ActionOnlyForProjectOwnerValidator.get_user_access_type_in_project"
+    )
+    def test_run_allows_owner(self, mock_get_user_access_type_in_project):
+        mock_get_user_access_type_in_project.return_value = (
+            True,
+            ProjectAccessType.OWNER.value,
+        )
+        validator = ActionOnlyForProjectOwnerValidator(self.view)
+
+        validator.run()
+
+        mock_get_user_access_type_in_project.assert_called_once_with(
+            1, "test_user", self.view.request
+        )
+
+    @patch(
+        "climmob.views.validators.ActionOnlyForProjectOwnerValidator.get_user_access_type_in_project"
+    )
+    def test_run_forbidden_if_not_owner(self, mock_get_user_access_type_in_project):
+        mock_get_user_access_type_in_project.return_value = (False, "")
+        validator = ActionOnlyForProjectOwnerValidator(self.view)
+        with self.assertRaises(HTTPForbidden):
+            validator.run()
+        mock_get_user_access_type_in_project.assert_called_once_with(
+            1, "test_user", self.view.request
+        )
+
+
+class TestProjectOpenValidatorPrivateView(unittest.TestCase):
+    def setUp(self):
+        self.view = MagicMock(spec=privateView)
+        self.view.request = MagicMock()
+        self.view.request.method = "POST"
+        self.view.classResult = {"project_status": ProjectStatus.FINALIZED.value}
+        self.view.__class__.__name__ = "current_view"
+        self.view.getPostDict = MagicMock(
+            return_value={"user_owner": "test_owner", "project_cod": "test_cod"}
+        )
+        self.validator = ProjectOpenValidator(self.view)
+        self.validator._ = lambda x: x
+
+    def test_is_project_close_invalid(self):
+        with self.assertRaises(HTTPForbidden) as cm:
+            self.validator.run()
+        self.assertEqual(
+            str(cm.exception),
+            "This project has been closed and is now in read-only mode. Modifications are no longer permitted to ensure the integrity of the final data.",
+        )
+        self.assertEqual(self.view.request.method, "GET")
+
+    def test_is_project_close_pass(self):
+        self.view.request.method = "GET"
+        self.validator.run()
+        self.assertEqual(self.view.request.method, "GET")
+        self.assertEqual(self.view.classResult["project_status"], 3)
+
+    def test_is_project_close_project_open(self):
+        self.view.classResult["project_status"] = 1
+        self.validator.run()
+        self.assertEqual(self.view.request.method, "POST")
+
+    def test_is_project_close_exception(self):
+        self.view.__class__.__name__ = "ProjectTechnologiesView"
+        self.view.getPostDict = MagicMock(
+            return_value={
+                "btn_show_technology_alias": "",
+                "project_cod": "test_cod",
+            }
+        )
+        self.validator.run()
+        self.assertEqual(self.view.request.method, "POST")
+
+
+class TestProjectOpenValidatorAPI(unittest.TestCase):
+    def setUp(self):
+        pov_mod = importlib.import_module(
+            "climmob.views.validators.project.ProjectOpenValidator"
+        )
+        self.view = MagicMock(spec=apiView)
+        self.view.request = MagicMock()
+        self.view.request.method = "POST"
+        self.view.user = MagicMock()
+        self.view.user.login = "test_user"
+
+        self.validator = ProjectOpenValidator(self.view)
+        self.validator._ = lambda x: x
+        post_data = {
+            "project_cod": "test_project",
+            "user_owner": "Test_user_owner",
+            "other_data": "value",
+        }
+        self.view.request.POST = {"Body": json.dumps(post_data)}
+        self.view.body = json.dumps(post_data)
+
+        self.project_id_owner_patcher = patch.object(pov_mod, "getTheProjectIdForOwner")
+        self.project_status_patcher = patch.object(pov_mod, "get_project_status")
+
+        self.mock_get_project_id = self.project_id_owner_patcher.start()
+        self.mock_project_status = self.project_status_patcher.start()
+
+        self.mock_get_project_id.return_value = 123
+        self.mock_project_status.return_value = 3
+
+        self.addCleanup(self.project_id_owner_patcher.stop)
+        self.addCleanup(self.project_status_patcher.stop)
+
+    def tearDown(self):
+        if self.mock_get_project_id.called:
+            self.mock_get_project_id.assert_called_with(
+                json.loads(self.view.request.POST["Body"])["user_owner"],
+                json.loads(self.view.request.POST["Body"])["project_cod"],
+                self.view.request,
+            )
+        if self.mock_project_status.called:
+            self.mock_project_status.assert_called_with(
+                self.mock_get_project_id.return_value,
+                self.view.request,
+            )
+
+    def test_api_post_method_with_closed_project_should_raise_forbidden(self):
+        """Checks the trigger of the HTTPForbidden when it is close"""
+        with self.assertRaises(HTTPForbidden) as context:
+            self.validator.run()
+        self.assertEqual(
+            "This project has been closed and is now in read-only mode. Modifications are no longer permitted to ensure the integrity of the final data.",
+            str(context.exception),
+        )
+
+    def test_api_post_method_with_active_project_should_not_raise_exception(self):
+        """Check if the project still active and let it pass"""
+
+        self.mock_project_status.return_value = 1
+        try:
+            self.validator.run()
+        except HTTPForbidden:
+            self.fail("HTTPForbidden fue lanzado incorrectamente")
+
+    def test_api_get_method_should_not_check_project_status(self):
+        """Check fot the GET pass without the verification"""
+        self.view.request.method = "GET"
+        self.validator.run()
+        self.mock_get_project_id.assert_not_called()
+        self.mock_project_status.assert_not_called()

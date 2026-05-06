@@ -25,168 +25,160 @@ from climmob.processes import (
 )
 from climmob.views.classes import privateView
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import ProjectOpenValidator
 
 
-class projectTecnologies_view(privateView):
-    def processView(self):
+class ProjectTechnologiesView(privateView):
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
+    def get(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
 
+        activeProjectId = getTheProjectIdForOwner(
+            activeProjectUser, activeProjectCod, self.request
+        )
+
+        prjData = getProjectData(activeProjectId, self.request)
+
+        if prjData["project_template"] == 1 or prjData["project_createpkgs"] == 2:
+            self.returnRawViewResult = True
+            return HTTPFound(
+                location=self.request.route_url(
+                    "dashboard",
+                    _query={"user": activeProjectUser, "project": activeProjectCod},
+                )
+            )
+
+        listOfCombinations = []
+        if prjData["project_regstatus"] > 0:
+            listOfCombinations = getCombinationsData(activeProjectId, self.request)
+
+        technologiesInProject = searchTechnologiesInProject(
+            activeProjectId, self.request
+        )
+
+        totalOfCombinations = 1
+        for tech in technologiesInProject:
+            totalOfCombinations *= tech["quantity"]
+
+        error_summary2 = {}
+        if totalOfCombinations > 50:
+            error_summary2["totalOfCombinations"] = self._(
+                "ClimMob has limited the number of possible combinations to 50, at the moment you are exceeding this number so you must remove technology options to be able to create the packages later."
+            )
+
+        return {
+            "activeUser": self.user,
+            "activeProject": getActiveProject(self.user.login, self.request),
+            "tech_id": "",
+            "TechnologiesUser": searchTechnologies(activeProjectId, self.request),
+            "TechnologiesInProject": technologiesInProject,
+            "project_numcom": numberOfCombinationsForTheProject(
+                activeProjectId, self.request
+            ),
+            "alias": {},
+            "dataworking": {"alias_name": ""},
+            "error_summary": {},
+            "techSee": {},
+            "error_summary2": error_summary2,
+            "totalOfCombinations": totalOfCombinations,
+            "combinations": listOfCombinations,
+        }
+
+    def post(self):
+        activeProjectUser = self.request.matchdict["user"]
+        activeProjectCod = self.request.matchdict["project"]
+        activeProjectId = getTheProjectIdForOwner(
+            activeProjectUser, activeProjectCod, self.request
+        )
+
+        postdata = self.getPostDict()
         alias = {}
         tech_id = ""
-        dataworking = {}
+        dataworking = {"alias_name": ""}
         error_summary = {}
-        error_summary2 = {}
-        dataworking["alias_name"] = ""
         techSee = {}
-        listOfCombinations = []
 
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
-            raise HTTPNotFound()
-        else:
-            activeProjectId = getTheProjectIdForOwner(
-                activeProjectUser, activeProjectCod, self.request
-            )
+        if "btn_save_technologies" in postdata:
+            if postdata["txt_technologies_included"]:
+                for element in postdata["txt_technologies_included"][:-1].split(","):
+                    attr = element.split("_")
+                    if attr[2] == "new":
+                        addTechnologyProject(activeProjectId, attr[1], self.request)
 
-            prjData = getProjectData(activeProjectId, self.request)
+            if postdata["txt_technologies_excluded"]:
+                for element in postdata["txt_technologies_excluded"][:-1].split(","):
+                    attr = element.split("_")
+                    if attr[2] == "exists":
+                        deleteTechnologyProject(activeProjectId, attr[1], self.request)
 
-            if prjData["project_regstatus"] > 0:
-                listOfCombinations = getCombinationsData(activeProjectId, self.request)
+        elif "btn_show_technology_alias" in postdata:
+            tech_id = postdata["tech_id"]
+            self.request.matchdict["tech_id"] = tech_id
+            alias = prjTechAliases_view.processView(self)
+            techSee = getTechnology(postdata, self.request)
 
-            if prjData["project_template"] == 1:
-                self.returnRawViewResult = True
-                return HTTPFound(
-                    location=self.request.route_url(
-                        "dashboard",
-                        _query={
-                            "user": activeProjectUser,
-                            "project": activeProjectCod,
-                        },
-                    )
+        elif "btn_show_technology_alias_in_library" in postdata:
+            tech_id = postdata["tech_id"]
+            alias = {
+                "AliasTechnology": AliasSearchTechnology(
+                    tech_id, activeProjectId, self.request
                 )
+            }
+            techSee = getTechnology(postdata, self.request)
 
-            # Only create the packages if its needed
-            if prjData["project_createpkgs"] == 2:
-                self.returnRawViewResult = True
-
-                return HTTPFound(location=self.request.route_url("dashboard"))
-
-            if self.request.method == "POST":
-                if "btn_save_technologies" in self.request.POST:
-                    postdata = self.getPostDict()
-
-                    if postdata["txt_technologies_included"] != "":
-
-                        part = postdata["txt_technologies_included"][:-1].split(",")
-
-                        for element in part:
-                            attr = element.split("_")
-                            if attr[2] == "new":
-                                addTechnologyProject(
-                                    activeProjectId,
-                                    attr[1],
-                                    self.request,
-                                )
-                    if postdata["txt_technologies_excluded"] != "":
-
-                        part = postdata["txt_technologies_excluded"][:-1].split(",")
-
-                        for element in part:
-                            attr = element.split("_")
-                            if attr[2] == "exists":
-                                deleteTechnologyProject(
-                                    activeProjectId,
-                                    attr[1],
-                                    self.request,
-                                )
-
-                if "btn_show_technology_alias" in self.request.POST:
-                    postdata = self.getPostDict()
-                    tech_id = postdata["tech_id"]
-                    self.request.matchdict["tech_id"] = postdata["tech_id"]
-                    alias = prjTechAliases_view.processView(self)
-                    techSee = getTechnology(postdata, self.request)
-
-                if "btn_show_technology_alias_in_library" in self.request.POST:
-                    postdata = self.getPostDict()
-                    tech_id = postdata["tech_id"]
-                    alias = {
-                        "AliasTechnology": AliasSearchTechnology(
-                            tech_id, activeProjectId, self.request
-                        )
-                    }
-                    techSee = getTechnology(postdata, self.request)
-
-                if "btn_save_technologies_alias" in self.request.POST:
-                    postdata = self.getPostDict()
-                    tech_id = postdata["tech_id"]
-                    dataworking["project_id"] = activeProjectId
-                    dataworking["tech_id"] = tech_id
-                    dataworking["user_name"] = self.user.login
-                    if not isTechnologyAssigned(dataworking, self.request):
-                        added, message = addTechnologyProject(
-                            activeProjectId,
-                            dataworking["tech_id"],
-                            self.request,
-                        )
-                    self.request.matchdict["tech_id"] = postdata["tech_id"]
-                    alias = prjTechAliases_view.processView(self)
-                    techSee = getTechnology(postdata, self.request)
-
-                if "btn_add_alias" in self.request.POST:
-                    postdata = self.getPostDict()
-                    tech_id = postdata["tech_id"]
-                    dataworking["project_id"] = activeProjectId
-                    dataworking["tech_id"] = tech_id
-                    dataworking["user_name"] = self.user.login
-                    if not isTechnologyAssigned(dataworking, self.request):
-                        added, message = addTechnologyProject(
-                            activeProjectId,
-                            dataworking["tech_id"],
-                            self.request,
-                        )
-
-                    self.request.matchdict["tech_id"] = postdata["tech_id"]
-                    result = prjTechAliasAdd_view.processView(self)
-                    dataworking = result["dataworking"]
-                    error_summary = result["error_summary"]
-                    if result["redirect"]:
-                        dataworking["alias_name"] = ""
-                    alias = prjTechAliases_view.processView(self)
-                    techSee = getTechnology(postdata, self.request)
-
-            technologiesInProject = searchTechnologiesInProject(
-                activeProjectId, self.request
+        elif "btn_save_technologies_alias" in postdata:
+            tech_id = postdata["tech_id"]
+            dataworking.update(
+                {
+                    "project_id": activeProjectId,
+                    "tech_id": tech_id,
+                    "user_name": self.user.login,
+                }
             )
-            totalOfCombinations = 1
-            for tech in technologiesInProject:
-                totalOfCombinations = totalOfCombinations * tech["quantity"]
+            if not isTechnologyAssigned(dataworking, self.request):
+                addTechnologyProject(activeProjectId, tech_id, self.request)
 
-            if totalOfCombinations > 50:
-                error_summary2["totalOfCombinations"] = self._(
-                    "ClimMob has limited the number of possible combinations to 50, at the moment you are exceeding this number so you must remove technology options to be able to create the packages later."
-                )
+            self.request.matchdict["tech_id"] = tech_id
+            alias = prjTechAliases_view.processView(self)
+            techSee = getTechnology(postdata, self.request)
 
-            return {
-                "activeUser": self.user,
-                "activeProject": getActiveProject(self.user.login, self.request),
+        elif "btn_add_alias" in postdata:
+            tech_id = postdata["tech_id"]
+            dataworking.update(
+                {
+                    "project_id": activeProjectId,
+                    "tech_id": tech_id,
+                    "user_name": self.user.login,
+                }
+            )
+            if not isTechnologyAssigned(dataworking, self.request):
+                addTechnologyProject(activeProjectId, tech_id, self.request)
+
+            self.request.matchdict["tech_id"] = tech_id
+            result = prjTechAliasAdd_view.processView(self)
+            dataworking = result["dataworking"]
+            error_summary = result["error_summary"]
+            if result["redirect"]:
+                dataworking["alias_name"] = ""
+            alias = prjTechAliases_view.processView(self)
+            techSee = getTechnology(postdata, self.request)
+
+        response_data = self.get()
+        response_data.update(
+            {
                 "tech_id": tech_id,
-                "TechnologiesUser": searchTechnologies(activeProjectId, self.request),
-                "TechnologiesInProject": technologiesInProject,
-                "project_numcom": numberOfCombinationsForTheProject(
-                    activeProjectId, self.request
-                ),
                 "alias": alias,
                 "dataworking": dataworking,
                 "error_summary": error_summary,
                 "techSee": techSee,
-                "error_summary2": error_summary2,
-                "totalOfCombinations": totalOfCombinations,
-                "combinations": listOfCombinations,
             }
+        )
+        return response_data
 
 
 class prjTechAliases_view(privateView):

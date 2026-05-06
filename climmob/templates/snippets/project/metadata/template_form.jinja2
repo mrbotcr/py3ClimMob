@@ -1,5 +1,6 @@
 
-    {% if activeProject["access_type"] in [4] %}
+{% set onlySee = False %}
+{% if activeProject["access_type"] in [4] or activeProject.project_status == 3 %}
         {% set onlySee = True %}
     {% endif %}
 
@@ -43,7 +44,7 @@
 
                 </div>
 
-                {% if JsonInfo["type"] == "repeat"  %}
+                {% if JsonInfo["type"] == "repeat" %}
                     <button type="button" class="btn btn-primary duplicate-repeat"
                             {% if relevant %}  data-depends-on="{{ relevant }}" {% endif %}
                             {% if data_relevant %}  data-relevant="{{ data_relevant }}" {% endif %}
@@ -782,6 +783,9 @@ function toggleConfirmationGroup(selectElement) {
                 } else {
                     input.setCustomValidity("");
                 }
+            }else{
+            input.removeAttribute('required');
+            input.setCustomValidity("");
             }
         }
     });

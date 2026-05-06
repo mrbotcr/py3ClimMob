@@ -38,6 +38,7 @@
 
 {% block pagecontent %}
     {% if newproject == False %}
+
         {% if error_summary %}
             {% for key, error in error_summary.items() %}
                 <div class="alert alert-danger alert-dismissable">
@@ -49,11 +50,13 @@
 
         <form id="formModify" method="post" class="form-horizontal" action="{{ request.path }}">
             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+
+
             {% block newprjform %}
+
                 {% set edit=True%}
-                {% if activeProject.access_type != 4%}
-                    {% set permissionForChanges=True%}
-                {% else %}
+                {% set permissionForChanges=True %}
+                {% if activeProject.access_type == 4 or activeProject.project_status == 3 %}
                     {% set permissionForChanges=False%}
                 {% endif %}
                 {% set dataworking=data %}
@@ -74,6 +77,7 @@
                             <button type="submit" name="btn_addNewProject" id="btn_addNewProject" class="btn btn-primary pull-right">{{ _("Save and close") }}</button>
                         </div>
                     </div>
+
                     <br>
                     <br>
                     <br>
@@ -85,7 +89,6 @@
             <br>
             <br>
         </form>
-
         {% include 'snippets/languages/addMoreLanguages.jinja2' %}
 
         <script>

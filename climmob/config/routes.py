@@ -154,7 +154,7 @@ from climmob.views.Share.projectShare import (
 )
 from climmob.views.assessment import (
     assessment_view,
-    deleteAssessmentSection_view,
+    DeleteAssessmentSectionView,
     getAssessmentDetails_view,
     assessmenthead_view,
     deleteassessmenthead_view,
@@ -185,12 +185,12 @@ from climmob.views.cleanErrorLogs import CleanErrorLogsView
 from climmob.views.cloneProjects.cloneProjects import CloneProjectsView
 from climmob.views.dashboard import dashboard_view, projectInformation_view
 from climmob.views.editData import (
-    editDataView,
+    EditDataView,
     downloadDataView,
     downloadErroLogDocument_view,
 )
 from climmob.views.enumerator import (
-    getEnumeratorDetails_view,
+    GetEnumeratorDetailsView,
     enumerators_view,
     deleteEnumerator_view,
 )
@@ -239,19 +239,20 @@ from climmob.views.project import (
     CurationOfProjectsView,
     GetUnitOfAnalysisByLocationView,
     GetObjectivesByLocationAndUnitOfAnalysisView,
+    FinishProjectView,
 )
 from climmob.views.projectHelp.projectHelp import projectHelp_view
 from climmob.views.project_analysis import analysisDataView
 from climmob.views.project_combinations import projectCombinations_view
 from climmob.views.project_enumerators import (
-    projectEnumerators_view,
+    ProjectEnumeratorsView,
     removeProjectEnumerators_view,
 )
 from climmob.views.project_metadata import (
     ProjectMetadataFormView,
     ShowMetadataFormView,
 )
-from climmob.views.project_technologies import projectTecnologies_view
+from climmob.views.project_technologies import ProjectTechnologiesView
 from climmob.views.projectsSummary.projectsSummary import (
     DownloadProjectsSummaryView,
     ProjectsSummaryCurationView,
@@ -732,7 +733,7 @@ def loadRoutes(config):
         addRoute(
             "getEnumeratorDetails",
             "/user/{user}/enumerator/{enumid}",
-            getEnumeratorDetails_view,
+            GetEnumeratorDetailsView,
             "json",
         )
     )
@@ -864,7 +865,7 @@ def loadRoutes(config):
         addRoute(
             "prjenumerators",
             "/user/{user}/project/{project}/enumerators",
-            projectEnumerators_view,
+            ProjectEnumeratorsView,
             "project/enumerators/enumerators.jinja2",
         )
     )
@@ -941,6 +942,14 @@ def loadRoutes(config):
             "/user/{user}/project/{project}/registry/close",
             CloseRegistryView,
             "project/closepregistry.jinja2",
+        )
+    )
+    routes.append(
+        addRoute(
+            "finishproject",
+            "/user/{user}/project/{project}/finishproject",
+            FinishProjectView,
+            "project/finishproject.jinja2",
         )
     )
 
@@ -1023,7 +1032,7 @@ def loadRoutes(config):
         addRoute(
             "deleteassessmentgroup",
             "/user/{user}/project/{project}/assessment/{assessmentid}/{groupid}/delete",
-            deleteAssessmentSection_view,
+            DeleteAssessmentSectionView,
             "json",
         )
     )
@@ -1048,7 +1057,7 @@ def loadRoutes(config):
         addRoute(
             "prjtechnologies",
             "/user/{user}/project/{project}/technologies",
-            projectTecnologies_view,
+            ProjectTechnologiesView,
             "project/technologies/technologies.jinja2",
         )
     )
@@ -1147,7 +1156,7 @@ def loadRoutes(config):
         addRoute(
             "EditDataRegistry",
             "/user/{user}/project/{project}/form/{formid}/EditData",
-            editDataView,
+            EditDataView,
             "project/editData/editData.jinja2",
         )
     )
@@ -1155,7 +1164,7 @@ def loadRoutes(config):
         addRoute(
             "EditDataAssessment",
             "/user/{user}/project/{project}/form/{formid}/{codeid}/EditData",
-            editDataView,
+            EditDataView,
             "project/editData/editData.jinja2",
         )
     )

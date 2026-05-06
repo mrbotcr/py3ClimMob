@@ -15,12 +15,14 @@ from climmob.processes import (
 from climmob.products.analysisdata.analysisdata import create_datacsv
 from climmob.products.dataxlsx.dataxlsx import create_XLSXToDownload
 from climmob.products.errorLogDocument.errorLogDocument import create_error_log_document
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 from climmob.views.classes import privateView
 from climmob.views.editDataDB import (
     getNamesEditByColums,
     fillDataTable,
     update_edited_data,
 )
+from climmob.views.validators.project import ProjectOpenValidator
 
 
 class downloadDataView(privateView):
@@ -187,7 +189,9 @@ class downloadErroLogDocument_view(privateView):
         return HTTPFound(location=url)
 
 
-class editDataView(privateView):
+class EditDataView(privateView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -195,102 +199,95 @@ class editDataView(privateView):
         formId = self.request.matchdict["formid"]
         code = ""
 
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
+        # todo refactor the function on get and post
+
+        activeProjectId = getTheProjectIdForOwner(
+            activeProjectUser, activeProjectCod, self.request
+        )
+        if not formId in ["registry", "assessment"]:
             raise HTTPNotFound()
+
+        if formId == "registry":
+            formId = "reg"
+        elif formId == "assessment":
+            formId = "ass"
+            code = self.request.matchdict["codeid"]
+
+        path = os.path.join(
+            self.request.registry.settings["user.repository"],
+            *[activeProjectUser, activeProjectCod]
+        )
+        if code == "":
+            paths = ["db", formId, "create.xml"]
         else:
+            paths = ["db", formId, code, "create.xml"]
 
-            activeProjectId = getTheProjectIdForOwner(
-                activeProjectUser, activeProjectCod, self.request
-            )
+        path = os.path.join(path, *paths)
 
-            if formId == "registry":
-                formId = "reg"
+        dataworking = {}  #
+        dataworking["error"] = ""
+        dataworking["data"] = False
+
+        if "btn_EditData" in self.request.POST:
+            selected_contacts = self.request.POST.getall("q_reg")
+            if len(selected_contacts) == 0:  # if non selected columns in check options
+
+                dataworking["error"] = "byC"
+                dataworking["msg"] = True
             else:
-                if formId == "assessment":
-                    formId = "ass"
-                    code = self.request.matchdict["codeid"]
-                else:
-                    raise HTTPNotFound()
 
-            path = os.path.join(
-                self.request.registry.settings["user.repository"],
-                *[activeProjectUser, activeProjectCod]
-            )
-            if code == "":
-                paths = ["db", formId, "create.xml"]
-            else:
-                paths = ["db", formId, code, "create.xml"]
+                dataworking["data"] = True
+                dataworking["fill"] = fillDataTable(
+                    self,
+                    activeProjectUser,
+                    activeProjectId,
+                    activeProjectCod,
+                    formId,
+                    selected_contacts,
+                    path,
+                    code,
+                )
+                dataworking["error"] = ""
 
-            path = os.path.join(path, *paths)
+        else:
+            if "json_data" in self.request.POST:
+                json_data = self.request.POST.getall("json_data")
+                dataworking["error"] = "byC"
+                dataworking["data"] = False
+                dataworking["msg"] = False
 
-            dataworking = {}  #
-            dataworking["error"] = ""
-            dataworking["data"] = False
-
-            if "btn_EditData" in self.request.POST:
-                selected_contacts = self.request.POST.getall("q_reg")
-                if (
-                    len(selected_contacts) == 0
-                ):  # if non selected columns in check options
-
-                    dataworking["error"] = "byC"
-                    dataworking["msg"] = True
-                else:
-
-                    dataworking["data"] = True
-                    dataworking["fill"] = fillDataTable(
-                        self,
+                if json_data[0] != "":
+                    dataworking["msg_flag"], message = update_edited_data(
                         activeProjectUser,
-                        activeProjectId,
                         activeProjectCod,
                         formId,
-                        selected_contacts,
+                        json_data,
                         path,
                         code,
+                        self.user.login,
                     )
-                    dataworking["error"] = ""
 
-            else:
-                if "json_data" in self.request.POST:
-                    json_data = self.request.POST.getall("json_data")
-                    dataworking["error"] = "byC"
-                    dataworking["data"] = False
-                    dataworking["msg"] = False
+        dataXML = getNamesEditByColums(path)
 
-                    if json_data[0] != "":
-                        dataworking["msg_flag"], message = update_edited_data(
-                            activeProjectUser,
-                            activeProjectCod,
-                            formId,
-                            json_data,
-                            path,
-                            code,
-                            self.user.login,
-                        )
+        dataOriginal = getQuestionsStructure(activeProjectId, code, self.request)
+        newStructure = []
+        for originalData in dataOriginal:
+            questInfo = {}
+            questInfo["name"] = originalData["name"]
+            questInfo["id"] = originalData["id"]
+            questInfo["vars"] = []
+            for vars in originalData["vars"]:
+                for xmldata in dataXML:
+                    if vars["name"].lower() == xmldata[0]:
+                        xmldata.append(vars["validation"].lower())
+                        questInfo["vars"].append(xmldata)
 
-            dataXML = getNamesEditByColums(path)
+            newStructure.append(questInfo)
 
-            dataOriginal = getQuestionsStructure(activeProjectId, code, self.request)
-            newStructure = []
-            for originalData in dataOriginal:
-                questInfo = {}
-                questInfo["name"] = originalData["name"]
-                questInfo["id"] = originalData["id"]
-                questInfo["vars"] = []
-                for vars in originalData["vars"]:
-                    for xmldata in dataXML:
-                        if vars["name"].lower() == xmldata[0]:
-                            xmldata.append(vars["validation"].lower())
-                            questInfo["vars"].append(xmldata)
-
-                newStructure.append(questInfo)
-
-            return {
-                "activeProject": getActiveProject(self.user.login, self.request),
-                "dataworking": dataworking,
-                "activeUser": self.user,
-                "formId": formId,
-                "newStructure": newStructure,
-            }
+        return {
+            "activeProject": getActiveProject(self.user.login, self.request),
+            "dataworking": dataworking,
+            "activeUser": self.user,
+            "formId": formId,
+            "newStructure": newStructure,
+        }

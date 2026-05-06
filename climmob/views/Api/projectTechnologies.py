@@ -26,9 +26,13 @@ from climmob.processes import (
     theUserBelongsToTheProject,
 )
 from climmob.views.classes import apiView
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import ProjectOpenValidator
 
 
 class AddProjectTechnologyView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         if self.request.method == "POST":
@@ -265,6 +269,8 @@ class ReadPossibleProjectTechnologiesView(apiView):
 
 
 class DeleteProjectTechnologyView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         if self.request.method == "POST":
@@ -374,6 +380,8 @@ class DeleteProjectTechnologyView(apiView):
 
 
 class AddProjectTechnologyAliasView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
         if self.request.method == "POST":
             obligatory = [
@@ -505,6 +513,8 @@ class AddProjectTechnologyAliasView(apiView):
 
 
 class AddProjectTechnologyAliasExtraView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
         if self.request.method == "POST":
             obligatory = [
@@ -871,6 +881,8 @@ class ReadPossibleProjectTechnologiesAliasView(apiView):
 
 
 class DeleteProjectTechnologyAliasView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         if self.request.method == "POST":

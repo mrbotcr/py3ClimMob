@@ -121,9 +121,13 @@ class NotFoundView(publicView):
 
 
 class ForbiddenView(publicView):
+    def __init__(self, context, request):
+        super().__init__(request)
+        self.context = context
+
     def get(self):
         self.request.response.status = 403
-        return {}
+        return {"message": self.context.detail}
 
 
 class StoreCookieView(publicView):

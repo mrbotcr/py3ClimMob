@@ -19,9 +19,13 @@ from climmob.products import stopTasksByProcess
 from climmob.products.fieldagents.fieldagents import create_fieldagents_report
 from climmob.views.classes import apiView
 import climmob.plugins as p
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import ProjectOpenValidator
 
 
 class AddProjectEnumeratorView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         if self.request.method == "POST":
@@ -303,6 +307,8 @@ class ReadPossibleProjectEnumeratorsView(apiView):
 
 
 class DeleteProjectEnumeratorView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         if self.request.method == "POST":

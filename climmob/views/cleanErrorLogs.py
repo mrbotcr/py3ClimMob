@@ -2,7 +2,7 @@ import json
 import os
 import xml.etree.ElementTree as ET
 
-from pyramid.httpexceptions import HTTPNotFound, HTTPFound
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound, HTTPForbidden
 
 from climmob.models.repository import sql_execute, execute_two_sqls
 from climmob.processes import (
@@ -19,13 +19,18 @@ from climmob.processes import (
     getQuestionsStructure,
 )
 from climmob.processes.odk.api import storeJSONInMySQL
+from climmob.utility.project import ProjectStatus
 from climmob.views.classes import privateView
 from climmob.views.editDataDB import getNamesEditByColums, fillDataTable
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import ProjectOpenValidator
 
 
 class CleanErrorLogsView(privateView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
@@ -72,6 +77,15 @@ class CleanErrorLogsView(privateView):
 
                         # POST
                         if self.request.method == "POST":
+                            if (
+                                proData["project_status"]
+                                == ProjectStatus.FINALIZED.value
+                            ):
+                                raise HTTPForbidden(
+                                    self._(
+                                        "This project has been finalized and is now in read-only mode. Modifications are no longer permitted to ensure the integrity of the final data."
+                                    )
+                                )
                             dataworking = self.getPostDict()
                             if "submit" in dataworking.keys():
                                 if formId == "registry":

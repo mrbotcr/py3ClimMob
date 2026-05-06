@@ -29,6 +29,8 @@ from climmob.processes import (
     theUserBelongsToTheProject,
 )
 from climmob.views.classes import apiView
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import ProjectOpenValidator
 
 
 class ReadProjectRegistryView(apiView):
@@ -202,6 +204,8 @@ class ReadPossibleQuestionsForRegistryGroupView(apiView):
 
 
 class AddRegistryGroupView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         if self.request.method == "POST":
@@ -297,6 +301,8 @@ class AddRegistryGroupView(apiView):
 
 
 class UpdateRegistryGroupView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         if self.request.method == "POST":
@@ -393,6 +399,8 @@ class UpdateRegistryGroupView(apiView):
 
 
 class DeleteRegistryGroupView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         if self.request.method == "POST":
@@ -497,6 +505,8 @@ class DeleteRegistryGroupView(apiView):
 
 
 class AddQuestionToGroupRegistryView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         if self.request.method == "POST":
@@ -645,6 +655,8 @@ class AddQuestionToGroupRegistryView(apiView):
 
 
 class DeleteQuestionFromGroupRegistryView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         if self.request.method == "POST":
@@ -785,6 +797,8 @@ class DeleteQuestionFromGroupRegistryView(apiView):
 
 
 class OrderRegistryQuestionsView(apiView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         if self.request.method == "POST":

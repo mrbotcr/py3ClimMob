@@ -43,8 +43,8 @@
     background-color: rgba(255, 230, 230, 0.4);
 }
     </style>
-
-    {% if activeProject["access_type"] in [4] %}
+{% set onlySee = False %}
+    {% if activeProject["access_type"] in [4] or activeProject["project_status"] == 3 %}
         {% set onlySee = True %}
     {% endif %}
 
@@ -111,9 +111,6 @@
                 </div>
                 <div class="ibox-content">
 
-{#                    <h2>#}
-{#                        {{ _("Please note that all fields are mandatory unless they include the label “(Optional)” ") }}.#}
-{#                    </h2>#}
                     <br>
 
                     <form class="form-horizontal" id="form_metadata" role="form" method="post" action="{{ request.url }}" >

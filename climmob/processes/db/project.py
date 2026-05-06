@@ -65,6 +65,8 @@ __all__ = [
     "getProjectFullDetailsById",
     "getProjectsByUserThatRequireSetup",
     "update_project_status",
+    "get_user_access_type_in_project",
+    "get_project_status",
 ]
 
 
@@ -454,6 +456,11 @@ def extraDetailsForProject(activeProject, request):
 
     activeProject["languages"] = getPrjLangInProject(
         activeProject["project_id"], request
+    )
+    activeProject["Country"] = (
+        request.dbsession.query(Country)
+        .filter_by(cnty_cod=activeProject["project_cnty"])
+        .first()
     )
 
     for plugin in p.PluginImplementations(p.IProjectTechnologyOptions):
@@ -955,6 +962,27 @@ def update_project_status(project_id, status, request):
         request.dbsession.query(Project).filter(
             Project.project_id == project_id
         ).update({"project_status": status})
-        return True
+        return True, ""
     except Exception as e:
         return False, str(e)
+
+
+def get_user_access_type_in_project(project_id, user, request):
+    res = mapFromSchema(
+        request.dbsession.query(userProject.access_type)
+        .filter(userProject.user_name == user)
+        .filter(userProject.project_id == project_id)
+        .first()
+    )
+    if res:
+        return True, res["access_type"]
+    return False, ""
+
+
+def get_project_status(projectId, request):
+    project_status = mapFromSchema(
+        request.dbsession.query(Project.project_status)
+        .filter(Project.project_id == projectId)
+        .first()
+    )
+    return project_status["project_status"]

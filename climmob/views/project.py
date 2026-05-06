@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import logging
 
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 import climmob.plugins as p
@@ -9,7 +10,6 @@ from climmob.processes import (
     addProject,
     getProjectData,
     modifyProject,
-    projectExists,
     deleteProject,
     changeTheStateOfCreateComb,
     getCountryList,
@@ -52,9 +52,25 @@ from climmob.processes import (
     get_location_unit_of_analysis_objectives_by_combination,
     delete_all_project_location_unit_objective,
     get_all_affiliations,
+    update_project_status,
+    getAllUserAdmin,
+    getProjectProgress,
+    setActiveProject,
+    get_collaborators_in_project,
+)
+from climmob.utility.email import (
+    render_template,
+    build_email_message_multiple_recipients,
+    EmailSender,
 )
 from climmob.views.classes import privateView
+from climmob.views.validators.ActionOnlyForProjectOwnerValidator import (
+    ActionOnlyForProjectOwnerValidator,
+)
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import ProjectOpenValidator
+
+log = logging.getLogger("climmob")
 
 
 class GetTemplatesByTypeOfProjectView(privateView):
@@ -492,7 +508,10 @@ def function_create_clone(self, projectId, newProjectId, structureToBeCloned):
 
 
 class ModifyProjectView(privateView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
     def processView(self):
 
@@ -600,6 +619,10 @@ class ModifyProjectView(privateView):
                                     "project_registration_and_analysis"
                                 ] = location_unit_of_analysis[
                                     "registration_and_analysis"
+                                ]
+                            else:
+                                data["project_registration_and_analysis"] = cdata[
+                                    "project_registration_and_analysis"
                                 ]
 
                             if "usingTemplate" in data.keys():
@@ -767,7 +790,10 @@ class ModifyProjectView(privateView):
 
 
 class DeleteProjectView(privateView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
@@ -939,3 +965,174 @@ class GetObjectivesByLocationAndUnitOfAnalysisView(privateView):
             return objectives
 
         return {}
+
+
+class FinishProjectView(privateView):
+    validators = (
+        ProjectExistsValidator,
+        ActionOnlyForProjectOwnerValidator,
+        ProjectOpenValidator,
+    )
+
+    def get(self):
+        request_activeUSer = self.request.user
+        request_activeProjectCod = self.request.project
+        activeProjectId = getTheProjectIdForOwner(
+            request_activeUSer, request_activeProjectCod, self.request
+        )
+        setActiveProject(self.user.login, activeProjectId, self.request)
+        project_info = getActiveProject(self.user.login, self.request)
+        progress, pcompleted = getProjectProgress(
+            request_activeUSer,
+            request_activeProjectCod,
+            activeProjectId,
+            self.request,
+        )
+        total_ass_records = 0
+        for assessment in progress["assessments"]:
+            if assessment["ass_status"] == 1 or assessment["ass_status"] == 2:
+                total_ass_records = total_ass_records + assessment["asstotal"]
+
+        return {
+            "project_info": project_info,
+            "progress": progress,
+            "total_ass_records": total_ass_records,
+        }
+
+    def post(self):
+
+        success, error_update = update_project_status(
+            self.context.active_project_id, 3, self.request
+        )
+        project_info = getActiveProject(self.user.login, self.request)
+
+        progress, pcompleted = getProjectProgress(
+            self.request.user,
+            self.request.project,
+            getTheProjectIdForOwner(
+                self.request.user, self.request.project, self.request
+            ),
+            self.request,
+        )
+        total_ass_records = 0
+        for assessment in progress["assessments"]:
+            if assessment["ass_status"] == 1 or assessment["ass_status"] == 2:
+                total_ass_records = total_ass_records + assessment["asstotal"]
+
+        project_info["total_ass_records"] = total_ass_records
+        project_info["progress"] = progress
+
+        if success:
+            self.send_email_notification(project_info)
+            self.send_collaborators_email_notification(project_info)
+            self.returnRawViewResult = True
+            self.request.session.flash(
+                self._(
+                    "The project has been successfully closed. Thank you for your dedication! Congratulations!"
+                )
+            )
+            return HTTPFound(location=self.request.route_url("dashboard"))
+        else:
+            return {
+                "error": error_update,
+                "project_info": project_info,
+            }
+
+    def send_email_notification(self, project_info):
+        _ = self.request.translate
+        mail_from = self.request.registry.settings.get("email.from", None)
+        if mail_from is None:
+            log.error(
+                "ClimMob has no email settings in place. Email service is disabled."
+            )
+            return False
+
+        admin_users = getAllUserAdmin(self.request)
+        recipients = []
+        for admin_user in admin_users:
+            recipients.append((admin_user["user_fullname"], admin_user["user_email"]))
+        if not recipients:
+            log.warning("Email didn't send. No recipients found.")
+            return False
+
+        subject = "✅  Project " + str(project_info["project_cod"]) + " has been closed"
+        try:
+            text = render_template(
+                "email/close_project.jinja2",
+                {
+                    "date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "project_info": project_info,
+                    "_": _,
+                    "link": self.request.route_url("projectsSummaryRecent"),
+                    "logo": self.request.url_for_static("landing/climmob2.png"),
+                },
+            )
+        except Exception as e:
+            log.error(f"Error rendering email template: {e}")
+            return False
+
+        try:
+            msg = build_email_message_multiple_recipients(
+                text, subject, recipients, mail_from
+            )
+        except Exception as e:
+            log.error(f"Error building email message: {e}")
+            return False
+        try:
+            recipient_emails = [email for _, email in recipients]
+            email_sender = EmailSender(self.request.registry.settings)
+            email_sender.send_email(recipient_emails, msg)
+            return True
+        except Exception as e:
+            log.error(f"Error sending email: {e}")
+            return False
+
+    def send_collaborators_email_notification(self, project_info):
+        _ = self.request.translate
+        mail_from = self.request.registry.settings.get("email.from", None)
+        if mail_from is None:
+            log.error(
+                "ClimMob has no email settings in place. Email service is disabled."
+            )
+            return False
+        related_collaborators = get_collaborators_in_project(
+            self.request, project_info["project_id"]
+        )
+        recipients = []
+        for collaborator in related_collaborators:
+            recipients.append(
+                (collaborator["user_fullname"], collaborator["user_email"])
+            )
+        if not recipients:
+            log.warning("Email didn't send. No recipients found.")
+            return False
+
+        subject = "Project " + str(project_info["project_cod"]) + " has been closed"
+        try:
+            text = render_template(
+                "email/close_project_participants_registration.jinja2",
+                {
+                    "project_info": project_info,
+                    "_": _,
+                    "logo": self.request.url_for_static("landing/climmob2.png"),
+                },
+            )
+        except Exception as e:
+            log.error(f"Error rendering email template: {e}")
+            return False
+
+        try:
+            msg = build_email_message_multiple_recipients(
+                text, subject, recipients, mail_from
+            )
+        except Exception as e:
+            log.error(f"Error building email message: {e}")
+            return False
+        try:
+            recipient_emails = [email for _, email in recipients]
+            email_sender = EmailSender(self.request.registry.settings)
+            email_sender.send_email(recipient_emails, msg)
+            return True
+        except Exception as e:
+            log.error(f"Error sending email: {e}")
+            return False

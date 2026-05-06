@@ -40,7 +40,7 @@
 
     {% set onlySee = False %}
 
-    {% if activeProject["access_type"] in [4] or assinfo["ass_status"] > 0 %}
+    {% if activeProject["access_type"] in [4] or assinfo["ass_status"] > 0 or activeProject["project_status"] == 3 %}
         {% set onlySee = True %}
     {% endif %}
 
@@ -150,7 +150,7 @@
                                             <div >
                                                 <input id="btnNewSection"    style="display: none" type="submit" class="btn btn-primary pull-right btnsSection" value="{{ _("Save") }}"></input>
                                                 <input id="btnUpdateSection" style="display: none" type="submit" class="btn btn-primary pull-right btnsSection" value="{{ _("Save") }}"></input>
-                                                <input id="btnDeleteSection" style="display: none" onclick="showDeleteSection()" class="btn btn-danger pull-left btnsSection" value="{{ _("Delete") }}"></input>
+                                                <input id="btnDeleteSection" style="display: none"  onclick="showDeleteSection()" class="btn btn-danger pull-left btnsSection" value="{{ _("Delete") }}"></input>
                                             </div>
                                         </div>
                                     </form>

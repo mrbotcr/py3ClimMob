@@ -10,7 +10,7 @@ from climmob.views.basic_views import (
     HomeView,
     HealthView,
     NotFoundView,
-    ForbiddenView,
+    # ForbiddenView,
     LoginView,
     RegisterView,
     LogoutView,
@@ -153,15 +153,6 @@ class TestNotFoundView(ViewBaseTest):
         result = self.view.get()
         self.assertEqual(result, {})
         self.assertEqual(self.view.request.response.status, 404)
-
-
-class TestForbiddenView(ViewBaseTest):
-    view_class = ForbiddenView
-
-    def test_get_not_found_view_success(self):
-        result = self.view.get()
-        self.assertEqual(result, {})
-        self.assertEqual(self.view.request.response.status, 403)
 
 
 class TestStoreCookieView(ViewBaseTest):

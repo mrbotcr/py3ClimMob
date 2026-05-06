@@ -10,8 +10,14 @@
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
+{% set can_edit = True %}
+
+{% if activeProject["project_status"] == 3 %}
+    {% set can_edit = False %}
+{% endif %}
+
 {% block pagecontent %}
-    {% if redirect == False %}
+    {% if redirect == False and can_edit %}
         {% block dltqstmessage %}
             <div class="text-center">
                 <h2 class="font-bold text-danger">{{ _("You are going to cancel the trial data collection") }} "{{ assessmentData.ass_desc }}"</h2>

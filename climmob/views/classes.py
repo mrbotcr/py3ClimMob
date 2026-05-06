@@ -367,6 +367,7 @@ class privateView(BaseView):
             "showHelp": False,
             "showRememberAfterCreateProject": False,
             "surveyMustBeDisplayed": None,
+            "project_status": None,
         }
 
         self.viewResult = {}
@@ -394,6 +395,7 @@ class privateView(BaseView):
         if activeProjectData:
             self.classResult["hasActiveProject"] = True
             self.classResult["activeProject"] = activeProjectData["project_id"]
+            self.classResult["project_status"] = activeProjectData["project_status"]
         else:
             self.classResult["hasActiveProject"] = False
 
