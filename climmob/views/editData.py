@@ -207,10 +207,8 @@ class EditDataView(privateView):
         if not formId in ["registry", "assessment"]:
             raise HTTPNotFound()
 
-        if formId == "registry":
-            formId = "reg"
-        elif formId == "assessment":
-            formId = "ass"
+        formId = formId[:3].lower()
+        if formId == "ass":
             code = self.request.matchdict["codeid"]
 
         path = os.path.join(

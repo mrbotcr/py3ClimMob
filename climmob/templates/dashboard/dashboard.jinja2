@@ -286,7 +286,7 @@
 
 
                                     <tr>
-                                        <td style="vertical-align: middle">revisar!!!!
+                                        <td style="vertical-align: middle">
                                             {{ activeProject.project_abstract }}
                                         </td>
                                     </tr>
@@ -381,7 +381,7 @@
                                                             {% if progress.enumerators %}
                                                                 {{ _("Completed") }}
                                                             {% elif is_open %}
-                                                                {{ _("Validation") }}
+                                                                {{ _("Pending") }}
                                                             {% else %}
                                                                 {{ _("Incomplete") }}
                                                             {% endif %}</span>
@@ -612,7 +612,7 @@
                                                                         </form>
                                                                     {% else %}
                                                                         <div style="text-align: left; padding-left: 10px" >
-                                                                            <p>{{ _("You already start all the data collection moments") }}</p>
+                                                                            <p>{{ _("You already start all the data collection moments") }}.</p>
                                                                         </div>
                                                                     {% endif %}
                                                                 </div>
@@ -621,7 +621,7 @@
                                                                     <div class="text-center">
                                                                         <p>
                                                                         {% if is_open %}
-                                                                            {{ _("You can start the trial data collection once the registration of participants is closed and the project definition is completed") }}
+                                                                            {{ _("You can start the trial data collection once the registration of participants is closed and the project definition is completed") }}.
                                                                         {% endif %}
                                                                         </p>
                                                                     </div>
@@ -630,7 +630,7 @@
                                                         {% else %}
                                                             <div style="text-align: left; padding-left: 10px" >
                                                                 <p>
-                                                                    {{ _("You can not start the trial data collection once the project was closed") }}
+                                                                    {{ _("You can not start the trial data collection once the project was closed") }}.
                                                                 </p>
                                                             </div>
                                                         {% endif %}
@@ -657,19 +657,26 @@
                                                                 <h5 style=" margin: initial">{{ _("Participant registration") }}</h5>
                                                             </td>
                                                             <td style="vertical-align: middle; text-align: center">
-                                                                {% if is_open %}
+
                                                                     {% set pbtype = "progress-bar-info" %}
-                                                                    {% if progress.regsubmissions == 0 %}
-                                                                        <div class="small"
-                                                                             style="text-align: left">{{ _("Not yet started") }}</div>
-                                                                    {% endif %}
-                                                                    {% if progress.regsubmissions == 1 %}
-                                                                        <div class="small"
-                                                                             style="text-align: left">{{ _("On going") }}</div>
+                                                                    {% if is_open %}
+                                                                        {% if progress.regsubmissions == 0 %}
+                                                                            <div class="small"
+                                                                                 style="text-align: left">{{ _("Not yet started") }}</div>
+                                                                        {% endif %}
+                                                                        {% if progress.regsubmissions == 1 %}
+                                                                            <div class="small"
+                                                                                 style="text-align: left">{{ _("On going") }}</div>
+                                                                        {% endif %}
                                                                     {% endif %}
                                                                     {% if progress.regsubmissions == 2 %}
+                                                                        {% if is_open %}
+                                                                            <div class="small"
+                                                                                 style="text-align: left">{{ _("Closed") }}</div>
+                                                                        {% else %}
                                                                         <div class="small"
-                                                                             style="text-align: left">{{ _("Closed") }}</div>
+                                                                                 style="text-align: left">{{ _("Project closed") }}</div>
+                                                                        {% endif %}
                                                                         {% if progress.regperc >= 100 %}
                                                                             {% set pbtype = "progress-bar-success" %}
                                                                         {% else %}
@@ -680,9 +687,6 @@
                                                                         <div style="width: {{ progress.regperc }}%;"
                                                                              class="progress-bar {{ pbtype }}"></div>
                                                                     </div>
-                                                                {% else %}
-                                                                    <div class="small" style="text-align: left">{{ _("Close project") }}</div>
-                                                                {% endif %}
                                                             </td>
                                                             <td style="vertical-align: middle;text-align: center; width: 10%">
                                                                 <a class="collapse-link">
@@ -711,12 +715,12 @@
                                                             </div>
                                                         {% else %}
                                                             <div class="col-md-12">
-                                                                <div>{{ _("You can start the registration of participants once the project has assigned field agents, technology and its options have been selected and a registration form has been prepared") }}</div>
+                                                                <div>{{ _("You can start the registration of participants once the project has assigned field agents, technology and its options have been selected and a registration form has been prepared") }}.</div>
                                                             </div>
                                                         {% endif %}
                                                     {% else %}
                                                         <div class="col-md-12">
-                                                            {{ _("The participant registration form is not yet available") }}
+                                                            {{ _("The participant registration form is not yet available") }}.
                                                         </div>
                                                     {% endif %}
                                                 </div>
@@ -746,7 +750,7 @@
                                                                 <td {% if progress.regerrors > 0 and progress.regsubmissions == 1 %}style="color: #ed5565;" {% endif %}>{{ progress.regerrors }}</td>
                                                             </tr>
                                                             <tr>
-                                                                <td>{{ _("Last submission") }}</td>
+                                                                <td>{{ _("Last submission") }}:</td>
                                                                 <td>{{ progress.lastreg }}</td>
                                                             </tr>
                                                             {% if progress.regsubmissions == 1 and is_open %}
@@ -829,11 +833,7 @@
                                                                                 class="fa fa-undo"></i> {{ _("Cancel registration") }}
                                                                         </button>
                                                                     </div>
-                                                                    {% else %}
-                                                                        <div class="text-center">
-                                                                            <p>{{ _("Project closed, for the integrity of the data you can not make changes") }}</p>
-                                                                        </div>
-                                                                    {% endif %}
+                                                                {% endif %}
                                                             {% else %}
                                                                 {% if is_open %}
                                                                     <div class="col-md-12">
@@ -846,8 +846,8 @@
                                                                 {% endif %}
                                                             {% endif %}
                                                         {% endif %}
-                                                        {% if progress.regsubmissions == 2 and is_open %}
 
+                                                        {#  {% if progress.regsubmissions == 2 and is_open %}
                                                             <div class="col-md-12">
                                                                 {% if progress.assessments|length == 0 %}
                                                                     <button onclick="location.href = '{{ request.route_url('cancelregistry',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'"
@@ -857,13 +857,13 @@
                                                                     </button>
                                                                 {% endif %}
                                                             </div>
-                                                        {% endif %}
+                                                        {% endif %}  #}
                                                     {% endif %}
                                                 </div>
                                             {% endif %}
                                             {% if not is_open and progress.regtotal == 0  %}
                                                 <p>
-                                                {{ _("This project has been closed. Now the project is blocked") }}
+                                                {{ _("This project has been closed. Now the project is blocked") }}.
                                                 </p>
                                             {% endif %}
 
@@ -949,7 +949,7 @@
                                                                     <td {% if assessment.errors > 0 and assessment.ass_status == 1 %}style="color: #ed5565;" {% endif %}>{{ assessment.errors }}</td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td>{{ _("Last submission") }}</td>
+                                                                    <td>{{ _("Last submission") }}:</td>
                                                                     <td>{{ assessment.lastass }}</td>
                                                                 </tr>
 
@@ -1062,6 +1062,11 @@
                                     <div class="ibox float-e-margins" >
                                         <div class="ibox-title">
                                             <h5>{{ _("Analysis") }}</h5>
+                                            <div class="ibox-tools">
+                                                <a class="collapse-link">
+                                                    <i class="fa fa-chevron-up"></i>
+                                                </a>
+                                            </div>
                                         </div>
                                         <div class="ibox-content">
                                             {% if total_ass_records > 5 or (activeProject.project_registration_and_analysis == 1 and progress.regtotal >=5)%}
@@ -1075,17 +1080,17 @@
                                                                 <a class="btn btn-primary btn-rounded " href="{{ request.route_url('Metadata', user=activeProject["owner"].user_name, project=activeProject.project_cod) }}"><i class="fa fa-file-text"></i> {{ _("Trial documentation") }}</a>
                                                             </div>
                                                         {% else %}
-                                                            {{ _("Project closed without the requirements to do the analysis") }}
+                                                            {{ _("Project closed without the requirements to do the analysis") }}.
                                                         {% endif %}
                                                     {% endif %}
                                                 {% else %}
-                                                    {{ _("Your access type do not allow to generate the analysis") }}
+                                                    {{ _("Your access type do not allow to generate the analysis") }}.
                                                 {% endif %}
                                             {% else %}
                                                 {% if is_open %}
-                                                    {{ _("The project does not meet the requirements to run the analysis.") }}
+                                                    {{ _("The project does not meet the requirements to run the analysis") }}.
                                                 {% else %}
-                                                    {{ _("Project closed without the requirements to do the analysis") }}
+                                                    {{ _("Project closed without the requirements to do the analysis") }}.
                                                 {% endif %}
                                             {% endif %}
                                             <br>
@@ -1099,6 +1104,8 @@
                                             <h5>
                                                 {% if is_open %}
                                                     {{ _("Close project") }}
+                                                {% else %}
+                                                    {{ _("Project closed") }}
                                                 {% endif %}
                                             </h5>
                                             <div class="ibox-tools">
@@ -1112,7 +1119,7 @@
                                             {% if is_open %}
                                                 {% if hasActiveProject and activeProject["access_type"] in [1] and activeUser.login == activeProject.owner.user_name %}
                                                     <p>
-                                                        {{ _("Closing a project is recommended once all objectives have been met and all planned phases are complete. Please ensure that no further data entries, profile updates, or metadata changes are required before proceeding.") }}
+                                                        {{ _("Closing a project is recommended once all objectives have been met and all planned phases are complete. Please ensure that no further data entries, profile updates, or metadata changes are required before proceeding") }}.
                                                     </p>
                                                     <button onclick="location.href='{{ request.route_url('finishproject', user = activeProject.owner.user_name, project= activeProject.project_cod) }}'"
                                                         class="btn btn-primary btn-rounded btn-block">

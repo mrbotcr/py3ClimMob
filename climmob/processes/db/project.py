@@ -457,7 +457,7 @@ def extraDetailsForProject(activeProject, request):
     activeProject["languages"] = getPrjLangInProject(
         activeProject["project_id"], request
     )
-    activeProject["Country"] = (
+    activeProject["Country"] = mapFromSchema(
         request.dbsession.query(Country)
         .filter_by(cnty_cod=activeProject["project_cnty"])
         .first()

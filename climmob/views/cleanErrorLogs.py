@@ -83,7 +83,7 @@ class CleanErrorLogsView(privateView):
                             ):
                                 raise HTTPForbidden(
                                     self._(
-                                        "This project has been finalized and is now in read-only mode. Modifications are no longer permitted to ensure the integrity of the final data."
+                                        "This project has been closed and is now in read-only mode. Modifications are no longer permitted to ensure the integrity of the final data."
                                     )
                                 )
                             dataworking = self.getPostDict()
