@@ -25,6 +25,7 @@ from climmob.processes import (
     getAccessTypeForProject,
     update_project_status,
 )
+from climmob.utility.project import ProjectAccessType
 from climmob.views.Api.projectRegistryStart import functionForProcessAndValidateUpdate
 from climmob.processes.odk.api import storeJSONInMySQL, review_multimedia_content
 from climmob.products.forms.form import create_document_form
@@ -60,7 +61,7 @@ class CreateProjectAssessmentView(apiView):
             self.user.login, activeProjectId, self.request
         )
 
-        if accessType in [4]:
+        if accessType in [ProjectAccessType.MEMBER.value]:
             response = Response(
                 status=401,
                 body=self._(
@@ -237,7 +238,7 @@ class CancelAssessmentApiView(apiView):
             self.user.login, activeProjectId, self.request
         )
 
-        if accessType in [4]:
+        if accessType in [ProjectAccessType.MEMBER.value]:
             response = Response(
                 status=401,
                 body=self._(
@@ -294,7 +295,7 @@ class CloseAssessmentApiView(apiView):
             self.user.login, activeProjectId, self.request
         )
 
-        if accessType in [4]:
+        if accessType in [ProjectAccessType.MEMBER.value]:
             response = Response(
                 status=401,
                 body=self._(
@@ -417,7 +418,7 @@ class PushJsonToAssessmentView(apiView):
             self.user.login, activeProjectId, self.request
         )
 
-        if accessType in [4]:
+        if accessType in [ProjectAccessType.MEMBER.value]:
             response = Response(
                 status=401,
                 body=self._(
@@ -817,7 +818,7 @@ class AssessmentDataCleaningView(apiView):
             self.user.login, activeProjectId, self.request
         )
 
-        if accessType in [4]:
+        if accessType in [ProjectAccessType.MEMBER.value]:
             response = Response(
                 status=401,
                 body=self._(

@@ -1401,7 +1401,7 @@ class AddCollaboratorView(apiView):
                 self.user.login, activeProjectId, self.request
             )
 
-            if accessType in [4]:
+            if accessType in [ProjectAccessType.MEMBER.value]:
                 response = Response(
                     status=401,
                     body=self._(
@@ -1417,7 +1417,14 @@ class AddCollaboratorView(apiView):
                     activeProjectId,
                     self.request,
                 ):
-                    if dataworking["access_type"] in [2, 3, 4, "2", "3", "4"]:
+                    if dataworking["access_type"] in [
+                        ProjectAccessType.ADMIN.value,
+                        ProjectAccessType.EDITOR.value,
+                        ProjectAccessType.MEMBER.value,
+                        str(ProjectAccessType.ADMIN.value),
+                        str(ProjectAccessType.EDITOR.value),
+                        str(ProjectAccessType.MEMBER.value),
+                    ]:
 
                         dataworking["access_type"] = int(dataworking["access_type"])
                         dataworking["project_id"] = activeProjectId
@@ -1493,7 +1500,7 @@ class DeleteCollaboratorView(apiView):
                 self.user.login, activeProjectId, self.request
             )
 
-            if accessType in [4]:
+            if accessType in [ProjectAccessType.MEMBER.value]:
                 response = Response(
                     status=401,
                     body=self._(

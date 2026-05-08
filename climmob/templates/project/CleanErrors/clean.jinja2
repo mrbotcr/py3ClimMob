@@ -141,9 +141,9 @@
 
                                                         {% else %}
                                                             {% if column[0] == "qst162" %}
-                                                                <select id="newqst" name="newqst" class="form-control" required="">
+                                                                <select id="newqst" name="newqst" class="form-control" required="" {% if onlySee %} disabled {% endif %}>
                                                                     {% for values in PosibleValues %}
-                                                                        <option value="{{ activeUser.login }}-{{ values }}-{{ proId }}" {% if values|string == New[column[0]]|string %}selected="selected"{% endif %} >{{ _("Package") }} #{{ values }}</option>
+                                                                        <option value="{{ activeUser.login }}-{{ values }}-{{ proId }}" {% if values|string == New[column[0]]|string %}selected="selected"{% endif %} >{{ _("Package") }} #{{ values }}{% if onlySee %} disabled {% endif %}</option>
                                                                     {% endfor %}
                                                                 </select>
                                                             {% else %}
