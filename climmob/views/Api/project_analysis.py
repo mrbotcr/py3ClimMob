@@ -11,8 +11,10 @@ from climmob.processes import (
     getTheProjectIdForOwner,
     getAccessTypeForProject,
     project_needs_to_start_anonymization,
+    get_project_anonymization_status,
 )
 from climmob.products.analysisdata.analysisdata import create_raw_data
+from climmob.utility import AnonymizationStatus
 from climmob.views.classes import apiView
 from climmob.views.project_analysis import processToGenerateTheReport
 from climmob.views.validators import TextField
@@ -42,7 +44,16 @@ class ReadDataOfProjectViewApi(apiView):
                 "Report",
                 "",
             )
-
+            return Response(
+                status="200",
+                body=self._(
+                    "ClimMob is starting to generate the shareable values for your project. Please try again in a moment."
+                ),
+            )
+        anon_status = get_project_anonymization_status(
+            self.context.active_project_id, self.request
+        )
+        if anon_status == AnonymizationStatus.IN_PROGRESS:
             return Response(
                 status="200",
                 body=self._(
