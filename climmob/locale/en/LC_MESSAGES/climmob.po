@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: climmob 3.3.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-05-08 14:20-0600\n"
+"POT-Creation-Date: 2026-05-11 16:07-0600\n"
 "PO-Revision-Date: 2021-06-01 09:47+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -2695,26 +2695,26 @@ msgstr ""
 #: climmob/templates/project/finishproject.jinja2:203
 msgid ""
 "The analysis cannot be generated because the trial documentation is not "
-"yet complete or there are not enough valid submissions. "
+"yet complete or there are not enough valid submissions."
 msgstr ""
 
-#: climmob/templates/project/finishproject.jinja2:204
+#: climmob/templates/project/finishproject.jinja2:203
 msgid "Unavailable"
 msgstr ""
 
-#: climmob/templates/project/finishproject.jinja2:212
+#: climmob/templates/project/finishproject.jinja2:211
 msgid "Go back to project overview"
 msgstr ""
 
-#: climmob/templates/project/finishproject.jinja2:215
+#: climmob/templates/project/finishproject.jinja2:214
 msgid "Do you want to close the project"
 msgstr ""
 
-#: climmob/templates/project/finishproject.jinja2:216
+#: climmob/templates/project/finishproject.jinja2:215
 msgid "Close it will disable further edits to this project."
 msgstr ""
 
-#: climmob/templates/project/finishproject.jinja2:226
+#: climmob/templates/project/finishproject.jinja2:225
 msgid "Confirm close project"
 msgstr ""
 
@@ -8562,5 +8562,12 @@ msgstr ""
 #~ "Modifications are no longer permitted to"
 #~ " ensure the integrity of the final"
 #~ " data."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The analysis cannot be generated because"
+#~ " the trial documentation is not yet"
+#~ " complete or there are not enough "
+#~ "valid submissions. "
 #~ msgstr ""
 
