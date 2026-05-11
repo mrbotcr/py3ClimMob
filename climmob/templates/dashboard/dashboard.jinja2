@@ -658,35 +658,33 @@
                                                             </td>
                                                             <td style="vertical-align: middle; text-align: center">
 
-                                                                    {% set pbtype = "progress-bar-info" %}
-                                                                    {% if is_open %}
-                                                                        {% if progress.regsubmissions == 0 %}
-                                                                            <div class="small"
-                                                                                 style="text-align: left">{{ _("Not yet started") }}</div>
-                                                                        {% endif %}
-                                                                        {% if progress.regsubmissions == 1 %}
-                                                                            <div class="small"
-                                                                                 style="text-align: left">{{ _("On going") }}</div>
-                                                                        {% endif %}
-                                                                    {% endif %}
-                                                                    {% if progress.regsubmissions == 2 %}
-                                                                        {% if is_open %}
-                                                                            <div class="small"
-                                                                                 style="text-align: left">{{ _("Closed") }}</div>
-                                                                        {% else %}
+                                                                {% set pbtype = "progress-bar-info" %}
+                                                                {% if is_open %}
+                                                                    {% if progress.regsubmissions == 0 %}
                                                                         <div class="small"
-                                                                                 style="text-align: left">{{ _("Project closed") }}</div>
-                                                                        {% endif %}
+                                                                             style="text-align: left">{{ _("Not yet started") }}</div>
+                                                                    {% endif %}
+                                                                    {% if progress.regsubmissions == 1 %}
+                                                                        <div class="small"
+                                                                             style="text-align: left">{{ _("On going") }}</div>
+                                                                    {% endif %}
+
+                                                                    {% if progress.regsubmissions == 2 %}
+                                                                        <div class="small"style="text-align: left">{{ _("Closed") }}</div>
                                                                         {% if progress.regperc >= 100 %}
                                                                             {% set pbtype = "progress-bar-success" %}
                                                                         {% else %}
                                                                             {% set pbtype = "progress-bar-warning" %}
                                                                         {% endif %}
                                                                     {% endif %}
-                                                                    <div class="progress progress-mini">
-                                                                        <div style="width: {{ progress.regperc }}%;"
-                                                                             class="progress-bar {{ pbtype }}"></div>
-                                                                    </div>
+                                                                {% else %}
+                                                                    {% set pbtype = "progress-bar-success" %}
+                                                                    <div class="small"  style="text-align: left">{{ _("Project closed") }}</div>
+                                                                {% endif %}
+                                                                <div class="progress progress-mini">
+                                                                    <div style="width: {{ progress.regperc }}%;"
+                                                                         class="progress-bar {{ pbtype }}"></div>
+                                                                </div>
                                                             </td>
                                                             <td style="vertical-align: middle;text-align: center; width: 10%">
                                                                 <a class="collapse-link">
@@ -905,6 +903,7 @@
                                                                                 {% endif %}
                                                                             {% endif %}
                                                                         {% else %}
+                                                                            {% set pbtype = "progress-bar-success" %}
                                                                              <div class="small" style="text-align: left">{{ _("Project closed") }}</div>
                                                                         {% endif %}
                                                                         <div class="progress progress-mini">
@@ -1102,11 +1101,7 @@
                                     <div class="ibox float-e-margins">
                                         <div class="ibox-title">
                                             <h5>
-                                                {% if is_open %}
-                                                    {{ _("Close project") }}
-                                                {% else %}
-                                                    {{ _("Project closed") }}
-                                                {% endif %}
+                                                {{ _("Close project") }}
                                             </h5>
                                             <div class="ibox-tools">
                                                 <a class="collapse-link">
