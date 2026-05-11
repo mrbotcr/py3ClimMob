@@ -715,7 +715,7 @@
                 const regex = /^[^{}]*{}[^{}]*$/;
                 if (!regex.test(anonymity_body["anonym_param_pseudonym"])) {
                     invalid_input = {name: "anonym_param_pseudonym",
-                                     msg: "{{ _("Musts contain '{}' once.") | safe }}" }
+                                     msg: "{{ _("Must contain '{}' once.") | safe }}" }
                 }
             }
             else if (anonymity_body["question_anonymity"] === {{ QuestionAnonymity.RANGE }}) {
