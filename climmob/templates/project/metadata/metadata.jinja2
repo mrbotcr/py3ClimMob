@@ -33,20 +33,24 @@
 {% block pagecontent %}
 
     <style>
-    .tableHover2 {
+    .tableHover tbody tr:hover{
         background-color: #e7eaec;
         border-left: 1px solid #1ab394;
         border-right: 1px solid #1ab394;
+        cursor: pointer;
     }
+    td.is-invalid {
+    background-color: rgba(255, 230, 230, 0.4);
+}
     </style>
-
-    {% if activeProject["access_type"] in [4] %}
+{% set onlySee = False %}
+    {% if activeProject["access_type"] in [4] or activeProject["project_status"] == 3 %}
         {% set onlySee = True %}
     {% endif %}
 
     <div class="row">
 
-        <div class="col-lg-4">
+        <div class="col-lg-3">
 
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
@@ -57,8 +61,8 @@
                     {% if listOfProjectMetadata %}
                         <div class="table-responsive">
 
-                            <table class="footable table table-stripped tableHover" data-page-size="50000" data-filter=#filter>
-                                <tbody>
+                            <table class="footable table table-stripped tableHover"  data-filter=#filter>
+                                <thead>
                                     <tr>
                                         <th>
                                             {{ _("Form name") }}
@@ -66,12 +70,11 @@
                                         <th class="text-center">
                                             {{ _("Status") }}
                                         </th>
-                                        <th class="text-center">
-                                            {{ _("Actions") }}
-                                        </th>
                                     </tr>
+                            </thead>
+                            <tbody>
                                     {% for metadata in listOfProjectMetadata %}
-                                        <tr idInternal="{{ metadata.metadata_id }}">
+                                        <tr idInternal="{{ metadata.metadata_id }}" onclick="openMetadataForm('{{ metadata.metadata_id }}')">
                                             <td style="vertical-align: middle">
                                                 {{ metadata.metadata_name }}
                                             </td>
@@ -81,9 +84,6 @@
                                                 {% else %}
                                                     <span class="label label-warning">{{ _("Pending") }}</span>
                                                 {% endif %}
-                                            </td>
-                                            <td class="text-center" style="vertical-align: middle">
-                                                <button type="submit" class="btn btn-primary" onclick="openMetadataForm('{{ metadata.metadata_id }}')" style="margin-bottom: 0px"><i class="fa fa-eye"></i> {{ _('View and edit') }}</button>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -101,7 +101,7 @@
 
         </div>
 
-        <div class="col-lg-8" id="div_for_show_form" style="display: none">
+        <div class="col-lg-9" id="div_for_show_form" style="display: none">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
                     <h5 id="spaceForPutTheTitle">{{ _("Trial documentation") }} </h5>
@@ -111,14 +111,11 @@
                 </div>
                 <div class="ibox-content">
 
-{#                    <h2>#}
-{#                        {{ _("Please note that all fields are mandatory unless they include the label “(Optional)” ") }}.#}
-{#                    </h2>#}
                     <br>
 
                     <form class="form-horizontal" id="form_metadata" role="form" method="post" action="{{ request.url }}" >
 
-                        <div class="form-horizontal">
+                        <div class="form-horizontal" id="mainSpaceForm">
                             <div id="spaceForPutTheForm"></div>
                         </div>
 
@@ -161,9 +158,26 @@
                 $.get(URL, function (dataString, status) {
                     dataString = dataString.split("@@@@@@@@@@")
                     $("#spaceForPutTheTitle").text("{{ _("Form") }}: "+dataString[0])
+                    $("#spaceForPutTheForm").remove();
+                    $("#mainSpaceForm").append('<div id="spaceForPutTheForm"></div>');
                     $("#spaceForPutTheForm").html(dataString[1])
                     $("#metadata_id").val(formId)
                     $("#div_for_show_form").css("display","block")
+
+                    //funtion in inspinia to make it collapsable
+                    $('.collapse-link').on('click', function () {
+                        var ibox = $(this).closest('div.ibox');
+                        var button = $(this).find('i');
+                        var content = ibox.children('.ibox-content');
+                        content.slideToggle(200);
+                        button.toggleClass('fa-chevron-up').toggleClass('fa-chevron-down');
+                        ibox.toggleClass('').toggleClass('border-bottom');
+                        setTimeout(function () {
+                            ibox.resize();
+                            ibox.find('[id^=map-]').resize();
+                        }, 50);
+                    });
+
                 });
             }
 
@@ -182,10 +196,20 @@
                 $("#div_for_show_form").css("display","none")
             });
 
-            $('.tableHover').on('click', 'tbody tr', function(event) {
-                $(this).addClass('tableHover2').siblings().removeClass('tableHover2');
-            });
-
+            function updateSticky(stickyA,stickyB){
+                var a = document.querySelector('[stickyname="'+stickyA+'"]');
+                var b = document.querySelector('[stickyname="'+stickyB+'"]');
+                if (!b) return;
+                if (!a){
+                    b.style.top = '0px';
+                    return;
+                }
+                var ro = new ResizeObserver(() => {
+                    var alturaA = a.getBoundingClientRect().height;
+                    b.style.top = alturaA + 'px';
+                });
+                ro.observe(a);
+            }
         </script>
 
     </div>

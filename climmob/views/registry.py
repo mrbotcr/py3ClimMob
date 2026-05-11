@@ -34,6 +34,7 @@ from climmob.views.classes import privateView
 from climmob.views.question import getDictForPreview
 from climmob.products.forms.form import create_document_form
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import ProjectOpenValidator
 
 
 class DeleteRegistrySectionView(privateView):
@@ -104,7 +105,10 @@ def actionsInSections(self, postdata):
 
 
 class RegistrySectionActionsView(privateView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
@@ -130,7 +134,10 @@ class RegistrySectionActionsView(privateView):
 
 
 class CancelRegistryView(privateView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
@@ -180,7 +187,10 @@ class CancelRegistryView(privateView):
 
 
 class CloseRegistryView(privateView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
@@ -226,7 +236,10 @@ class CloseRegistryView(privateView):
 
 
 class RegistryView(privateView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
@@ -307,6 +320,8 @@ class RegistryView(privateView):
 
 
 class RegistryFormCreationView(privateView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -456,6 +471,8 @@ def getDataFormPreview(
 
 
 class GetRegistrySectionView(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -516,6 +533,8 @@ def createDocumentForm(
 
 
 class ChangeProjectMainLanguage_view(privateView):
+    validators = (ProjectExistsValidator,)
+
     def processView(self):
 
         self.returnRawViewResult = True

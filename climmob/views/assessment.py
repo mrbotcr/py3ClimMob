@@ -41,9 +41,12 @@ from climmob.views.classes import privateView
 from climmob.views.registry import getDataFormPreview
 from climmob.views.question import getDictForPreview
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import ProjectOpenValidator
 
 
-class deleteAssessmentSection_view(privateView):
+class DeleteAssessmentSectionView(privateView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -122,6 +125,8 @@ def actionsInSections(self, postdata):
 
 
 class assessmentSectionActions_view(privateView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -156,6 +161,8 @@ class assessmentSectionActions_view(privateView):
 
 
 class getAssessmentDetails_view(privateView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
         if self.request.method == "GET":
             activeProjectUser = self.request.matchdict["user"]
@@ -182,6 +189,8 @@ class getAssessmentDetails_view(privateView):
 
 
 class assessmenthead_view(privateView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -278,6 +287,8 @@ class assessmenthead_view(privateView):
 
 
 class deleteassessmenthead_view(privateView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -320,6 +331,8 @@ class deleteassessmenthead_view(privateView):
 
 
 class assessment_view(privateView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -352,7 +365,6 @@ class assessment_view(privateView):
 
             if "btn_download_doc" in self.request.POST:
 
-                print("Aquiii")
                 projectDetails = getActiveProject(self.user.login, self.request)
                 createDocumentForm(
                     self,
@@ -408,7 +420,7 @@ class assessment_view(privateView):
 
 
 class CloneAssessmentView(privateView):
-    validators = (ProjectExistsValidator,)
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
 
     def post(self):
         active_project_user = self.request.user
@@ -433,6 +445,8 @@ class CloneAssessmentView(privateView):
 
 
 class assessmentFormCreation_view(privateView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -518,6 +532,8 @@ class assessmentFormCreation_view(privateView):
 
 
 class startAssessments_view(privateView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
@@ -729,7 +745,7 @@ def createDocumentForm(
 
 
 class closeAssessment_view(privateView):
-    validators = (ProjectExistsValidator,)
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
 
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
@@ -780,7 +796,10 @@ class closeAssessment_view(privateView):
 
 
 class CancelAssessmentView(privateView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]

@@ -38,6 +38,8 @@
 {% block pageheading %}
     {% set iconOfLibrary="fa-comment" %}
     {% set _title= _("Questions") %}
+    {% set removeBasicBreadcrumb = True %}
+    {% set extra =[[_("Library"), ],] %}
     {% set _linkWiki="https://climmob.net/blog/wiki/prepare-data-collection/" %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
@@ -547,6 +549,8 @@
                 }
 
             });
+
+            $("#jstree1").jstree("close_all");
 
             $("#filterjstree1").keyup(function (){
                 var searchString = $(this).val();

@@ -1,20 +1,21 @@
-<div class="panel panel-warning">
-    <div class="panel-heading">
-        <i class="fa fa-info-circle"></i>
+<div class="panel panel-warning ibox">
+    <div class="panel-heading ibox-title">
+        <h5><i class="fa fa-info-circle"></i>
         {% if lang_answer_name %} {{ _("Remember: ") }}
         {% else %} {{ _("Before you fill up this form: ") }}
-        {% endif %}
-
+        {% endif %}</h5>
+        <div class="ibox-tools">
+            <a class="collapse-link">
+                <i style="color: white" class="fa fa-chevron-up"></i>
+            </a>
+        </div>
     </div>
-    <div class="panel-body">
+    <div class="panel-body ibox-content">
         <strong>
         {% if lang_answer_name %}
             {{_("This form displays the answers in the language they were saved in:")}} {{ lang_answer_name }}
         {% else %}
-            {{ _("Please check your selected language.")}} <br>
-            {{_("Your answers will be saved and displayed in that language.
-            For consistency, use the same language across all metadata fields and make sure it matches the project
-            language.") }}
+            {{_("Free-text responses are not automatically translated. To ensure consistency, we recommend using a single language when editing your project metadata.") }}
     {% endif %}
         </strong>
         </div>

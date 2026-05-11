@@ -111,7 +111,10 @@ class BaseView:
             raise HTTPMethodNotAllowed(f"Method {self.request.method} Not Allowed")
 
         for validator in self.validators:
-            validator(self).run()
+            result = validator(self).run()
+
+            if result:
+                return result
 
     def get(self):
         raise NotImplementedError
@@ -364,6 +367,7 @@ class privateView(BaseView):
             "showHelp": False,
             "showRememberAfterCreateProject": False,
             "surveyMustBeDisplayed": None,
+            "project_status": None,
         }
 
         self.viewResult = {}
@@ -392,6 +396,7 @@ class privateView(BaseView):
         if activeProjectData:
             self.classResult["hasActiveProject"] = True
             self.classResult["activeProject"] = activeProjectData["project_id"]
+            self.classResult["project_status"] = activeProjectData["project_status"]
         else:
             self.classResult["hasActiveProject"] = False
 
@@ -460,7 +465,10 @@ class privateView(BaseView):
                 pass
 
         try:
-            self._validate()
+            result_validate = self._validate()
+            if result_validate:
+                return result_validate
+
         except (HTTPBadRequest, HTTPMethodNotAllowed) as e:
             return {"result": "error", "error": str(e)}
 

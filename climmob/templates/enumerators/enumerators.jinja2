@@ -23,6 +23,11 @@
 {% block pageheading %}
     {% set iconOfLibrary="fa-group" %}
     {% set _title= _("Field agents") %}
+
+    {% set removeBasicBreadcrumb = True %}
+    {% set extra =[[_("Library"), ],] %}
+
+
     {% set _linkWiki= "https://climmob.net/blog/wiki/assign-field-agents/"%}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
@@ -172,9 +177,9 @@
                                     <td style="vertical-align: middle;">
 
                                         {% if enumerator.enum_active == 1 %}
-                                            <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" href="#"><i class="fa fa-thumbs-o-up"></i> {{ _('Can submit data') }}</a>
+                                            <a class="btn btn-success btn-rounded btn-block btn-xs pull-left" ><i class="fa fa-thumbs-o-up"></i> {{ _('Can submit data') }}</a>
                                         {% else %}
-                                            <a class="btn btn-danger btn-rounded btn-block btn-xs pull-left" href="#"><i class="fa fa-thumbs-o-down"></i> {{ _('Cannot submit data') }}</a>
+                                            <a class="btn btn-danger btn-rounded btn-block btn-xs pull-left" ><i class="fa fa-thumbs-o-down"></i> {{ _('Cannot submit data') }}</a>
                                         {% endif %}
 
                                     </td>

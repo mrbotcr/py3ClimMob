@@ -41,7 +41,7 @@
                 <!--Continually expanded and constantly improved Inspinia Admin Them (IN+)-->
             </p>#}
             {% block logincontent %}
-                <p>{{ _("Login in") }}</p>
+                <p>{{ _("Log in to {} instance").format(request.registry.settings.get('analytics.instancename', "")) }}</p>
                 {% block loginerror %}
                     {% if failed_attempt %}
                         <div class="alert alert-danger alert-dismissable">

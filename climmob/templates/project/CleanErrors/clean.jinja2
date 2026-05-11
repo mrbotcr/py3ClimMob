@@ -11,6 +11,10 @@
 {% endblock %}
 
 {% block pagecontent %}
+    {% set onlySee = False %}
+    {% if activeProject["access_type"] in [4] or activeProject.project_status == 3 %}
+        {% set onlySee = True %}
+    {% endif %}
 
     <style>
     .vertical-timeline-content{
@@ -137,9 +141,9 @@
 
                                                         {% else %}
                                                             {% if column[0] == "qst162" %}
-                                                                <select id="newqst" name="newqst" class="form-control" required="">
+                                                                <select id="newqst" name="newqst" class="form-control" required="" {% if onlySee %} disabled {% endif %}>
                                                                     {% for values in PosibleValues %}
-                                                                        <option value="{{ activeUser.login }}-{{ values }}-{{ proId }}" {% if values|string == New[column[0]]|string %}selected="selected"{% endif %} >{{ _("Package") }} #{{ values }}</option>
+                                                                        <option value="{{ activeUser.login }}-{{ values }}-{{ proId }}" {% if values|string == New[column[0]]|string %}selected="selected"{% endif %} >{{ _("Package") }} #{{ values }}{% if onlySee %} disabled {% endif %}</option>
                                                                     {% endfor %}
                                                                 </select>
                                                             {% else %}
@@ -193,7 +197,8 @@
                                                                 {% endfor %}
                                                             {% else %}
 
-                                                                <select id="newqst2" name="newqst2" class="form-control" required="">
+                                                                <select id="newqst2" name="newqst2" class="form-control" required="" {% if onlySee %} disabled {% endif %}>
+
                                                                     {% for values in PosibleValues %}
 
                                                                         <option value="{{ values[0] }}" {% if values[0]|string == New[quest[0]]|string %}selected{% endif %} >{{ values[1] }}</option>
@@ -221,18 +226,15 @@
                                                 {% endfor %}
                                         {% endfor %}
                                     {% endif %}
-                                    <tr>
-                                        <td style="text-align: left"><button type="submit" name="deleteboth" id="deleteboth" class="btn btn-danger" style="white-space: normal !important;word-wrap: break-word !important;">{{ _("Delete both entries") }}</button></td>
-                                        <td style="text-align: center"><button type="submit" name="discard" id="discard" class="btn btn-warning" style="white-space: normal !important;word-wrap: break-word !important;">{{ _("Keep previously registered information") }}</button></td>
-                                        <td style="text-align: center"><button type="submit" name="submit" id="submit" class="btn btn-primary " style="white-space: normal !important;word-wrap: break-word !important;">{{ _("Replace information with new data") }}</button></td>
-                                    </tr>
+                                    {% if not onlySee %}
+                                        <tr>
+                                            <td style="text-align: left"><button type="submit" name="deleteboth" id="deleteboth" class="btn btn-danger" style="white-space: normal !important;word-wrap: break-word !important;">{{ _("Delete both entries") }}</button></td>
+                                            <td style="text-align: center"><button type="submit" name="discard" id="discard" class="btn btn-warning" style="white-space: normal !important;word-wrap: break-word !important;">{{ _("Keep previously registered information") }}</button></td>
+                                            <td style="text-align: center"><button type="submit" name="submit" id="submit" class="btn btn-primary " style="white-space: normal !important;word-wrap: break-word !important;">{{ _("Replace information with new data") }}</button></td>
+                                        </tr>
+                                    {% endif %}
                                 </tbody>
                             </table>
-{#                            <div style=" text-align: center">#}
-{#                                <button type="submit" name="submit" id="submit" class="btn btn-primary ">{{ _("Update") }}</button>#}
-{#                                <br><br>#}
-{#                                <button type="submit" name="discard" id="discard" class="btn btn-warning">{{ _("Discard") }}</button>#}
-{#                            </div>#}
                         </form>
 
                     </div>

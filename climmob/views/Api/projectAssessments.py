@@ -36,7 +36,10 @@ from climmob.views.classes import apiView
 from climmob.views.validators import TextField, IntegerField, BinaryField
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 from climmob.views.validators.assessment import AssessmentExistsValidator
-from climmob.views.validators.project import CanEditProjectValidator
+from climmob.views.validators.project import (
+    CanEditProjectValidator,
+    ProjectOpenValidator,
+)
 
 
 class ReadProjectAssessmentsView(apiView):
@@ -68,7 +71,10 @@ class ReadProjectAssessmentsView(apiView):
 
 
 class AddNewAssessmentView(apiView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
     valid_fields = (
         TextField("project_cod"),
         TextField("user_owner"),
@@ -113,7 +119,10 @@ class AddNewAssessmentView(apiView):
 
 
 class UpdateProjectAssessmentView(apiView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
     valid_fields = (
         TextField("project_cod"),
         TextField("user_owner"),
@@ -170,7 +179,10 @@ class UpdateProjectAssessmentView(apiView):
 
 
 class DeleteProjectAssessmentView(apiView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
     valid_fields = (
         TextField("project_cod"),
         TextField("user_owner"),
@@ -247,6 +259,7 @@ class CloneAssessmentApiView(apiView):
         ProjectExistsValidator,
         CanEditProjectValidator,
         AssessmentExistsValidator,
+        ProjectOpenValidator,
     )
     valid_fields = (
         TextField("project_cod"),
@@ -361,7 +374,10 @@ class ReadProjectAssessmentStructureView(apiView):
 
 
 class CreateAssessmentGroupView(apiView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
     valid_fields = (
         TextField("project_cod"),
         TextField("user_owner"),
@@ -443,7 +459,10 @@ class CreateAssessmentGroupView(apiView):
 
 
 class UpdateAssessmentGroupView(apiView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
     valid_fields = (
         TextField("project_cod"),
         TextField("user_owner"),
@@ -532,7 +551,10 @@ class UpdateAssessmentGroupView(apiView):
 
 
 class DeleteAssessmentGroupView(apiView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
     valid_fields = (
         TextField("project_cod"),
         TextField("user_owner"),
@@ -630,7 +652,10 @@ class DeleteAssessmentGroupView(apiView):
 
 
 class ReadPossibleQuestionForAssessmentGroupView(apiView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
     valid_fields = (
         TextField("project_cod"),
         TextField("user_owner"),
@@ -706,7 +731,10 @@ class ReadPossibleQuestionForAssessmentGroupView(apiView):
 
 
 class AddQuestionToGroupAssessmentView(apiView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
     valid_fields = (
         TextField("project_cod"),
         TextField("user_owner"),
@@ -829,7 +857,10 @@ class AddQuestionToGroupAssessmentView(apiView):
 
 
 class DeleteQuestionFromGroupAssessmentView(apiView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
     valid_fields = (
         TextField("project_cod"),
         TextField("user_owner"),
@@ -940,7 +971,10 @@ class DeleteQuestionFromGroupAssessmentView(apiView):
 
 # _________________________________________ASSESSMENTS ORDER GROUPS___________________________________________________#
 class OrderAssessmentQuestionsView(apiView):
-    validators = (ProjectExistsValidator,)
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
     valid_fields = (
         TextField("project_cod"),
         TextField("user_owner"),

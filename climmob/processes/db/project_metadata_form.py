@@ -49,13 +49,22 @@ def knowIfTheProjectMetadataIsComplete(request, projectId):
     quantityRequired = mapFromSchema(
         request.dbsession.query(
             func.count(MetadataForm.metadata_id).label("quantity_required")
-        ).one()
+        )
+        .filter(MetadataForm.metadata_active == 1)
+        .one()
     )
     quantityCompleted = mapFromSchema(
         request.dbsession.query(
             func.count(ProjectMetadataForm.project_id).label("quantity_completed")
         )
         .filter(ProjectMetadataForm.project_id == projectId)
+        .filter(
+            ProjectMetadataForm.metadata_id.in_(
+                request.dbsession.query(MetadataForm.metadata_id).filter(
+                    MetadataForm.metadata_active == 1
+                )
+            )
+        )
         .one()
     )
     return (

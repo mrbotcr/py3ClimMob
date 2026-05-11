@@ -6,6 +6,7 @@ import uuid
 from ago import human
 from sqlalchemy import func
 
+import climmob.plugins as p
 from climmob.models import (
     Project,
     mapToSchema,
@@ -27,16 +28,18 @@ from climmob.models import (
 )
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
 from climmob.processes.db.enumerator import countEnumeratorsOfAllCollaborators
-from climmob.processes.db.project_technologies import numberOfCombinationsForTheProject
-from climmob.processes.db.question import getQuestionOptions
 from climmob.processes.db.prjlang import getPrjLangInProject
-from climmob.processes.db.project_metadata_form import (
-    knowIfTheProjectMetadataIsComplete,
-)
 from climmob.processes.db.project_location_unit_objective import (
     get_project_objectives_by_project_id,
 )
-import climmob.plugins as p
+from climmob.processes.db.project_metadata_form import (
+    knowIfTheProjectMetadataIsComplete,
+)
+from climmob.processes.db.project_technologies import (
+    numberOfCombinationsForTheProject,
+    searchTechnologiesInProject,
+)
+from climmob.processes.db.question import getQuestionOptions
 
 __all__ = [
     "getTotalNumberOfProjectsInClimMob",
@@ -62,6 +65,8 @@ __all__ = [
     "getProjectFullDetailsById",
     "getProjectsByUserThatRequireSetup",
     "update_project_status",
+    "get_user_access_type_in_project",
+    "get_project_status",
     "get_project_cod_by_id",
 ]
 
@@ -463,6 +468,11 @@ def extraDetailsForProject(activeProject, request):
     activeProject["languages"] = getPrjLangInProject(
         activeProject["project_id"], request
     )
+    activeProject["Country"] = mapFromSchema(
+        request.dbsession.query(Country)
+        .filter_by(cnty_cod=activeProject["project_cnty"])
+        .first()
+    )
 
     for plugin in p.PluginImplementations(p.IProjectTechnologyOptions):
         activeProject = plugin.get_extra_information_for_data_exchange(
@@ -532,10 +542,17 @@ def getUserProjects(user, request):
             .filter(Assessment.project_id == project["project_id"])
             .one()
         )[0]
-
-        # project["progress"], project["perc"] = getProjectProgress(
-        #     project["user_name"], project["project_cod"], project["project_id"], request
-        # )
+        ##get the code of country and add the complete name in a string
+        res_country = mapFromSchema(
+            request.dbsession.query(Country.cnty_name)
+            .filter(Country.cnty_cod == project["project_cnty"])
+            .first()
+        )
+        if res_country:
+            project["country_name"] = res_country["cnty_name"]
+        project["technologies"] = searchTechnologiesInProject(
+            project["project_id"], request
+        )
     return mappedData
 
 
@@ -956,6 +973,27 @@ def update_project_status(project_id, status, request):
         request.dbsession.query(Project).filter(
             Project.project_id == project_id
         ).update({"project_status": status})
-        return True
+        return True, ""
     except Exception as e:
         return False, str(e)
+
+
+def get_user_access_type_in_project(project_id, user, request):
+    res = mapFromSchema(
+        request.dbsession.query(userProject.access_type)
+        .filter(userProject.user_name == user)
+        .filter(userProject.project_id == project_id)
+        .first()
+    )
+    if res:
+        return True, res["access_type"]
+    return False, ""
+
+
+def get_project_status(projectId, request):
+    project_status = mapFromSchema(
+        request.dbsession.query(Project.project_status)
+        .filter(Project.project_id == projectId)
+        .first()
+    )
+    return project_status["project_status"]

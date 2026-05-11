@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            text-align: center;
+        !important;
+        }
+
+        .email-container {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 30px;
+            border-radius: 6px;
+            margin: 0 auto;
+            width: 600px;
+            display: inline-block;
+        !important;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    {% block email_body %}
+        {% block email_hello %}
+            <p style="margin-bottom: 15px;"><strong>{{ _('Dear 1000FARMS Administrator') }},</strong></p>
+        {% endblock email_hello %}
+
+        {% block email_message %}
+            <p style="margin-bottom: 15px;">
+                {{ _('Please be advised that Project ') }}
+                <strong>{{ project_info["project_cod"] }}</strong> {{ _('was officially close today, ') }} {{ date }}.
+            </p>
+            <p style="margin-bottom: 15px;">
+                {{ _('From this point forward, all project-related tasks, data entries, and activities are permanently locked.') }}
+            </p>
+            <p>{{ _('Project details:') }}</p>
+            <ul>{{ _('Project name') }}: <strong>{{ project_info["project_name"] }}</strong></ul>
+            <ul>{{ _('Project principal investigator') }}: <strong>{{ project_info["project_pi"] }}</strong></ul>
+            <ul>{{ _('Owner') }}: <strong>{{ project_info["owner"]["user_name"] }}</strong></ul>
+            <ul>{{ _('Country') }}: <strong>{{ project_info["Country"].cnty_name }}</strong></ul>
+            <ul>{{ _('Crop name') }}: <strong>{{ project_info["project_curated_cropname"] }}</strong></ul>
+            <ul>{{ _('Creation date') }}: <strong>{{ project_info["project_creationdate"] }}</strong></ul>
+            <ul>{{ _('Progress') }}:
+                <strong>
+                    {% if project_info.project_regstatus == 0 %}
+                        {{ _("Registration not yet started") }}
+                    {% else %}
+                        {% if project_info.project_regstatus == 1 %}
+                            {{ _("Registration ongoing") }}
+                        {% else %}
+                            {% if project_info.project_regstatus == 2 %}
+                                {% if project_info.project_assstatus == 0 %}
+                                    {{ _("Registration closed") }}
+                                {% else %}
+                                    {{ _("Trial data collection / Analysis ongoing") }}
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </strong>
+            </ul>
+            <ul>{{ _('Status') }}: <strong>
+                {% if project_info["project_status"] == 0 %}
+                    {{ _("Undefined") }}
+                {% elif project_info["project_status"] == 1 %}
+                    {{ _("Definition") }}
+                {% elif project_info["project_status"] == 2 %}
+                    {{ _("In progress") }}
+                {% elif project_info["project_status"] == 3 %}
+                    {{ _("Closed") }}
+                {% endif %}</strong></ul>
+
+            <p style="margin-bottom: 20px;">{{ _('Would you like to add this project to your network dashboard?') }} <a href="{{ link }}">{{ _('Go to ClimMob') }}</a></p>
+            <p style="margin-bottom: 15px;">{{ _('Thank you for collaborating in the 1000FARMS Network monitoring!') }}</p>
+        {% endblock email_message %}
+
+        {% block email_goodbye %}
+            <p>{{ _('Best regards,') }}<p>
+            <p style="margin-bottom: 0;">{{ _('The ClimMob team') }}</p>
+            <br>
+            <img src="{{ logo }}" style="width:45%; max-width:100px; height:auto;" >
+        {% endblock email_goodbye %}
+    {% endblock email_body %}
+</div>
+</body>
+</html>

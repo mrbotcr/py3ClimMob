@@ -1,0 +1,74 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | Dashboard") }}</title>
+{% endblock title %}
+
+{% block css %}
+    {% cssresource request,'coreresources','tour' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {% jsresource request,'coreresources','toastr' %}
+{% endblock topScripts %}
+
+{% block pageheading %}
+    {% set _title= _("Analytics") %}
+    {% set removeBasicBreadcrumb = True %}
+    {% set extra =[[_("Projects"),],[_("1000Farms Network"), ]] %}
+
+    {% include 'snippets/menuheading.jinja2' %}
+{% endblock %}
+
+{% block pagecontent %}
+    {% for section in sections %}
+        <div class="ibox ">
+            <div class="ibox-title">
+                <h5>{{ section.name | capitalize }}</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="ibox-content" id="container-{{ section.name }}">
+            </div>
+        </div>
+    {% endfor %}
+
+    <script src="https://unpkg.com/superset-embedded-sdk"></script>
+  <script>
+    const sections = {{ sections | tojson }};
+        $(document).ready(function () {
+            var URL = "{{ request.route_url("getTokenSuperSet") }}";
+            $.get(URL, async function (String) {
+                for (let i = 0; i < sections.length; i++) {
+                    const section = sections[i];
+                    var container_id = "container-" + section.name;
+                    supersetEmbeddedSdk.embedDashboard({
+                        id: section.dashboard, // given by the Superset embedding UI
+                        supersetDomain: '{{ request.registry.settings.get("analytics.supersetHost", None) }}',
+                        mountPoint: document.getElementById(container_id), // any html element that can contain an iframe
+                        fetchGuestToken: () =>
+                            String, // guest_token
+                        dashboardUiConfig: { // dashboard UI config: hideTitle, hideTab, hideChartControls, filters.visible, filters.expanded (optional)
+                            hideTitle: true,
+                            hideTab: true,
+                            filters: {
+                                expanded: false,
+                                visible: false,
+                            },
+                            hideChartControls: true,
+                        }
+                    })
+                    var screensize = document.querySelectorAll(`#${container_id} > iframe`)
+                    screensize[0].style.width = "100%";
+                    screensize[0].style.height = section.size+ "px";
+                    screensize[0].style.border = "none"
+                }}
+            )
+        });
+  </script>
+
+
+{% endblock pagecontent %}

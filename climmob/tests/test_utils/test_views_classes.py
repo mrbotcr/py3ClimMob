@@ -180,10 +180,12 @@ class TestBaseView(unittest.TestCase):
         mock_validator_a_class = MagicMock()
         mock_validator_a_instance = MagicMock(view=self.view)
         mock_validator_a_class.return_value = mock_validator_a_instance
+        mock_validator_a_instance.run.return_value = None
 
         mock_validator_b_class = MagicMock()
-        mock_validator_b_instance = MagicMock(view=self.view)
+        mock_validator_b_instance = MagicMock(view=self.view, return_value=None)
         mock_validator_b_class.return_value = mock_validator_b_instance
+        mock_validator_a_instance.run.return_value = None
 
         validators = (
             mock_validator_a_class,
@@ -654,7 +656,8 @@ class TestPrivateView(unittest.TestCase):
         }
 
         with patch("climmob.views.classes.counterChat", return_value=5), patch(
-            "climmob.views.classes.getActiveProject", return_value={"project_id": 1}
+            "climmob.views.classes.getActiveProject",
+            return_value={"project_id": 1, "project_status": 1},
         ), patch(
             "climmob.views.classes.getActiveForm",
             return_value=(True, {"form_name": "Survey"}),

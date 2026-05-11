@@ -16,7 +16,7 @@ from sqlalchemy import (
     UniqueConstraint,
     Float,
 )
-from sqlalchemy.dialects.mysql import MEDIUMTEXT
+from sqlalchemy.dialects.mysql import MEDIUMTEXT, MEDIUMBLOB
 from sqlalchemy.orm import relationship
 
 from climmob.models.meta import Base
@@ -1424,7 +1424,7 @@ class MetadataForm(Base):
 
     metadata_id = Column(Unicode(64), primary_key=True)
     metadata_name = Column(Unicode(200), nullable=False)
-    metadata_odk = Column(BLOB, nullable=False)
+    metadata_odk = Column(MEDIUMBLOB, nullable=False)
     metadata_json = Column(JSON, nullable=False)
     metadata_active = Column(Integer, nullable=False, server_default=text("'1'"))
     metadata_for_technology_options = Column(
@@ -1533,3 +1533,19 @@ class Affiliation(Base):
 
     affiliation_id = Column(Integer, primary_key=True, autoincrement=True)
     affiliation_name = Column(Unicode(120), nullable=False)
+
+
+class ProjectSummary(Base):
+    __tablename__ = "project_summary"
+
+    project_id = Column(
+        ForeignKey("project.project_id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+    psm_json = Column(JSON, nullable=False)
+
+    admin_user_name = Column(ForeignKey("user.user_name"), nullable=True)
+    admin_update_date = Column(DateTime, nullable=True)
+
+    Project = relationship("Project")

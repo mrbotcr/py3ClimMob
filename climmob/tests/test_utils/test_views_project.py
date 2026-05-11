@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime
 from unittest.mock import MagicMock, patch, ANY, call
 
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
@@ -12,6 +13,7 @@ from climmob.views.project import (
     GetTemplatesByTypeOfProjectView,
     ProjectListView,
     DeleteProjectView,
+    FinishProjectView,
 )
 
 
@@ -220,6 +222,7 @@ class TestNewProjectView(ViewBaseTest):
                 "listOfUnitOfAnalysis": "UNIT_OF_ANALYSIS",
                 "listOfObjectives": "OBJECTIVES_AND_UNIT_OF_ANALYSIS",
                 "list_of_affiliation": "LIST_AFFILIATIONS",
+                "sectionActive": "addproject",
             },
         )
         mock_get_active_project.assert_called_once_with(
@@ -1602,6 +1605,222 @@ class TestDeleteProjectView(ViewBaseTest):
         )
         mock_get_project_data.assert_called_once_with(1, self.view.request)
         mock_delete_project.assert_called_once_with(1, self.view.request)
+
+
+class TestFinishProjectView(ViewBaseTest):
+    view_class = FinishProjectView
+
+    def setUp(self):
+        super().setUp()
+        self.view.context.active_project_id = 1
+
+        self.view.request.user = "test_user"
+        self.view.request.project = "PRJ001"
+
+        self.view.request.registry.settings = {"email.from": "email_send@test.com"}
+        fake_now = datetime(2024, 1, 1, 12, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
+        self.view.request.translate = lambda text: text
+
+        self.get_project_id_patcher = patch(
+            "climmob.views.project.getTheProjectIdForOwner"
+        )
+        self.set_active_project_patcher = patch(
+            "climmob.views.project.setActiveProject"
+        )
+        self.active_project_patcher = patch("climmob.views.project.getActiveProject")
+        self.update_project_status_patcher = patch(
+            "climmob.views.project.update_project_status"
+        )
+        self.get_all_user_admin_patcher = patch("climmob.views.project.getAllUserAdmin")
+        self.get_project_progress_patcher = patch(
+            "climmob.views.project.getProjectProgress"
+        )
+        self.render_template_patcher = patch("climmob.views.project.render_template")
+        self.datetime_patcher = patch("climmob.views.project.datetime.datetime")
+        self.build_email_message_multiple_recipients_patcher = patch(
+            "climmob.views.project.build_email_message_multiple_recipients"
+        )
+        self.email_sender_patcher = patch("climmob.views.project.EmailSender")
+        self.log_patcher = patch("climmob.views.project.log")
+
+        self.mock_get_project_id = self.get_project_id_patcher.start()
+        self.mock_set_active_project = self.set_active_project_patcher.start()
+        self.mock_project_info = self.active_project_patcher.start()
+        self.mock_progress = self.get_project_progress_patcher.start()
+        self.mock_success = self.update_project_status_patcher.start()
+        self.mock_admin_users_patcher = self.get_all_user_admin_patcher.start()
+        self.mock_text = self.render_template_patcher.start()
+        self.mock_datetime = self.datetime_patcher.start()
+        self.mock_msg = self.build_email_message_multiple_recipients_patcher.start()
+        self.mock_email_sender = self.email_sender_patcher.start()
+        self.mock_email_sender.return_value.send_email.return_value = None
+
+        self.mock_log = self.log_patcher.start()
+        self.fake_project_id = MagicMock(name="fake_id")
+        self.fake_project_cod = MagicMock(name="fake_cod")
+        self.mock_project_info.return_value = {
+            "project_id": self.fake_project_id,
+            "project_cod": self.fake_project_cod,
+        }
+        self.mock_get_project_id.return_value = {
+            "project_id": self.fake_project_id,
+            "project_cod": self.fake_project_cod,
+        }
+
+        self.mock_success.return_value = (True, "")
+        self.mock_admin_users_patcher.return_value = [
+            {"user_fullname": "name1", "user_email": "email1"},
+            {"user_fullname": "name2", "user_email": "email2"},
+        ]
+        self.mock_text.return_value = "rendered email body"
+        self.mock_datetime.now.strftime.return_value = fake_now
+        self.mock_msg.return_value = "some text to add to the email body"
+        self.mock_progress.return_value = {
+            "data_progress": "result_data",
+            "assessments": [{"ass_status": 1, "asstotal": 1}],
+        }, True
+
+        self.view.request.matchdict = {"project": "PRJ001"}
+
+        self.addCleanup(self.get_project_id_patcher.stop)
+        self.addCleanup(self.set_active_project_patcher.stop)
+        self.addCleanup(self.active_project_patcher.stop)
+        self.addCleanup(self.get_project_progress_patcher.stop)
+        self.addCleanup(self.update_project_status_patcher.stop)
+        self.addCleanup(self.get_all_user_admin_patcher.stop)
+        self.addCleanup(self.render_template_patcher.stop)
+        self.addCleanup(self.datetime_patcher.stop)
+        self.addCleanup(self.build_email_message_multiple_recipients_patcher.stop)
+        self.addCleanup(self.email_sender_patcher.stop)
+        self.addCleanup(self.mock_log.stop)
+
+    def tearDown(self):
+        if self.mock_get_project_id.called:
+            self.mock_get_project_id.assert_called_once_with(
+                self.view.request.user, "PRJ001", self.view.request
+            )
+
+        if self.mock_set_active_project.called:
+            self.mock_set_active_project.assert_called_once_with(
+                self.view.user.login,
+                self.mock_get_project_id.return_value,
+                self.view.request,
+            )
+
+        if self.mock_project_info.called:
+            self.mock_project_info.assert_called_once_with(
+                self.view.user.login, self.view.request
+            )
+        if self.mock_success.called:
+            self.mock_success.assert_called_once_with(
+                self.view.context.active_project_id, 3, self.view.request
+            )
+        if self.mock_admin_users_patcher.called:
+            self.mock_admin_users_patcher.assert_called_once_with(self.view.request)
+        if self.mock_text.called:
+            self.mock_text.assert_called_once_with(
+                "email/close_project.jinja2",
+                {
+                    "date": self.mock_datetime.now.return_value.strftime.return_value,
+                    "project_info": self.mock_project_info.return_value,
+                    "_": self.view.request.translate,
+                    "link": self.view.request.route_url("projectsSummaryRecent"),
+                    "logo": self.view.request.url_for_static("landing/climmob2.png"),
+                },
+            )
+        if self.mock_msg.called:
+            self.mock_msg.assert_called_once_with(
+                self.mock_text.return_value,
+                "✅  Project "
+                + str(self.mock_get_project_id.return_value["project_cod"])
+                + " has been closed",
+                [("name1", "email1"), ("name2", "email2")],
+                self.view.request.registry.settings["email.from"],
+            )
+        if self.mock_progress.called:
+            self.mock_progress.assert_called_once_with(
+                self.view.user.login,
+                self.view.request.project,
+                self.mock_get_project_id.return_value,
+                self.view.request,
+            )
+        super().tearDown()
+
+    def test_finish_project_view_get(self):
+        response = self.view.get()
+        self.assertEqual(
+            response,
+            {
+                "project_info": self.mock_get_project_id.return_value,
+                "progress": {
+                    "data_progress": "result_data",
+                    "assessments": [{"ass_status": 1, "asstotal": 1}],
+                },
+                "total_ass_records": 1,
+            },
+        )
+
+    @patch.object(FinishProjectView, "send_email_notification", return_value=True)
+    def test_finish_project_view_post_success(self, mock_send_email_notification):
+        mock_route = self.view.request.route_url("dashboard")
+        response = self.view.post()
+        self.assertIsInstance(response, HTTPFound)
+        self.assertEqual(response.location, mock_route)
+        mock_send_email_notification.assert_called_once_with(
+            self.mock_project_info.return_value
+        )
+
+    def test_finish_project_view_post_fail(self):
+        self.mock_success.return_value = (False, "Fake Error")
+        response = self.view.post()
+        self.assertEqual(
+            response,
+            {
+                "error": self.mock_success.return_value[1],
+                "project_info": self.mock_project_info.return_value,
+            },
+        )
+
+    def test_send_email_success(self):
+        response = self.view.send_email_notification(
+            self.mock_project_info.return_value
+        )
+        self.assertEqual(response, True)
+
+    def test_send_email_no_mail_from(self):
+        self.view.request.registry.settings = {}
+        response = self.view.send_email_notification(
+            self.mock_project_info.return_value
+        )
+        self.assertEqual(response, False)
+
+    def test_send_email_no_admin(self):
+        self.mock_admin_users_patcher.return_value = []
+        response = self.view.send_email_notification(
+            self.mock_project_info.return_value
+        )
+        self.assertEqual(response, False)
+
+    def test_send_email_template_error(self):
+        self.mock_text.side_effect = Exception("template error")
+        response = self.view.send_email_notification(
+            self.mock_project_info.return_value
+        )
+        self.assertEqual(response, False)
+
+    def test_send_email_msg_error(self):
+        self.mock_msg.side_effect = Exception("msg error")
+        response = self.view.send_email_notification(
+            self.mock_project_info.return_value
+        )
+        self.assertEqual(response, False)
+
+    def test_send_email_error(self):
+        self.mock_email_sender.side_effect = Exception("server error")
+        response = self.view.send_email_notification(
+            self.mock_project_info.return_value
+        )
+        self.assertEqual(response, False)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,556 @@
+{% extends 'dashboard/dashboard.jinja2' %}
+
+{% block title %}
+    <title>{{ _("ClimMob | 1000FARMS Network  All projects") }}</title>
+{% endblock title %}
+
+{% block css %}
+
+    {% cssresource request,'coreresources','chosen' %}
+    {% cssresource request,'coreresources','sweetAlert' %}
+    {% cssresource request,'coreresources','dataTables2_3_2' %}
+    {% cssresource request,'coreresources','dataTables2_3_2_columnControl' %}
+    {% cssresource request,'coreresources','dataTables2_3_2_buttons' %}
+    {% cssresource request,'coreresources','select2' %}
+
+    <style>
+{#order the name and the icon to be consistent#}
+        .dt-column-header {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: flex-start;
+            align-items: center;
+        }
+{#order the name and the icon to be consistent#}
+        .dt-column-header .dtcc-button {
+            margin-left: auto;
+        }
+
+        th {
+            text-align: left !important;
+            /*min-width: 180px;*/
+            max-width: 250px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        td {
+            max-width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .table.dataTable {
+            margin: 0px;
+        }
+
+        div.dt-buttons > .dt-button {
+            font-size: 14px;
+            font-weight: normal;
+            line-height: 1.42857143;
+            text-align: center;
+            white-space: nowrap;
+            cursor: pointer;
+            color: inherit;
+            background: white;
+            border: 1px solid #e7eaec;
+            border-radius: 3px;
+
+        }
+
+        .dtcc-button select,
+        .dtcc-button input {
+            pointer-events: none;
+            appearance: none;
+            -webkit-appearance: none;
+            border: none;
+            background: none;
+            padding: 0;
+            font: inherit;
+            color: inherit;
+        }
+
+        {#allows see the difference on the row what is pointed#}
+        #curation-table tbody tr:hover {
+           background-color: #FAFAFA;
+           cursor: pointer;
+       }
+
+        {#marks the filter button on a different color when is activate#}
+        .dtcc-button.dtcc-button_active > .dtcc-button-icon svg * {
+            stroke: #1ab394;        }
+
+        .dtcc-button.dtcc-button_active {
+            background: rgba(152, 152, 152, 0.44) !important;
+        }
+
+        #curation-table_wrapper {
+            min-height: 400px;
+        }
+
+        {#changes the style in the dtcc button to make it look like a plain text #}
+        .dtcc-button-text .select2-selection {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .dtcc-button-text .select2-selection__arrow {
+            display: none !important;
+        }
+
+    </style>
+
+{% endblock css %}
+
+{% block topScripts %}
+
+    {% jsresource request,'coreresources','toastr' %}
+    {% jsresource request,'coreresources','datapicker' %}
+    {% jsresource request,'coreresources','chosen' %}
+    {% jsresource request,'coreresources','sweetAlert' %}
+    {% jsresource request,'coreresources','datatable2_3_2js' %}
+    {% jsresource request,'coreresources','datatable2_3_2js_columControl' %}
+    {% jsresource request,'coreresources','datatable2_3_2js_buttons3_0_0' %}
+    {% jsresource request,'coreresources','datatable2_3_2js_colVis' %}
+    {% jsresource request,'coreresources','select2' %}
+
+{% endblock topScripts %}
+
+{% block pageheading %}
+    {% if sectionActive == "projectsSummaryCuration" %}
+        {% set _title= _("All projects") %}
+    {% elif sectionActive == "projectsSummaryRecent" %}
+        {% set _title= _("Validation") %}
+    {% elif sectionActive == "projectsSummaryPublished" %}
+        {% set _title= _("Published") %}
+    {% endif %}
+    {% set removeBasicBreadcrumb = True %}
+    {% set extra =[[_("Projects"), ], [ _("1000FARMS Network"),],] %}
+    {% include 'snippets/menuheading.jinja2' %}
+{% endblock pageheading %}
+
+{% block pagecontent %}
+
+    {% set options = [
+    "african eggplant","amaranth","banana","barley","beans","bread wheat",
+    "cassava","chickpea","cocoa","cowpea","durum wheat","faba bean",
+    "finger millet","forages","groundnut","jute mallow","maize","millets",
+    "mustard","okra","pearl millet","pepper","pigeon pea","potato","rice",
+    "sorghum","soybean","sweetpotato","teff","tomato"
+] %}
+
+    {% if lastReport and lastReport[0]["state"] =="Pending..." %}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>{{ _("Generating report") }}</h5>
+                    </div>
+                    <div class="ibox-content text-center">
+                        <p>{{ _("The report generation process is running, wait a moment until the process is finished, or try refreshing the screen with the following button to verify if the process has finished.") }}</p>
+                        <button class="btn btn-info  dim btn-large-dim btn-outline" id="btn_refresh_report"><i
+                                class="fa fa-refresh"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if lastReport and lastReport[0]["state"] =="Success" %}
+        {% if listOfProjects %}
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox ">
+                        <div class="ibox-title">
+                            <h5>{{ _("Projects Curation") }}</h5>
+                            <p>&nbsp;- {{ _("Last updated: {}.").format(lastReport[0].datetime_added) }}</p>
+                        </div>
+                        <div class="ibox-content">
+                            <div style="overflow-x: auto;">
+                                <div id="loader">
+                                    {{ _("Loading please wait...")}}
+                                </div>
+                                <div id="footable-wrapper" style="display: none">
+                                    <table class="display nowrap table table-stripped" data-filter=#filter
+                                           id="curation-table">
+                                        <thead>
+                                        <tr>
+
+                                            {% for col in tableStructure %}
+                                                {% if col["name"] == "Revised" %}
+                                                    <th title='{{ _("Set to “Yes” once a network coordinator reviews and saves the project.") }}'><i class="fa fa-info-circle"> </i> {{  _(col["name"])  }} </th>
+                                                {% elif col["name"] == "Dashboard" %}
+                                                    <th title='{{ _("If set to “Yes”, the anonymized data from this project will be published on the CGIAR Fairgrounds and included in the aggregated results report of the 1000FARMS project.") }}'><i class="fa fa-info-circle"> </i> {{  _(col["name"])  }} </th>
+
+                                                {% else %}
+                                                    <th>{{ _(col["name"]) }}</th>
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% if edit_mode == True %}
+                                                <th title='{{ _("Sends a custom email to the project owner. A copy of the message is automatically sent to the coordinator for record. You can drag the bottom-right corner to resize.") }}'><i class="fa fa-info-circle"> </i> {{ _('Notification') }} </th>
+                                                <th></th>
+                                            {% endif %}
+                                        </tr>
+
+                                        </thead>
+                                        <tbody id="curation-table-body">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="ibox">
+                <div class="ibox-content">
+                    <div style="text-align: center">
+                        <h3><i class="fa fa-tim"></i> {{ _("We do not have projects to show.") }}</h3>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    {% if sectionActive == "projectsSummaryCuration" %}
+
+        {% if lastReport[0]["state"] =="Success" or lastReport[0]["state"] =="Fail." %}
+            <div class="row">
+
+                <div class="col-lg-12 ">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>{{ _("Download table") }}</h5>
+                        </div>
+                        <div class="ibox-content">
+                            {% if lastReport[0]["state"] =="Fail." %}
+                                <div class="alert alert-danger alert-dismissable">
+                                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×
+                                    </button>
+                                    {{ _("There was an error generating the report, try again.") }}
+                                </div>
+                            {% endif %}
+
+                            {% if lastReport[0]["state"] =="Success" %}
+
+                                <p>{{ _("Last updated: {}.").format(lastReport[0].datetime_added) }}</p><br>
+
+                                <table>
+                                    <tr title="{{ _("Exports the table as a .xlsx file.") }}">
+                                        <td>
+                                            <button class="btn btn-outline btn-primary" id="btn_download_report">
+                                                {{ _(" Download table ") }}
+                                            </button> <i class="fa fa-info-circle"> </i>
+                                        </td>
+                                    </tr>
+                                </table>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <script>
+
+        $(document).ready(function () {
+
+            {% if listOfProjects %}
+            $('#loader').show();
+            $('#footable-wrapper').hide();
+                const editMode = "{{ edit_mode | lower }}";
+                const affiliations = {{ list_of_affiliation | tojson }}
+                const crops = {{ options | tojson }}
+                const projects = jQuery.parseJSON({{ listOfProjects| tojson }});
+                const tableStructure = {{ table_structure | tojson }};
+                const tableBody = $('#curation-table-body');
+
+                $.each(projects, function(index, project) {
+                    let row = '<tr>';
+                    $.each(tableStructure, function(colIndex, col) {
+                        let cellContent = '';
+                        let value = project[col.key];
+
+                        // Determina el contenido de la celda según el 'type' de la columna
+                        if (col.type === "static" || editMode ==="false") {
+
+                            if (col.key === "project_date" || col.key === "startDate" || col.key === "endDate") {
+                                if (value) {
+                                    const [day, month, year] = value.split("-").map(Number);
+                                    const date_date_form = new Date(year, month - 1, day);
+                                    cellContent = date_date_form.toLocaleDateString("en-GB", { //this method is for js
+                                        day: "2-digit",
+                                        month: "short",
+                                        year: "numeric"
+                                        });
+                                }
+                                else {
+                                    cellContent = ""
+                                }
+                            }
+                            else if (col.options) {
+                                $.each(col.options, function (key, id) {
+                                    if (id === value) {
+                                        cellContent = key;
+                                        return false;
+                                    }
+                                });
+                            } else {
+                                cellContent = value ? value : '';
+                            }
+                            row += `<td data-column="${col.key}">${cellContent}</td>`;
+
+                        }else if (col.type === "input") {
+                            cellContent = `<input class="form-control" value="${value || ''}" style="width: 250px" maxlength="50">`;
+                            row += `<td data-column="${col.key}">${cellContent}<span class="d-none filter-value" hidden>${value || ''}</span></td>`;
+
+                        }else if (col.type === "dropdown") {
+                            let optionsHtml = `<option value="" selected>{{ _("Choose an option") }}</option>`;
+                            $.each(col.options, function(key, id) {
+                                optionsHtml += `<option value="${id}" ${id === value ? 'selected="selected"' : ''}>${key}</option>`;
+                            });
+                            cellContent = `<select class="Select2_simple form-control select2-hidden-accessible" style="width: 150px">${optionsHtml}</select>`;
+                            let filterValue = '';
+                            $.each(col.options, function(key, id) {
+                                if (id === value) {
+                                    filterValue = key;
+                                    return false;
+                                }
+                            });
+                            row += `<td data-column="${col.key}">${cellContent}<span class="d-none filter-value" hidden>${filterValue}</span></td>`;
+
+                        }else if (col.type === "dropdown_affiliation") {
+                            let optionsHtml = `<option value="" selected>{{ _("Please select or add one") }}</option>`;
+                            let isSelectedExisting = false;
+                            $.each(affiliations, function(i, affiliation) {
+                                if (affiliation.affiliation_name === value) {
+                                    optionsHtml += `<option value="${affiliation.affiliation_name}" selected>${affiliation.affiliation_name}</option>`;
+                                    isSelectedExisting = true;
+                                } else {
+                                    optionsHtml += `<option value="${affiliation.affiliation_name}">${affiliation.affiliation_name}</option>`;
+                                }
+                            });
+                            if (!isSelectedExisting && value) {
+                                optionsHtml += `<option value="${value}" selected>{{ _("New") }}: ${value}</option>`;
+                            }
+                            cellContent = `<select class="form-control Select2 js-affiliation-tags" style="width: 200px;">${optionsHtml}</select>`;
+                            row += `<td data-column="${col.key}">${cellContent}</td>`;
+
+                        } else if (col.type === "dropdown_crop") {
+                            let optionsHtml = `<option value="" ${!value ? 'selected' : ''}>{{ _("Without selection") }}</option>`;
+                            let isSelectedExisting = false;
+                            $.each(crops, function(i, crop) {
+                                if (crop === value) {
+                                    optionsHtml += `<option value="${crop}" selected>${crop}</option>`;
+                                    isSelectedExisting = true;
+                                } else {
+                                    optionsHtml += `<option value="${crop}">${crop}</option>`;
+                                }
+                            });
+                            if (!isSelectedExisting && value) {
+                                optionsHtml += `<option value="${value}" selected>{{ _("New") }}:${value}</option>`;
+                            }
+                            cellContent = `<select class="Select2 form-control js-affiliation-tags" style="width: 200px;">${optionsHtml}</select>`;
+                            row += `<td data-column="${col.key}">${cellContent}</td>`;
+                        }
+                    })
+
+                    if(editMode==="true")
+                    {
+                        row += `<td data-column="admin_msj"><textarea placeholder="Use this field to send a message to the project user." maxlength="500" style="width: 200px; height: 50px;"></textarea></td>`;
+                        row += `<td data-column="save"><button class="btn btn-primary pull-right" onclick="checkInputs('${project.project_id}', this)">Save</button></td>`;
+                    }
+
+                    row += '</tr>';
+                    tableBody.append(row);
+                })
+
+                $(".Select2_simple").select2({
+                    minimumResultsForSearch: Infinity
+                });
+
+                $('.Select2').select2({
+                });
+
+                $(".js-affiliation-tags").select2({
+                    tags: true,
+                    createTag: function (params) {
+                        const term = $.trim(params.term);
+                        if (term === '') return null;
+
+                        return {
+                            id: params.term,
+                            text: "{{ _("New") }}: " + params.term,
+                        }
+                    }
+                });
+
+                const hiddenIndexes = [
+                    {% for col in tableStructure %}
+                        {% if not col.show %}
+                            {{ loop.index - 1 }},
+                        {% endif %}
+                    {% endfor %}
+                ];
+
+                const ToggleableColumns = [
+                    {% for col in tableStructure %}
+                        {% if col.type == 'static' and not ( col.key == "projectTitle") %}
+                            {{ loop.index - 1 }}{{ "," if not loop.last }}
+                        {% endif %}
+                    {% endfor %}
+                ];
+
+                {% if lastReport and lastReport[0]["state"] =="Success"%}
+
+                    const table = new DataTable('#curation-table', {
+                        scrollX: true,
+                        ordering: true,
+                        deferRender: true,
+                        columnControl: {
+                            target: 0,
+                            content: [
+                                {
+                                    extend: 'dropdown',
+                                    icon: 'filter',
+                                    content: ['searchList']
+                                }
+                            ],
+                        },
+                        columnDefs: [
+                            {target: -1, columnControl: [], orderable: false},
+                            {target: -2, columnControl: [], orderable: false},
+                            {
+                                targets: hiddenIndexes,
+                                visible: false,
+                            },
+                        ],
+                        layout: {
+                            topStart: {
+                                buttons: [
+                                    {
+                                        extend: 'colvis',
+                                        text: '{{ _("Show / Hide columns") }}',
+                                        className: 'btn btn-default',
+                                        columns: ToggleableColumns
+                                    },
+                                    {
+                                        extend: 'pageLength',
+                                        text: '{{ _("Rows per Page") }}',
+                                        className: 'dt_button_custom',
+                                    }
+                                ]
+                            },
+                            topEnd: {
+                                search: {
+                                    return: true,
+                                    text: '{{ _("General search:") }} ',
+                                    className: 'form-control',
+                                },
+                            },
+                            bottomStart: {
+                                info: {
+                                    return: true,
+                                    text: "{{ _('Showing _START_ to _END_ from _TOTAL_ total entries') }}",
+                                },
+                            },
+                        },
+                    });
+
+                {% endif %}
+            {% endif %}
+        $('#loader').hide();
+        $('#footable-wrapper').show();
+        })
+
+        async function checkInputs(project_id, button) {
+            if (button.disabled) return;
+            button.disabled = true;
+            const row = button.closest('tr');
+            const project_title = row.querySelector('[data-column="projectTitle"]').textContent.trim();
+            const fieldAffiliation = row.querySelector('[data-column="affiliation"] select');
+            const fieldCrop = row.querySelector('[data-column="cropname"] select');
+            const fieldAnalytics = row.querySelector('[data-column="climmob_analytics"] select');
+            const adminMessage = row.querySelector('[data-column="admin_msj"] textarea');
+
+            let error = [];
+
+            if (!fieldAnalytics || fieldAnalytics.value.trim() === '') {
+                error.push('{{ _("Dashboard") }}');
+            }
+
+            if (fieldAnalytics.value.trim() !== '0') {
+                if (!fieldAffiliation || fieldAffiliation.value.trim() === '') {
+                    error.push('Affiliation');
+                }
+                if (!fieldCrop || fieldCrop.value.trim() === '') {
+                    error.push('{{ _("Cropname") }}');
+                }
+            }
+
+            if (error.length > 0) {
+                await swal(
+                    "{{ _('Check the project ') }}" + project_title,
+                    "{{ _('Please, complete these empty fields: ') }}" + error.join(', ') + "{{ _(' to continue') }}",
+                    "error"
+                );
+                button.disabled = false;
+                return;
+
+            } else {
+                const data = {
+                    project_id: project_id,
+                    affiliation: fieldAffiliation.value.trim(),
+                    crop: fieldCrop.value.trim(),
+                    analytics: fieldAnalytics.value.trim(),
+                    admin_message: adminMessage.value,
+                    csrf_token: "{{ request.session.get_csrf_token() }}"
+                }
+
+                await fetch('{{ request.route_url('projectsSummaryCurationUpdateRow') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams(data)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status !== 200) {
+                            throw new Error(data.message || "Unknown error");
+                        }
+                        swal("{{ _('Successful update') }}", data.message, "success");
+                    })
+                    .catch(error => {
+                        swal("{{ _('Error') }}", error.message, "error");
+                    })
+                    .finally(()=>{
+                        button.disabled = false;
+                    })
+                ;
+            }
+
+        }
+
+        $("#btn_download_report").click(function () {
+            {% if lastReport %}
+                const url = "{{ request.route_url('downloadProjectsSummary') }}?celery_taskid={{ lastReport[0].celery_taskid }}&product_id={{ lastReport[0].product_id }}"
+                location.href = url;
+            {% endif %}
+        })
+
+        $("#btn_refresh_report").click(function () {
+            {% if lastReport %}
+                location.href = "{{ request.route_url('projectsSummaryCuration') }}"
+            {% endif %}
+        })
+
+    </script>
+
+{% endblock pagecontent %}
+

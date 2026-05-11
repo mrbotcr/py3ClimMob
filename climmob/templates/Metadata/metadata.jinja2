@@ -30,6 +30,8 @@
 {% block pageheading %}
     {% set iconOfLibrary="fa-file-text" %}
     {% set _title= _("Metadata forms") %}
+    {% set removeBasicBreadcrumb = True %}
+    {% set extra =[[_("Library"), ],] %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 

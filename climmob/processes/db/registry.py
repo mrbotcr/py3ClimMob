@@ -1,9 +1,16 @@
 import os
 import shutil
 
-from sqlalchemy import func
+from sqlalchemy import func, literal, and_
 
-from climmob.models import Regsection, Registry, Project, Question, userProject
+from climmob.models import (
+    Regsection,
+    Registry,
+    Project,
+    Question,
+    userProject,
+    I18nQuestion,
+)
 from climmob.models.repository import execute_two_sqls, sql_execute
 from climmob.models.schema import mapFromSchema, mapToSchema
 from climmob.processes.db.project import addRegistryQuestionsToProject
@@ -39,6 +46,7 @@ __all__ = [
     "getTheGroupOfThePackageCode",
     "registryHaveQuestionOfMultimediaType",
     "deleteRegistryByProjectId",
+    "get_registry_questions_by_project",
     "delete_registry_data_by_qst162",
     "get_registry_data_by_qst162",
 ]
@@ -547,6 +555,17 @@ def exitsQuestionInGroup(data, request):
 
 
 def deleteRegistryGroup(projectId, sectionId, request):
+    _ = request.translate
+    exists_restricted = (
+        request.dbsession.query(Registry.question_id)
+        .filter(Registry.project_id == projectId)
+        .filter(Registry.section_id == sectionId)
+        .filter(Registry.question_id.in_([199, 162]))
+        .first()
+    )
+    if exists_restricted:
+        return False, _("You can not delete the base questions")
+
     try:
         request.dbsession.query(Regsection).filter(
             Regsection.project_id == projectId
@@ -587,6 +606,52 @@ def registryHaveQuestionOfMultimediaType(request, projectId):
         return True
     else:
         return False
+
+
+def get_registry_questions_by_project(request, project_id, lang_code):
+    registry_questions = mapFromSchema(
+        request.dbsession.query(
+            Question.question_id,
+            literal("Participant registration form").label("form"),
+            func.coalesce(I18nQuestion.lang_code, Question.question_lang).label(
+                "question_lang"
+            ),
+            func.coalesce(I18nQuestion.question_desc, Question.question_desc).label(
+                "question_desc"
+            ),
+            func.coalesce(I18nQuestion.question_notes, Question.question_notes).label(
+                "question_notes"
+            ),
+            func.coalesce(I18nQuestion.question_unit, Question.question_unit).label(
+                "question_unit"
+            ),
+            func.coalesce(I18nQuestion.question_posstm, Question.question_posstm).label(
+                "question_posstm"
+            ),
+            func.coalesce(I18nQuestion.question_negstm, Question.question_negstm).label(
+                "question_negstm"
+            ),
+            func.coalesce(
+                I18nQuestion.question_perfstmt, Question.question_perfstmt
+            ).label("question_perfstmt"),
+            func.coalesce(I18nQuestion.question_name, Question.question_name).label(
+                "question_name"
+            ),
+        )
+        .join(
+            I18nQuestion,
+            and_(
+                Question.question_id == I18nQuestion.question_id,
+                I18nQuestion.lang_code == lang_code,
+            ),
+            isouter=True,
+        )
+        .filter(Registry.project_id == project_id)
+        .filter(Registry.question_id == Question.question_id)
+        .order_by(Registry.question_order)
+        .all()
+    )
+    return registry_questions
 
 
 def get_registry_data_by_qst162(schema, qst162, columns):

@@ -37,7 +37,7 @@
 
     {% set onlySee = False %}
 
-    {% if activeProject["access_type"] in [4] %}
+    {% if activeProject["access_type"] in [4] or activeProject["project_status"] == 3 %}
         {% set onlySee = True %}
     {% endif %}
 
@@ -136,7 +136,7 @@
 
                                         <form method="post" action="{{ request.route_url('clone_assessment', user=activeProject["owner"].user_name, project=activeProject.project_cod,assessmentid=assessment.ass_cod) }}">
                                             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                                            <button class="btn btn-default" title="{{ _("Clone") }}"><i class="fa fa-clone"></i>  {{ _("Clone") }}</button>
+                                            {% if not onlySee %}<button class="btn btn-default" title="{{ _("Clone") }}"><i class="fa fa-clone"></i>  {{ _("Clone") }}</button> {% endif %}
                                         </form>
 
                                         {% if assessment.ass_status == 0 %}

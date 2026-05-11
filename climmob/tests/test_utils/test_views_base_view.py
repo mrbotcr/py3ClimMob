@@ -10,6 +10,7 @@ from climmob.views.basic_views import (
     HomeView,
     HealthView,
     NotFoundView,
+    # ForbiddenView,
     LoginView,
     RegisterView,
     LogoutView,
@@ -47,29 +48,36 @@ class TestRenderTemplate(unittest.TestCase):
 class TestHomeView(ViewBaseTest):
     view_class = HomeView
 
-    @patch("climmob.views.basic_views.getProjectCount", return_value=8)
-    @patch("climmob.views.basic_views.getUserCount", return_value=2)
-    def test_get_home_view_cookie_none(
-        self, mock_get_user_count, mock_get_project_count
-    ):
-        self.view.request.cookies = {}
-        result = self.view.get()
-        self.assertEqual(
-            result, {"user_count": 2, "project_count": 8, "ask_for_cookies": True}
-        )
-        mock_get_user_count.assert_called_once_with(self.view.request)
-        mock_get_project_count.assert_called_once_with(self.view.request)
+    def test_get_always_redirects_to_login(self):
+        res = self.view.get()
 
-    @patch("climmob.views.basic_views.getProjectCount", return_value=8)
-    @patch("climmob.views.basic_views.getUserCount", return_value=2)
-    def test_get_cookie_true(self, mock_get_user_count, mock_get_project_count):
-        self.view.request.cookies = {"climmob_cookie_question": 1}
-        result = self.view.get()
-        self.assertEqual(
-            result, {"user_count": 2, "project_count": 8, "ask_for_cookies": False}
-        )
-        mock_get_user_count.assert_called_once_with(self.view.request)
-        mock_get_project_count.assert_called_once_with(self.view.request)
+        assert res.status_code == 302
+        assert res.location.endswith("/login")
+
+    #####----------------------------this test was comment because the HomeView does not going to be showed
+    # @patch("climmob.views.basic_views.getProjectCount", return_value=8)
+    # @patch("climmob.views.basic_views.getUserCount", return_value=2)
+    # def test_get_home_view_cookie_none(
+    #     self, mock_get_user_count, mock_get_project_count
+    # ):
+    #     self.view.request.cookies = {}
+    #     result = self.view.get()
+    #     self.assertEqual(
+    #         result, {"user_count": 2, "project_count": 8, "ask_for_cookies": True}
+    #     )
+    #     mock_get_user_count.assert_called_once_with(self.view.request)
+    #     mock_get_project_count.assert_called_once_with(self.view.request)
+    #
+    # @patch("climmob.views.basic_views.getProjectCount", return_value=8)
+    # @patch("climmob.views.basic_views.getUserCount", return_value=2)
+    # def test_get_cookie_true(self, mock_get_user_count, mock_get_project_count):
+    #     self.view.request.cookies = {"climmob_cookie_question": 1}
+    #     result = self.view.get()
+    #     self.assertEqual(
+    #         result, {"user_count": 2, "project_count": 8, "ask_for_cookies": False}
+    #     )
+    #     mock_get_user_count.assert_called_once_with(self.view.request)
+    #     mock_get_project_count.assert_called_once_with(self.view.request)
 
 
 ##*****##
@@ -317,50 +325,35 @@ class TestRecoverPasswordView(ViewBaseTest):
     def test_has_validators(self):
         self.assertEqual(self.view.validators, (NotLoggedInValidator,))
 
+    @patch("climmob.views.basic_views.EmailSender")
     @patch("climmob.views.basic_views.build_email_message")
-    @patch("climmob.views.basic_views.smtplib.SMTP")
     def test_send_password_by_email_success(
-        self, mock_smtp_server, mock_build_email_message
+        self, mock_build_email_message, mock_email_sender
     ):
-        mock_server = MagicMock()
-        mock_smtp_server.return_value = mock_server
-        body = MagicMock(str)
-        subject = MagicMock(str)
-        target_name = MagicMock(str)
-        target_email = MagicMock(str)
-        mail_from = MagicMock(str)
+        body = MagicMock(str, name="body")
+        subject = MagicMock(str, name="subject")
+        target_name = MagicMock(str, name="target_name")
+        target_email = MagicMock(str, name="target_email")
+        mail_from = MagicMock(str, name="mail_from")
 
-        self.view.send_password_by_email(
+        mock_msg = MagicMock()
+        mock_build_email_message.return_value = mock_msg
+
+        mock_email_sender_instance = MagicMock()
+        mock_email_sender.return_value = mock_email_sender_instance
+
+        result = self.view.send_password_by_email(
             body, subject, target_name, target_email, mail_from
         )
+
+        self.assertIsNone(result)
         mock_build_email_message.assert_called_once_with(
             body, subject, target_name, target_email, mail_from
         )
-        mock_smtp_server.assert_called_once()
-        mock_server.sendmail.assert_called_once_with(
-            mail_from, [target_email], mock_build_email_message.return_value.as_string()
+        mock_email_sender.assert_called_once_with(self.view.request.registry.settings)
+        mock_email_sender_instance.send_email.assert_called_once_with(
+            [target_email], mock_msg
         )
-        mock_server.quit.assert_called_once()
-
-    @patch("climmob.views.basic_views.build_email_message")
-    @patch("climmob.views.basic_views.print")
-    @patch("climmob.views.basic_views.smtplib.SMTP")
-    def test_send_password_by_email_fail(
-        self, mock_smtp_server, mock_print, mock_build_email_message
-    ):
-        mock_smtp_server.side_effect = Exception("Connection failed")
-
-        body = MagicMock(str)
-        subject = MagicMock(str)
-        target_name = MagicMock(str)
-        target_email = MagicMock(str)
-        mail_from = MagicMock(str)
-
-        self.view.send_password_by_email(
-            body, subject, target_name, target_email, mail_from
-        )
-        mock_smtp_server.assert_called_once()
-        mock_print.assert_called_with("Connection failed")
 
     @patch("climmob.views.basic_views.log.error")
     @patch("climmob.views.basic_views.jinjaEnv")

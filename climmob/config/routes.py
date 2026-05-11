@@ -7,12 +7,22 @@ These functions setup the routes for the host application and any plugins connec
 import climmob.plugins as p
 from climmob.plugins.utilities import addRoute
 from climmob.utility import factory
+from climmob.views.Affiliation import SearchAffiliationView
 from climmob.views.Api.enumerators import (
     CreateEnumeratorView,
     ReadEnumeratorsView,
     UpdateEnumeratorView,
     UpdatePasswordEnumeratorView,
     ApiDeleteEnumeratorView,
+)
+from climmob.views.Api.languages import (
+    GetCompleteListOfLanguages,
+    ReadListOfLanguagesView,
+    AddLanguageForUseView,
+    DeleteLanguageView,
+    ReadListOfUnusedLanguagesView,
+    ReadAllGeneralPhrasesView,
+    ChangeGeneralPhrasesView,
 )
 from climmob.views.Api.projectAssessmentStart import (
     CreateProjectAssessmentView,
@@ -58,7 +68,11 @@ from climmob.views.Api.projectEnumerators import (
     ReadPossibleProjectEnumeratorsView,
     DeleteProjectEnumeratorView,
 )
-from climmob.views.Api.projectProducts import readProducts_view, downloadApi_view
+from climmob.views.Api.projectProducts import (
+    readProducts_view,
+    downloadApi_view,
+    GetListOfQuestionsByProject,
+)
 from climmob.views.Api.projectRegistry import (
     ReadProjectRegistryView,
     ReadPossibleQuestionsForRegistryGroupView,
@@ -138,10 +152,9 @@ from climmob.views.Share.projectShare import (
     API_all_users_view,
     removeprojectShare_view,
 )
-from climmob.views.Affiliation import SearchAffiliationView
 from climmob.views.assessment import (
     assessment_view,
-    deleteAssessmentSection_view,
+    DeleteAssessmentSectionView,
     getAssessmentDetails_view,
     assessmenthead_view,
     deleteassessmenthead_view,
@@ -157,6 +170,7 @@ from climmob.views.basic_views import (
     HomeView,
     HealthView,
     NotFoundView,
+    ForbiddenView,
     LoginView,
     RegisterView,
     LogoutView,
@@ -171,17 +185,24 @@ from climmob.views.cleanErrorLogs import CleanErrorLogsView
 from climmob.views.cloneProjects.cloneProjects import CloneProjectsView
 from climmob.views.dashboard import dashboard_view, projectInformation_view
 from climmob.views.editData import (
-    editDataView,
+    EditDataView,
     downloadDataView,
     downloadErroLogDocument_view,
 )
 from climmob.views.enumerator import (
-    getEnumeratorDetails_view,
+    GetEnumeratorDetailsView,
     enumerators_view,
     deleteEnumerator_view,
 )
+from climmob.views.extra_form import ExtraFormPostView
 from climmob.views.mapForProjectVisualization.mapForProjectVisualization import (
     showMapForProjectVisualization_view,
+)
+from climmob.views.metadata import (
+    MetadataForms_view,
+    MetadataFormDetails_view,
+    DownloadMetadataForm_view,
+    DeleteMetadataForms_view,
 )
 from climmob.views.odk import (
     FormlistView,
@@ -195,6 +216,12 @@ from climmob.views.odk import (
     AssessmentXMLFormView,
     AssessmentMediaFileView,
     AssessmentManifestView,
+)
+from climmob.views.otherLanguages import (
+    OtherLanguagesView,
+    SaveOtherLanguagesView,
+    GetOtherLanguagesView,
+    requestLanguageTranslation_view,
 )
 from climmob.views.productsList import (
     productsView,
@@ -212,15 +239,27 @@ from climmob.views.project import (
     CurationOfProjectsView,
     GetUnitOfAnalysisByLocationView,
     GetObjectivesByLocationAndUnitOfAnalysisView,
+    FinishProjectView,
 )
 from climmob.views.projectHelp.projectHelp import projectHelp_view
 from climmob.views.project_analysis import analysisDataView
 from climmob.views.project_combinations import projectCombinations_view
 from climmob.views.project_enumerators import (
-    projectEnumerators_view,
+    ProjectEnumeratorsView,
     removeProjectEnumerators_view,
 )
-from climmob.views.project_technologies import projectTecnologies_view
+from climmob.views.project_metadata import (
+    ProjectMetadataFormView,
+    ShowMetadataFormView,
+)
+from climmob.views.project_technologies import ProjectTechnologiesView
+from climmob.views.projectsSummary.projectsSummary import (
+    DownloadProjectsSummaryView,
+    ProjectsSummaryCurationView,
+    SaveProjectRow,
+    ProjectSummaryRecentView,
+    ProjectSummaryPublishedView,
+)
 from climmob.views.question import (
     qlibrary_view,
     getUserQuestionDetails_view,
@@ -235,6 +274,11 @@ from climmob.views.question import (
     deleteUserLanguage_view,
     getUserLanguagesPreview_view,
 )
+from climmob.views.questionTranslations import (
+    QuestionTranslationsView,
+    APILanguagesView,
+    ChangeDefaultQuestionLanguageView,
+)
 from climmob.views.registry import (
     RegistryView,
     DeleteRegistrySectionView,
@@ -245,6 +289,7 @@ from climmob.views.registry import (
     GetRegistrySectionView,
     ChangeProjectMainLanguage_view,
 )
+from climmob.views.superset_view import AdministratorsReport, AdministratorsReportToken
 from climmob.views.techaliases import deletealias_view
 from climmob.views.technologies import (
     technologies_view,
@@ -254,46 +299,7 @@ from climmob.views.technologies import (
     getUserTechnologyAliasDetails_view,
     APICropsView,
 )
-from climmob.views.metadata import (
-    MetadataForms_view,
-    MetadataFormDetails_view,
-    DownloadMetadataForm_view,
-    DeleteMetadataForms_view,
-)
 from climmob.views.test import test_view, sentry_debug_view
-
-from climmob.views.questionTranslations import (
-    QuestionTranslationsView,
-    APILanguagesView,
-    ChangeDefaultQuestionLanguageView,
-)
-
-from climmob.views.otherLanguages import (
-    OtherLanguagesView,
-    SaveOtherLanguagesView,
-    GetOtherLanguagesView,
-    requestLanguageTranslation_view,
-)
-
-from climmob.views.Api.languages import (
-    ReadListOfLanguagesView,
-    AddLanguageForUseView,
-    DeleteLanguageView,
-    ReadListOfUnusedLanguagesView,
-    ReadAllGeneralPhrasesView,
-    ChangeGeneralPhrasesView,
-)
-from climmob.views.projectsSummary.projectsSummary import (
-    projectsSummary_view,
-    downloadProjectsSummary_view,
-)
-
-from climmob.views.extra_form import ExtraFormPostView
-
-from climmob.views.project_metadata import (
-    ProjectMetadataFormView,
-    ShowMetadataFormView,
-)
 
 # -------Api-------#
 
@@ -431,6 +437,25 @@ def loadRoutes(config):
             "renderer": "dashboard/dashboard.jinja2",
         }
     )
+    # -------------- administrator report --------------
+    routes.append(
+        {
+            "name": "administrators_report",
+            "path": "/administrators_report",
+            "view": AdministratorsReport,
+            "renderer": "dashboard/administrators_report.jinja2",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "getTokenSuperSet",
+            "path": "/getTokenSuperSet",
+            "view": AdministratorsReportToken,
+            "renderer": "string",
+        }
+    )
+    # --------------end administrator report --------------
     routes.append(
         {
             "name": "projectList",
@@ -708,7 +733,7 @@ def loadRoutes(config):
         addRoute(
             "getEnumeratorDetails",
             "/user/{user}/enumerator/{enumid}",
-            getEnumeratorDetails_view,
+            GetEnumeratorDetailsView,
             "json",
         )
     )
@@ -840,7 +865,7 @@ def loadRoutes(config):
         addRoute(
             "prjenumerators",
             "/user/{user}/project/{project}/enumerators",
-            projectEnumerators_view,
+            ProjectEnumeratorsView,
             "project/enumerators/enumerators.jinja2",
         )
     )
@@ -917,6 +942,14 @@ def loadRoutes(config):
             "/user/{user}/project/{project}/registry/close",
             CloseRegistryView,
             "project/closepregistry.jinja2",
+        )
+    )
+    routes.append(
+        addRoute(
+            "finishproject",
+            "/user/{user}/project/{project}/finishproject",
+            FinishProjectView,
+            "project/finishproject.jinja2",
         )
     )
 
@@ -999,7 +1032,7 @@ def loadRoutes(config):
         addRoute(
             "deleteassessmentgroup",
             "/user/{user}/project/{project}/assessment/{assessmentid}/{groupid}/delete",
-            deleteAssessmentSection_view,
+            DeleteAssessmentSectionView,
             "json",
         )
     )
@@ -1024,7 +1057,7 @@ def loadRoutes(config):
         addRoute(
             "prjtechnologies",
             "/user/{user}/project/{project}/technologies",
-            projectTecnologies_view,
+            ProjectTechnologiesView,
             "project/technologies/technologies.jinja2",
         )
     )
@@ -1123,7 +1156,7 @@ def loadRoutes(config):
         addRoute(
             "EditDataRegistry",
             "/user/{user}/project/{project}/form/{formid}/EditData",
-            editDataView,
+            EditDataView,
             "project/editData/editData.jinja2",
         )
     )
@@ -1131,7 +1164,7 @@ def loadRoutes(config):
         addRoute(
             "EditDataAssessment",
             "/user/{user}/project/{project}/form/{formid}/{codeid}/EditData",
-            editDataView,
+            EditDataView,
             "project/editData/editData.jinja2",
         )
     )
@@ -1359,18 +1392,45 @@ def loadRoutes(config):
 
     routes.append(
         {
-            "name": "projectsSummary",
-            "path": "/projectsSummary",
-            "view": projectsSummary_view,
-            "renderer": "projectsSummary/projectsSummary.jinja2",
+            "name": "projectsSummaryCuration",
+            "path": "/projectsSummaryCuration",
+            "view": ProjectsSummaryCurationView,
+            "renderer": "projectsSummary/projectsSummaryCuration.jinja2",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "projectsSummaryRecent",
+            "path": "/projectsSummaryRecent",
+            "view": ProjectSummaryRecentView,
+            "renderer": "projectsSummary/projectsSummaryCuration.jinja2",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "projectSummaryPublished",
+            "path": "/projectSummaryPublished",
+            "view": ProjectSummaryPublishedView,
+            "renderer": "projectsSummary/projectsSummaryCuration.jinja2",
+        }
+    )
+
+    routes.append(
+        {
+            "name": "projectsSummaryCurationUpdateRow",
+            "path": "/projectsSummaryCurationUpdateRow",
+            "view": SaveProjectRow,
+            "renderer": "json",
         }
     )
 
     routes.append(
         addRoute(
             "downloadProjectsSummary",
-            "/download/{celery_taskid}/{product_id}/downloadProjectsSummary",
-            downloadProjectsSummary_view,
+            "/download/downloadProjectsSummary",
+            DownloadProjectsSummaryView,
             None,
         )
     )
@@ -1378,6 +1438,16 @@ def loadRoutes(config):
     # --------------------------------------------------------ClimMob API--------------------------------------------------------#
 
     # Languages
+
+    routes.append(
+        addRoute(
+            "GetCompleteListOfLanguages",
+            "/api/GetCompleteListOfLanguages",
+            GetCompleteListOfLanguages,
+            None,
+        )
+    )
+
     routes.append(
         addRoute(
             "readListOfLanguages",
@@ -1971,6 +2041,15 @@ def loadRoutes(config):
     )
     routes.append(addRoute("downloadApi", "/api/downloadApi", downloadApi_view, None))
 
+    routes.append(
+        addRoute(
+            "getlistofquestionsbyproject",
+            "api/getListOfQuestionsByProject",
+            GetListOfQuestionsByProject,
+            None,
+        )
+    )
+
     # Project Assessments
     routes.append(
         addRoute(
@@ -2184,6 +2263,7 @@ def loadRoutes(config):
     appendToRoutes(routes)
 
     config.add_notfound_view(NotFoundView, renderer="404.jinja2")
+    config.add_forbidden_view(ForbiddenView, renderer="403.jinja2")
 
     # Custom mapping can happen here AFTER the host maps
     for plugin in p.PluginImplementations(p.IRoutes):

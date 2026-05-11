@@ -50,7 +50,9 @@ class FunctionalTests(unittest.TestCase):
     def test_all(self):
         def test_root():
             # Test the root urls
-            self.testapp.get("/", status=200)
+            res = self.testapp.get("/", status=302)
+            res = res.follow()
+            assert res.status_code == 200
 
         def test_login():
             self.testapp.get("/login", status=200)
