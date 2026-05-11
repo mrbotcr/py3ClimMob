@@ -7,6 +7,8 @@ __all__ = [
     "set_project_anonymization_status",
 ]
 
+from climmob.models.repository import sql_execute, sql_fetch_one
+
 
 def get_project_anonymization_status(project_id, request) -> int | None:
     query = request.dbsession.query(
@@ -20,23 +22,30 @@ def get_project_anonymization_status(project_id, request) -> int | None:
 
 
 def set_project_anonymization_status(project_id, anonymization_status_id, request):
-    query = request.dbsession.query(ProjectAnonymizationStatus).filter(
-        ProjectAnonymizationStatus.project_id == project_id
-    )
+    sql = f"""
+        SELECT * FROM project_anonymization_status
+        WHERE project_id = "{project_id}"
+    """
 
-    if query.first() is None:
-        project_anonymization_status = ProjectAnonymizationStatus(
-            anonymization_status_id=anonymization_status_id,
-            project_id=project_id,
-            last_updated_by=request.user_in_session,
-            last_updated_at=datetime.datetime.now(),
-        )
-        request.dbsession.add(project_anonymization_status)
+    result = sql_fetch_one(sql)
+
+    if result is None:
+        sql = f"""
+            INSERT INTO project_anonymization_status VALUES
+            ({anonymization_status_id},
+            "{project_id}",
+            "{request.user_in_session}",
+            "{datetime.datetime.now()}");
+
+        """
     else:
-        query.update(
-            {
-                "anonymization_status_id": anonymization_status_id,
-                "last_updated_by": request.user_in_session,
-                "last_updated_at": datetime.datetime.now(),
-            }
-        )
+        sql = f"""
+            UPDATE project_anonymization_status
+            SET
+            anonymization_status_id = {anonymization_status_id},
+            last_updated_by = "{request.user_in_session}",
+            last_updated_at = "{datetime.datetime.now()}"
+            WHERE project_id = "{project_id}";
+        """
+
+    sql_execute(sql)
