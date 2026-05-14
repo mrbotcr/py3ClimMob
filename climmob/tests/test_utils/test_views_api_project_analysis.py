@@ -3,6 +3,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 
 from climmob.tests.test_utils.common import ViewBaseTest
+from climmob.utility import AnonymizationStatus
 from climmob.views.Api.project_analysis import (
     ReadDataOfProjectViewApi,
     ReadVariablesForAnalysisViewApi,
@@ -23,11 +24,23 @@ class TestReadDataOfProjectViewAPI(ViewBaseTest):
         )
 
     @patch(
+        "climmob.views.Api.project_analysis.get_project_anonymization_status",
+        return_value=AnonymizationStatus.COMPLETED,
+    )
+    @patch(
+        "climmob.views.Api.project_analysis.project_needs_to_start_anonymization",
+        return_value=False,
+    )
+    @patch(
         "climmob.views.Api.project_analysis.getJSONResult",
         return_value={"data": "some_data"},
     )
-    def test_get_success(self, mock_get_json_result):
-        self.view._ = self.mock_translation  # Mock translation function
+    def test_get_success(
+        self,
+        mock_get_json_result,
+        mock_project_needs_to_start_anonymization,
+        mock_get_project_anonymization_status,
+    ):
 
         response = self.view.get()
 
@@ -40,6 +53,80 @@ class TestReadDataOfProjectViewAPI(ViewBaseTest):
             self.body["project_cod"],
             self.view.request,
             anonymize=True,
+        )
+
+        mock_project_needs_to_start_anonymization.assert_called_once_with(
+            self.view.context.active_project_id,
+            self.view.request,
+        )
+
+        mock_get_project_anonymization_status.assert_called_once_with(
+            self.view.context.active_project_id,
+            self.view.request,
+        )
+
+    @patch("climmob.views.Api.project_analysis.create_raw_data")
+    @patch(
+        "climmob.views.Api.project_analysis.project_needs_to_start_anonymization",
+        return_value=True,
+    )
+    def test_get_success_start_anonymization(
+        self, mock_project_needs_to_start_anonymization, mock_create_raw_data
+    ):
+        response = self.view.get()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(
+            "ClimMob is starting to generate the shareable values for your project. Please try again in a moment.",
+            response.body.decode(),
+        )
+
+        mock_project_needs_to_start_anonymization.assert_called_once_with(
+            self.view.context.active_project_id,
+            self.view.request,
+        )
+
+        mock_create_raw_data.assert_called_once_with(
+            {
+                "userOwner": self.body["user_owner"],
+                "projectId": self.view.context.active_project_id,
+                "projectCod": self.body["project_cod"],
+            },
+            {"anonymize": True},
+            self.view.request,
+            "Report",
+            "",
+        )
+
+    @patch(
+        "climmob.views.Api.project_analysis.get_project_anonymization_status",
+        return_value=AnonymizationStatus.IN_PROGRESS,
+    )
+    @patch(
+        "climmob.views.Api.project_analysis.project_needs_to_start_anonymization",
+        return_value=False,
+    )
+    def test_get_success_in_progress(
+        self,
+        mock_project_needs_to_start_anonymization,
+        mock_get_project_anonymization_status,
+    ):
+        response = self.view.get()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(
+            "ClimMob is currently generating the shareable values for your project. Please try again in a moment.",
+            response.body.decode(),
+        )
+
+        mock_project_needs_to_start_anonymization.assert_called_once_with(
+            self.view.context.active_project_id,
+            self.view.request,
+        )
+
+        mock_get_project_anonymization_status.assert_called_once_with(
+            self.view.context.active_project_id,
+            self.view.request,
         )
 
 

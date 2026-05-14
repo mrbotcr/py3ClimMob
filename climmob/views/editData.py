@@ -205,7 +205,7 @@ class EditDataView(privateView):
 
         path = os.path.join(
             self.request.registry.settings["user.repository"],
-            *[activeProjectUser, activeProjectCod]
+            *[activeProjectUser, activeProjectCod],
         )
         if code == "":
             paths = ["db", formId, "create.xml"]

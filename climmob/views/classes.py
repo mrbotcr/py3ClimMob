@@ -380,10 +380,10 @@ class privateView(BaseView):
             login_data = literal_eval(login_data)
             if login_data["group"] == "mainApp":
                 self.user = getUserData(login_data["login"], self.request)
-                self.request.user_in_session = self.user.login
-                self.classResult["activeUser"] = self.user
-                if self.user == None:
+                if self.user is None:
                     return HTTPFound(location=self.request.route_url("login"))
+                self.classResult["activeUser"] = self.user
+                self.request.user_in_session = self.user.login
             else:
                 return HTTPFound(location=self.request.route_url("login"))
         else:
@@ -552,9 +552,7 @@ class apiView(BaseView):
             apiKey = self.request.params["Apikey"]
             self.apiKey = apiKey
             self.user = getUserByApiKey(apiKey, self.request)
-            self.request.user_in_session = self.user.login
-
-            if self.user == None:
+            if self.user is None:
                 response = Response(
                     status=401,
                     body=self.request.translate(
@@ -562,6 +560,7 @@ class apiView(BaseView):
                     ),
                 )
                 return response
+            self.request.user_in_session = self.user.login
 
             # TODO Replace with self.body = get_get_body_from_api_request
             try:
