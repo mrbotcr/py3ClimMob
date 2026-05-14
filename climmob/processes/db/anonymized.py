@@ -249,7 +249,7 @@ def anonymize_field_value(field, registry_id, request):
     elif field["question"].question_anonymity == QuestionAnonymity.NOISE.value:
         geo_point = field["value"].split()
         geo_point[0], geo_point[1] = add_noise_to_gps_coordinates(
-            float(geo_point[0]), float(geo_point[1]), 2000, 5000
+            float(geo_point[0]), float(geo_point[1]), 3000, 5000
         )
         field["value"] = " ".join([str(p) for p in geo_point])
 
