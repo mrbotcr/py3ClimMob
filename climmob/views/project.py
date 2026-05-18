@@ -1099,10 +1099,14 @@ class FinishProjectView(privateView):
             self.request, project_info["project_id"]
         )
         recipients = []
+        collaborators = []
         for collaborator in related_collaborators:
-            recipients.append(
-                (collaborator["user_fullname"], collaborator["user_email"])
-            )
+            if collaborator["access_type"] == 1:
+                recipients.append(
+                    (collaborator["user_fullname"], collaborator["user_email"])
+                )
+            else:
+                collaborators.append(collaborator)
         if not recipients:
             log.warning("Email didn't send. No recipients found.")
             return False
@@ -1115,6 +1119,7 @@ class FinishProjectView(privateView):
                     "project_info": project_info,
                     "_": _,
                     "logo": self.request.url_for_static("landing/climmob2.png"),
+                    "collaborators": collaborators,
                 },
             )
         except Exception as e:
