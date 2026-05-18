@@ -61,7 +61,17 @@
                     {{ _("In progress") }}
                 {% elif project_info["project_status"] == 3 %}
                     {{ _("Closed") }}
-                {% endif %}</strong></ul>
+                {% endif %}</strong>
+            </ul>
+            {% if collaborators %}
+                <p>
+                    {{ _("This project was previously shared with the following people:") }}<br><br>
+                    {% for collaborator in collaborators %}
+                        {{ collaborator["user_fullname"] }}: {{ collaborator["user_email"] }}<br>
+                    {% endfor %}<br>
+                    {{ _("If you would like to inform them that the project has been closed, you may forward this email.") }}<br><br>
+                </p>
+            {% endif %}
             <p style="margin-bottom: 15px;">{{ _('Thank you for using ClimMob and contributing to its growing community') }}.</p>
         {% endblock email_message %}
 
