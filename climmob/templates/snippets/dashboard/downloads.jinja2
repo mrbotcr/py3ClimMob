@@ -41,14 +41,14 @@
             <table class="downloads-table table table-bordered">
                 <thead>
                 <tr>
-                    <th>{{ _('File Type') }}</th>
-                    <th>{{ _('Raw Data') }}</th>
+                    <th>{{ _('File type') }}</th>
+                    <th>{{ _('Raw data') }}</th>
                     {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
                         <th>
                             <i class="fa fa-info-circle"
                                title="{{ _("Omits confidential information. You must check contents before sharing it.") }}">
                             </i>
-                            {{ _('Shareable Data') }}
+                            {{ _('Shareable data') }}
                         </th>
                     {% endif %}
                 </tr>
