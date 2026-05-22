@@ -92,7 +92,10 @@ def create_raw_data_file(request_attrs, project_id, file, result_params):
 def replace_options_with_labels(data):
     for row in data["data"]:
         for field in data["registry"]["fields"]:
-            if field["rtable"] is not None and row["REG_" + field["name"]] is not None:
+            if (
+                field["rtable"] is not None
+                and row.get("REG_" + field["name"]) is not None
+            ):
                 result = get_option_label(
                     data["registry"]["lkptables"],
                     field["rtable"],
