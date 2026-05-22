@@ -1516,3 +1516,22 @@ class ProjectPublishStatus(Base):
     destination = Column(Unicode(32), primary_key=True, nullable=False)
     last_updated_by = Column(Unicode(80), ForeignKey("user.user_name"), nullable=False)
     last_updated_at = Column(DateTime, nullable=False)
+
+
+class PublishingLicense(Base):
+    __tablename__ = "publishing_license"
+
+    publishing_license_id = Column(Integer, primary_key=True, nullable=False)
+    publishing_license_name = Column(Unicode(32), nullable=False)
+
+class ProjectPublishingLicense(Base):
+    __tablename__ = "project_publishing_license"
+
+    publishing_license_id = Column(
+        Integer,
+        ForeignKey("publishing_license.publishing_license_id"),
+        nullable=False,
+    )
+    project_id = Column(
+        Unicode(64), ForeignKey("project.project_id"), primary_key=True, nullable=False
+    )
