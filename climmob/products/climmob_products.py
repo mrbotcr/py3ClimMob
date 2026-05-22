@@ -9,7 +9,7 @@ def createProductDirectory(request, userID, projectID, product):
         if p.product_found(product):
             path = os.path.join(
                 request.registry.settings["user.repository"],
-                *[userID, projectID, "products", product]
+                *[userID, projectID, "products", product],
             )
             if not os.path.exists(path):
                 os.makedirs(path)
@@ -29,7 +29,7 @@ def getProductDirectory(request, userID, projectID, product):
         if p.product_found(product):
             path = os.path.join(
                 request.registry.settings["user.repository"],
-                *[userID, projectID, "products", product]
+                *[userID, projectID, "products", product],
             )
             return path
         else:
@@ -229,7 +229,7 @@ def register_products(config):
     products.append(datacsv)
 
     datacsv_anonymized = addProduct(
-        "datacsv-anonymized", "Information collected in the project anonymized."
+        "datacsv-shareable", "Information collected in the project anonymized."
     )
     addMetadataToProduct(datacsv_anonymized, "author", "Johann Ávalos")
     addMetadataToProduct(datacsv_anonymized, "version", "1.0")
@@ -375,7 +375,7 @@ def register_products(config):
     products.append(dataxlsx)
 
     dataxlsx_anonymized = addProduct(
-        "dataxlsx-anonymized",
+        "dataxlsx-shareable",
         "Information collected in the project anonymized in XLSX format.",
     )
     addMetadataToProduct(dataxlsx_anonymized, "author", "Johann Ávalos")

@@ -99,8 +99,8 @@ class productsView(climmobPrivateView):
                 if (
                     product["product_id"]
                     in [
-                        "datacsv-anonymized",
-                        "dataxlsx-anonymized",
+                        "datacsv-shareable",
+                        "dataxlsx-shareable",
                     ]
                     and self.request.registry.settings.get(
                         "module.dataprivacy", "false"
@@ -128,8 +128,8 @@ class productsView(climmobPrivateView):
                         "documentform",
                         "datacsv",
                         "dataxlsx",
-                        "datacsv-anonymized",
-                        "dataxlsx-anonymized",
+                        "datacsv-shareable",
+                        "dataxlsx-shareable",
                         "errorlogdocument",
                         "multimediadownloads",
                         "uploaddata",
@@ -305,11 +305,11 @@ class generateProductView(privateView):
 
         if productid in [
             "datacsv",
-            "datacsv-anonymized",
+            "datacsv-shareable",
             "dataxlsx",
-            "dataxlsx-anonymized",
+            "dataxlsx-shareable",
         ]:
-            anonymized = productid in ["datacsv-anonymized", "dataxlsx-anonymized"]
+            anonymized = productid in ["datacsv-shareable", "dataxlsx-shareable"]
             file_type = "csv" if "csv" in productid else "xlsx"
             infoProduct = processname.split("_")
             if file_type == "xlsx":

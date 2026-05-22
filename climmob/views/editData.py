@@ -81,7 +81,7 @@ class downloadDataView(privateView):
         )
 
         format_extra = "xlsx_" if formatId == "xlsx" else ""
-        product_id_extra = "-anonymized" if anonymize else ""
+        product_id_extra = "-shareable" if anonymize else ""
 
         url = self.request.route_url(
             "productList",

@@ -35,16 +35,16 @@
             'QRPackagesEditable':false,
             'projectDataCollectedCSV':false,
             'projectDataCollectedXLSX': false,
-            'projectDataCollectedCSV-anonymized':false,
-            'projectDataCollectedXLSX-anonymized': false,
+            'projectDataCollectedCSV-shareable':false,
+            'projectDataCollectedXLSX-shareable': false,
             'productToFocus':""
         } %}
         {% if activeProject.project_regstatus > 0 %}
             {% if changes.update({'DataCollectionProgress': true }) %} {% endif %}
             {% if changes.update({'projectDataCollectedCSV': true }) %} {% endif %}
             {% if changes.update({'projectDataCollectedXLSX': true }) %} {% endif %}
-            {% if changes.update({'projectDataCollectedCSV-anonymized': true }) %} {% endif %}
-            {% if changes.update({'projectDataCollectedXLSX-anonymized': true }) %} {% endif %}
+            {% if changes.update({'projectDataCollectedCSV-shareable': true }) %} {% endif %}
+            {% if changes.update({'projectDataCollectedXLSX-shareable': true }) %} {% endif %}
         {% endif %}
 
         {% block qr_packages_editable_variable scoped%}
@@ -66,21 +66,21 @@
                     {% if product.product_id == "qrpackage" %}
                         {{ _("List of packages with QR for the participant registration form") }}
 
-                    {% elif product.product_id == "datacsv-anonymized" %}
-                        {% if product.process_name == "create_data-anonymized_Report_" %}
-                            {% if changes.update({'projectDataCollectedCSV-anonymized': false }) %}{% endif %}
+                    {% elif product.product_id == "datacsv-shareable" %}
+                        {% if product.process_name == "create_data-shareable_Report_" %}
+                            {% if changes.update({'projectDataCollectedCSV-shareable': false }) %}{% endif %}
                             {{ _("Information collected in all the project in .CSV format (shareable)") }}
-                        {% elif product.process_name == "create_data-anonymized_Registration_" %}
+                        {% elif product.process_name == "create_data-shareable_Registration_" %}
                             {{ _("Information collected in the participant registration form in .CSV format (shareable)") }}
                         {% else %}
                             {{ _("Information collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }} {{ _("in .CSV format (shareable)") }}
                         {% endif %}
 
-                    {% elif product.product_id == "dataxlsx-anonymized" %}
-                        {% if product.process_name == "create_data-anonymized_xlsx_Report_" %}
-                            {% if changes.update({'projectDataCollectedXLSX-anonymized': false }) %}{% endif %}
+                    {% elif product.product_id == "dataxlsx-shareable" %}
+                        {% if product.process_name == "create_data-shareable_xlsx_Report_" %}
+                            {% if changes.update({'projectDataCollectedXLSX-shareable': false }) %}{% endif %}
                             {{ _("Information collected in all the project in .XLSX format (shareable)") }}
-                        {% elif product.process_name == "create_data-anonymized_xlsx_Registration_" %}
+                        {% elif product.process_name == "create_data-shareable_xlsx_Registration_" %}
                             {{ _("Information collected in the participant registration form in .XLSX format (shareable)") }}
                         {% else %}
                             {{ _("Information collected in the trial data collection moment form") }}: {{ product.extraInformation.ass_desc }} {{ _("in .XLSX format (shareable)") }}
@@ -298,16 +298,16 @@
                                 <a href="{{ request.route_url('generateProduct', productid="datacsv", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
                             {% endif %}
 
-                            {% if product.product_id == "datacsv-anonymized" and product.process_name == "create_data-anonymized_Report_" %}
-                                <a href="{{ request.route_url('generateProduct', productid="datacsv-anonymized", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data-anonymized_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
+                            {% if product.product_id == "datacsv-shareable" and product.process_name == "create_data-shareable_Report_" %}
+                                <a href="{{ request.route_url('generateProduct', productid="datacsv-shareable", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data-shareable_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
                             {% endif %}
 
                             {% if product.product_id == "dataxlsx" and product.process_name == "create_data_xlsx_Report_" %}
                                 <a href="{{ request.route_url('generateProduct', productid="dataxlsx", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data_xlsx_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
                             {% endif %}
 
-                            {% if product.product_id == "dataxlsx-anonymized" and product.process_name == "create_data-anonymized_xlsx_Report_" %}
-                                <a href="{{ request.route_url('generateProduct', productid="dataxlsx-anonymized", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data-anonymized_xlsx_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
+                            {% if product.product_id == "dataxlsx-shareable" and product.process_name == "create_data-shareable_xlsx_Report_" %}
+                                <a href="{{ request.route_url('generateProduct', productid="dataxlsx-shareable", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data-shareable_xlsx_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Update") }}</a>
                             {% endif %}
 
                             {% if product.product_id == "generalreport" %}
@@ -361,25 +361,25 @@
         {% endif %}
 
         {% if request.registry.settings.get("module.dataprivacy", "false") != "false"%}
-            {% if changes["projectDataCollectedXLSX-anonymized"] %}
+            {% if changes["projectDataCollectedXLSX-shareable"] %}
                 <tr>
                     <td>{{ _("Information collected in all the project in .XLSX format (shareable)") }}</td>
                     <td></td>
                     <td></td>
                     <td class="text-center">
-                        <a href="{{ request.route_url('generateProduct', productid="dataxlsx-anonymized", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data-anonymized_xlsx_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
+                        <a href="{{ request.route_url('generateProduct', productid="dataxlsx-shareable", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data-shareable_xlsx_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                     </td>
                     <td></td>
                 </tr>
             {% endif %}
 
-            {% if changes["projectDataCollectedCSV-anonymized"] %}
+            {% if changes["projectDataCollectedCSV-shareable"] %}
                 <tr>
                     <td>{{ _("Information collected in all the project in .CSV format (shareable)") }}</td>
                     <td></td>
                     <td></td>
                     <td class="text-center">
-                        <a href="{{ request.route_url('generateProduct', productid="datacsv-anonymized", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data-anonymized_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
+                        <a href="{{ request.route_url('generateProduct', productid="datacsv-shareable", user=activeProject["owner"].user_name,project=activeProject.project_cod, processname="create_data-shareable_Report_") }}" class="btn btn-default" ><i class="fa fa-plus"></i> {{ _("Create") }}</a>
                     </td>
                     <td></td>
                 </tr>
