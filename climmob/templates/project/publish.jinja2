@@ -70,6 +70,14 @@
                                     <input type="checkbox" id="databricks-confirm"/>
                                     Accept
                                 </label>
+                                <label>
+                                    Usage rights:
+                                    <select class="form-control" name="license">
+                                        {% for license in licenses %}
+                                            <option value={{ license.publishing_license_id }}>{{ license.publishing_license_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </label>
                                 <section class="flex flex-col">
                                     <h3>Select destinations:</h3>
 

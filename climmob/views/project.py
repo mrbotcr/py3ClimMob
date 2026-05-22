@@ -52,7 +52,9 @@ from climmob.processes import (
     get_location_unit_of_analysis_objectives_by_combination,
     delete_all_project_location_unit_objective,
     get_all_affiliations,
+    save_project_publishing_license,
 )
+from climmob.processes.db.publishing_license import get_publishing_licenses
 from climmob.products.jsonResults.jsonresults import create_json_results
 from climmob.views.classes import privateView
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
@@ -958,10 +960,13 @@ class PublishProjectView(privateView):
         destinations = []
         for plugin in p.PluginImplementations(p.IPublisher):
             destinations.append((plugin.get_destination_name(), plugin.get_label()))
+
+        licenses = get_publishing_licenses(self.request)
         return {
             "activeUser": self.user,
             "redirect": False,
             "destinations": destinations,
+            "licenses": licenses,
         }
 
     def post(self):
@@ -977,6 +982,9 @@ class PublishProjectView(privateView):
         project_cod = self.request.project
         cropname = project["project_curated_cropname"]
         destinations = body.get("destination", [])
+        license = body.get("license")
+
+        save_project_publishing_license(project["project_id"], license, self.request)
 
         create_json_results(
             user_apikey,
