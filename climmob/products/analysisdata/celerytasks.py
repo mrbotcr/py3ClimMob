@@ -24,47 +24,9 @@ def create_raw_data_file(request_attrs, project_id, file, result_params):
 
     with create_request(**request_attrs) as request:
         if result_params.get("anonymize"):
-            start_anonymization = True
-
-            perc = get_anonymization_percentage(project_id, request)
-
-            if perc == 100.0:
-                set_project_anonymization_status(
-                    project_id, AnonymizationStatus.COMPLETED.value, request
-                )
-                start_anonymization = False
-            else:
-                anonymization_status = get_project_anonymization_status(
-                    project_id, request
-                )
-
-                if anonymization_status is None:
-                    anonymization_status = AnonymizationStatus.NOT_STARTED
-                    set_project_anonymization_status(
-                        project_id, anonymization_status.value, request
-                    )
-
-                # NOT_STARTED, COMPLETED and ERROR leave start_anonymization = True
-                if anonymization_status == AnonymizationStatus.IN_PROGRESS:
-                    start_anonymization = False
-
-            if start_anonymization:
-                set_project_anonymization_status(
-                    project_id, AnonymizationStatus.IN_PROGRESS.value, request
-                )
-                success, msg = anonymize_project(project_id, request)
-
-                perc = get_anonymization_percentage(project_id, request)
-
-                if success and perc == 100.0:
-                    set_project_anonymization_status(
-                        project_id, AnonymizationStatus.COMPLETED.value, request
-                    )
-                if not success or perc < 100.0:
-                    set_project_anonymization_status(
-                        project_id, AnonymizationStatus.ERROR.value, request
-                    )
-                    return
+            success = process_anonymization(project_id, request)
+            if not success:
+                return
 
         result_params["request"] = request
         result = getJSONResult(**result_params)
@@ -87,6 +49,52 @@ def create_raw_data_file(request_attrs, project_id, file, result_params):
             os.path.join(output_path, file["name"]) + f".{file['type']}",
             index=False,
         )
+
+
+def process_anonymization(project_id, request):
+    """
+    Handles project anonymization and anonymization status
+    """
+    start_anonymization = True
+
+    perc = get_anonymization_percentage(project_id, request)
+
+    if perc == 100.0:
+        set_project_anonymization_status(
+            project_id, AnonymizationStatus.COMPLETED.value, request
+        )
+        start_anonymization = False
+    else:
+        anonymization_status = get_project_anonymization_status(project_id, request)
+
+        if anonymization_status is None:
+            anonymization_status = AnonymizationStatus.NOT_STARTED
+            set_project_anonymization_status(
+                project_id, anonymization_status.value, request
+            )
+
+        # NOT_STARTED, COMPLETED and ERROR leave start_anonymization = True
+        if anonymization_status == AnonymizationStatus.IN_PROGRESS:
+            start_anonymization = False
+
+    if start_anonymization:
+        set_project_anonymization_status(
+            project_id, AnonymizationStatus.IN_PROGRESS.value, request
+        )
+        success, msg = anonymize_project(project_id, request)
+
+        perc = get_anonymization_percentage(project_id, request)
+
+        if success and perc == 100.0:
+            set_project_anonymization_status(
+                project_id, AnonymizationStatus.COMPLETED.value, request
+            )
+        if not success or perc < 100.0:
+            set_project_anonymization_status(
+                project_id, AnonymizationStatus.ERROR.value, request
+            )
+            return False
+    return True
 
 
 def replace_options_with_labels(data):
