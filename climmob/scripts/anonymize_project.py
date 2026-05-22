@@ -1,20 +1,21 @@
+import argparse
+import os
 import sys
 
+import pyramid
+import requests
+import transaction
 from pyramid.paster import get_appsettings, setup_logging
+
 from climmob.models import (
     get_engine,
     Base,
     get_tm_session,
     get_session_factory,
     initialize_schema,
+    add_modules_to_schema,
 )
-import transaction
-import requests
-import argparse
-import pyramid
-import os
-
-from climmob.processes import anonymize_project
+from climmob.products.analysisdata import process_anonymization
 
 
 def main(raw_args=None):
@@ -41,15 +42,20 @@ def main(raw_args=None):
         dbsession = get_tm_session(session_factory, transaction.manager)
         setup_logging(args.ini_path)
 
+        modules_allowed = ["climmob.models.climmobv4"]
+        add_modules_to_schema(modules_allowed)
+
         request = requests.Session()
         request.dbsession = dbsession
         request.registry = pyramid.registry.Registry
         request.registry.settings = settings
         request.locale_name = "en"
+        request.user_in_session = "bioversity"
+        request.translate = lambda x: x
 
         initialize_schema()
 
-        success, msg = anonymize_project(args.project_id, request)
+        success = process_anonymization(args.project_id, request)
 
         if success:
             print(f"Successfully anonymized project {args.project_id}")
