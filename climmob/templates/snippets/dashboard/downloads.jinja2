@@ -46,7 +46,7 @@
                     {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
                         <th>
                             <i class="fa fa-info-circle"
-                               title="{{ _("Omits confidential information. You must check contents before sharing it.") }}">
+                               title="{{ _("Confidential information is omitted. Please review the content before sharing.") }}">
                             </i>
                             {{ _('Shareable data') }}
                         </th>
