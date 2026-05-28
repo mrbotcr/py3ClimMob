@@ -8,7 +8,6 @@ from sqlalchemy.pool import NullPool
 
 from climmob.config.celery_app import get_ini_value
 from climmob.models import (
-    Base,
     get_engine,
     get_session_factory,
     get_tm_session,
@@ -57,7 +56,6 @@ def execute_two_sqls(sql1, sql2):
 @contextmanager
 def create_request(settings: dict, locale_name: str, user_in_session: str):
     engine = get_engine(settings)
-    Base.metadata.create_all(engine)
 
     session_factory = get_session_factory(engine)
     with transaction.manager:
