@@ -200,8 +200,7 @@
                                             and progress.metadata == True %}
                                                 <span class="label label-success">{{ _("Available") }}</span>
                                             {% else %}
-                                                <span class="label label-danger" title="{{ _("The analysis cannot be generated because the trial documentation is not yet complete or there are not enough valid submissions.
-                                                ") }}"><i class="fa fa-info-circle"></i> {{ _('Unavailable') }}</span>
+                                                <span class="label label-danger" title="{{ _("The analysis cannot be generated because the trial documentation is not yet complete or there are not enough valid submissions.") }}"><i class="fa fa-info-circle"></i> {{ _("Unavailable") }}</span>
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -236,5 +235,3 @@
         </div>
     {% endif %}
 {% endblock pagecontent %}
-{% block script %}
-{% endblock script %}

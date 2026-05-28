@@ -27,6 +27,7 @@ def query_for_users(request, q, query_from, query_size, projectId):
             )
         )
         .filter(User.user_name.notin_(subquery))
+        .filter(User.user_active == 1)
         .offset(query_from)
         .limit(query_size)
         .all()
@@ -58,6 +59,7 @@ def query_for_all_users(request, q, query_from, query_size):
                 User.user_fullname.ilike("%" + query + "%"),
             )
         )
+        .filter(User.user_active == 1)
         .offset(query_from)
         .limit(query_size)
         .all()
