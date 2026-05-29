@@ -38,6 +38,7 @@ __all__ = [
     "IAssessments",
     "IProjectRegistry",
     "IUserFlow",
+    "ISikia",
 ]
 
 
@@ -59,6 +60,13 @@ class Interface(_pca_Interface):
             return cls in other._implements
         except AttributeError:
             return False
+
+
+class ISikia(Interface):
+    """ """
+
+    def get_sikia_info(self, request, project_id):
+        """ """
 
 
 class IRoutes(Interface):

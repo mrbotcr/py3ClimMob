@@ -11,7 +11,7 @@ import climmob.products as p
 import climmob.resources as r
 from climmob.config.celery_class import celeryTask
 from climmob.processes import addTask
-from climmob.views.classes import publicView, privateView
+from climmob.views.classes import publicView, privateView, apiView
 
 __all__ = [
     "addTemplatesDirectory",
@@ -43,6 +43,12 @@ class climmobPublicView(publicView):
 
 
 class climmobPrivateView(privateView):
+    """
+    A view class for plugins which require a private (login required) view.
+    """
+
+
+class climmobApiView(apiView):
     """
     A view class for plugins which require a private (login required) view.
     """

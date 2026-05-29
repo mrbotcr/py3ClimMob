@@ -80,6 +80,11 @@ class dashboard_view(privateView):
                         total_ass_records = total_ass_records + assessment["asstotal"]
                     else:
                         all_ass_closed = False
+
+                info_of_sikia = None
+                for plugin in p.PluginImplementations(p.ISikia):
+                    info_of_sikia = plugin.get_sikia_info(self.request, activeProjectId)
+
                 context = {
                     "activeUser": self.user,
                     "activeProject": activeProjectData,
@@ -101,6 +106,7 @@ class dashboard_view(privateView):
                         activeProjectCod,
                         self.request,
                     ),
+                    "info_of_sikia": info_of_sikia,
                 }
                 for plugin in p.PluginImplementations(p.IDashBoard):
                     context = plugin.before_returning_dashboard_context(
