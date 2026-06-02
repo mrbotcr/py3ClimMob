@@ -6,9 +6,22 @@ from lxml import etree
 
 from climmob.models import Assessment, Question, Project, mapFromSchema
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
-from climmob.processes import getCombinations
+from climmob.processes.db.project_combinations import getCombinations
+from climmob.processes.db.anonymization_params import get_anonymization_params_as_dict
+from climmob.processes.db.question import (
+    get_sensitive_questions_anonymity_by_project_id,
+    get_registry_key_question,
+    get_assessment_key_question,
+)
 
-__all__ = ["getJSONResult", "getCombinationsData"]
+__all__ = [
+    "getJSONResult",
+    "getCombinationsData",
+    "get_registry_submission_count",
+    "get_assessment_submission_count",
+]
+
+from climmob.utility import get_question_by_field_name, QuestionAnonymity
 
 
 def getMiltiSelectLookUpTable(XMLFile, multiSelectTable):
@@ -55,11 +68,12 @@ def getFields(XMLFile, table):
     return fields
 
 
-def getLookups(XMLFile, userOwner, projectCod, request):
+def getLookups(XMLFile, userOwner, projectCod, anonymize, request):
     lktables = []
     tree = etree.parse(XMLFile)
     root = tree.getroot()
     elkptables = root.find(".//lkptables")
+    qst_163_pseudonym = get_anonymization_params_as_dict(163, request)["pseudonym"]
     if elkptables is not None:
         etables = elkptables.findall(".//table")
         for table in etables:
@@ -94,12 +108,16 @@ def getLookups(XMLFile, userOwner, projectCod, request):
                     avalue = {}
                     for field in atable["fields"]:
                         avalue[field["name"]] = value[field["name"]]
+                    if anonymize and atable["name"].endswith("lkpqst163_opts"):
+                        avalue["qst163_opts_des"] = qst_163_pseudonym.replace(
+                            "{}", str(avalue["qst163_opts_cod"])
+                        )
                     atable["values"].append(avalue)
             lktables.append(atable)
     return lktables
 
 
-def getPackageData(userOwner, projectId, projectCod, request):
+def getPackageData(userOwner, projectId, projectCod, request, anonymize=False):
     data = (
         request.dbsession.query(Question).filter(Question.question_regkey == 1).first()
     )
@@ -107,6 +125,7 @@ def getPackageData(userOwner, projectId, projectCod, request):
     data = (
         request.dbsession.query(Question).filter(Question.question_fname == 1).first()
     )
+    farmer_name_qst_id = data.question_id
     qstFarmer = data.question_code
 
     sql = (
@@ -209,6 +228,12 @@ def getPackageData(userOwner, projectId, projectCod, request):
     )
 
     pkgdetails = sql_fetch_all(sql)
+
+    farmer_name_pseudonym = ""
+    if anonymize:
+        params = get_anonymization_params_as_dict(farmer_name_qst_id, request)
+        farmer_name_pseudonym = params["pseudonym"]
+
     packages = []
     pkgcode = -999
     for pkg in pkgdetails:
@@ -216,7 +241,12 @@ def getPackageData(userOwner, projectId, projectCod, request):
             aPackage = {}
             pkgcode = pkg.package_id
             aPackage["package_id"] = pkg.package_id
-            aPackage["farmername"] = pkg["farmername"]
+            if anonymize:
+                aPackage["farmername"] = farmer_name_pseudonym.replace(
+                    "{}", str(pkg.package_id)
+                )
+            else:
+                aPackage["farmername"] = pkg["farmername"]
             aPackage["comps"] = []
             for x in range(0, ncombs):
                 aPackage["comps"].append({})
@@ -264,44 +294,112 @@ def getPackageData(userOwner, projectId, projectCod, request):
     return packages
 
 
-def getData(userOwner, projectCod, registry, assessments, request):
-    data = (
-        request.dbsession.query(Question).filter(Question.question_regkey == 1).first()
-    )
-    registryKey = data.question_code
-    data = (
-        request.dbsession.query(Question).filter(Question.question_asskey == 1).first()
-    )
-    assessmentKey = data.question_code
+class QuestionSelectFieldBuilder:
+    def __init__(self, anonymize):
+        self.column = None
+        self.table = None
+        self.form_id = None
+        self.prefix = None
+        self.sensitive = False
+        self.anonymize = anonymize
+
+    def set_column(self, column):
+        self.column = column
+
+    def set_table(self, table):
+        self.table = table
+
+    def set_form_id(self, form_id):
+        self.form_id = form_id
+
+    def set_prefix(self, prefix):
+        self.prefix = prefix
+
+    def set_sensitive(self, sensitive):
+        self.sensitive = sensitive
+
+    def build(self):
+        if not self.anonymize or not self.sensitive:
+            return f"{self.table}.{self.column} AS {self.prefix}_{self.column}"
+
+        query = (
+            f"COALESCE(MAX("
+            f"CASE WHEN da.col_name = '{self.column}' "
+            f"AND da.form_id='{self.form_id}'"
+            f"THEN da.value END),"
+            f"{self.table}.{self.column}) "
+            f"AS {self.prefix}_{self.column}"
+        )
+        return query
+
+
+def getData(
+    userOwner, project_id, projectCod, registry, assessments, request, anonymize=False
+):
+    registryKey = get_registry_key_question(request).question_code
+
+    assessmentKey = get_assessment_key_question(request).question_code
+
+    questions = get_sensitive_questions_anonymity_by_project_id(project_id, request)
 
     fields = []
+
+    reg_alias = "reg"
+
+    select_field_builder = QuestionSelectFieldBuilder(anonymize)
+    select_field_builder.set_table(reg_alias)
+    select_field_builder.set_prefix("REG")
+    select_field_builder.set_form_id("-")
+
     for field in registry["fields"]:
-        fields.append(
-            userOwner
-            + "_"
-            + projectCod
-            + ".REG_geninfo."
-            + field["name"]
-            + " AS "
-            + "REG_"
-            + field["name"]
-        )
+        select_field_builder.set_column(field["name"])
+        if anonymize:
+            question = get_question_by_field_name(field["name"], questions)
+            if (
+                question
+                and question.question_anonymity == QuestionAnonymity.REMOVE.value
+            ):
+                continue
+            select_field_builder.set_sensitive(question is not None)
+        fields.append(select_field_builder.build())
+
     for assessment in assessments:
+        assessment_alias = "assess_" + assessment["code"]
+        select_field_builder.set_table(assessment_alias)
+        select_field_builder.set_prefix(f'ASS{assessment["code"]}')
+        select_field_builder.set_form_id(f"{assessment['code']}")
         for field in assessment["fields"]:
-            fields.append(
-                userOwner
-                + "_"
-                + projectCod
-                + ".ASS"
-                + assessment["code"]
-                + "_geninfo."
-                + field["name"]
-                + " AS "
-                + "ASS"
-                + assessment["code"]
-                + "_"
-                + field["name"]
-            )
+            select_field_builder.set_column(field["name"])
+            if anonymize:
+                question = get_question_by_field_name(field["name"], questions)
+                if (
+                    question
+                    and question.question_anonymity == QuestionAnonymity.REMOVE.value
+                ):
+                    continue
+                select_field_builder.set_sensitive(question is not None)
+            fields.append(select_field_builder.build())
+
+    if anonymize:
+        to_remove_keys = [
+            "instancename",
+            "deviceimei",
+            "cal_qst163",
+            "clc_after",
+            "_submitted_by",
+            "_xform_id_string",
+            "_clc_before",
+        ]
+        tmp_fields = fields.copy()
+        fields = []
+        for field in tmp_fields:
+            append = True
+            for key in to_remove_keys:
+                if key in field:
+                    append = False
+                    break
+            if append:
+                fields.append(field)
 
     sql = (
         "SELECT "
@@ -311,8 +409,11 @@ def getData(userOwner, projectCod, registry, assessments, request):
         + "_"
         + projectCod
         + ".REG_geninfo "
+        + reg_alias
     )
+
     for assessment in assessments:
+        assessment_alias = "assess_" + assessment["code"]
         sql = (
             sql
             + " LEFT JOIN "
@@ -321,34 +422,29 @@ def getData(userOwner, projectCod, registry, assessments, request):
             + projectCod
             + ".ASS"
             + assessment["code"]
-            + "_geninfo ON "
+            + "_geninfo "
+            + assessment_alias
+            + " ON "
         )
         sql = (
             sql
-            + userOwner
-            + "_"
-            + projectCod
-            + ".REG_geninfo."
+            + reg_alias
+            + "."
             + registryKey
             + " = "
-            + userOwner
-            + "_"
-            + projectCod
-            + ".ASS"
-            + assessment["code"]
-            + "_geninfo."
+            + assessment_alias
+            + "."
             + assessmentKey
         )
-    sql = (
-        sql
-        + " ORDER BY cast("
-        + userOwner
-        + "_"
-        + projectCod
-        + ".REG_geninfo."
-        + registryKey
-        + " AS unsigned)"
-    )
+    if anonymize:
+        sql = (
+            sql
+            + " LEFT JOIN "
+            + f"{userOwner}_{projectCod}.anonymized da "
+            + f"ON da.reg_id = {reg_alias}.qst162 "
+            + f"GROUP BY {reg_alias}.qst162"
+        )
+    sql = sql + f" ORDER BY cast({reg_alias}.{registryKey} AS unsigned)"
 
     data = sql_fetch_all(sql)
 
@@ -368,6 +464,29 @@ def getData(userOwner, projectCod, registry, assessments, request):
                 dct[key] = str(value)
         result.append(dct)
     return result
+
+
+def get_registry_submission_count(user_owner, project_cod):
+    sql = (
+        "SELECT count(*)" + " FROM " + user_owner + "_" + project_cod + ".REG_geninfo "
+    )
+    data = sql_fetch_all(sql)
+    return data[0][0]
+
+
+def get_assessment_submission_count(user_owner, project_cod, assessment_code):
+    sql = (
+        "SELECT count(*)"
+        + " FROM "
+        + user_owner
+        + "_"
+        + project_cod
+        + ".ASS"
+        + assessment_code
+        + "_geninfo"
+    )
+    data = sql_fetch_all(sql)
+    return data[0][0]
 
 
 def getImportantFields(projectId, request):
@@ -544,6 +663,7 @@ def getJSONResult(
     includeRegistry=True,
     includeAssessment=True,
     assessmentCode="",
+    anonymize=False,
 ):
     data = {}
     res = (
@@ -569,12 +689,12 @@ def getJSONResult(
             if includeRegistry:
                 registryXML = os.path.join(
                     request.registry.settings["user.repository"],
-                    *[userOwner, projectCod, "db", "reg", "create.xml"]
+                    *[userOwner, projectCod, "db", "reg", "create.xml"],
                 )
                 if os.path.exists(registryXML):
                     data["registry"] = {
                         "lkptables": getLookups(
-                            registryXML, userOwner, projectCod, request
+                            registryXML, userOwner, projectCod, anonymize, request
                         ),
                         "fields": getFields(registryXML, "REG_geninfo"),
                     }
@@ -605,7 +725,7 @@ def getJSONResult(
                                     "ass",
                                     assessment.ass_cod,
                                     "create.xml",
-                                ]
+                                ],
                             )
                             if os.path.exists(assessmentXML):
                                 data["assessments"].append(
@@ -617,6 +737,7 @@ def getJSONResult(
                                             assessmentXML,
                                             userOwner,
                                             projectCod,
+                                            anonymize,
                                             request,
                                         ),
                                         "fields": getFields(
@@ -629,7 +750,9 @@ def getJSONResult(
             if res.project_registration_and_analysis == 1:
                 haveAssessments = True
             # Get the package information but only for registered farmers
-            data["packages"] = getPackageData(userOwner, projectId, projectCod, request)
+            data["packages"] = getPackageData(
+                userOwner, projectId, projectCod, request, anonymize
+            )
             data["combination"] = getCombinationsData(projectId, request)
 
             if haveAssessments:
@@ -638,10 +761,12 @@ def getJSONResult(
                 )
                 data["data"] = getData(
                     userOwner,
+                    projectId,
                     projectCod,
                     data["registry"],
                     data["assessments"],
                     request,
+                    anonymize=anonymize,
                 )
                 data["importantfields"] = getImportantFields(projectId, request)
 
@@ -649,10 +774,12 @@ def getJSONResult(
                 data["specialfields"] = []
                 data["data"] = getData(
                     userOwner,
+                    projectId,
                     projectCod,
                     data["registry"],
                     data["assessments"],
                     request,
+                    anonymize=anonymize,
                 )
                 data["importantfields"] = []
 

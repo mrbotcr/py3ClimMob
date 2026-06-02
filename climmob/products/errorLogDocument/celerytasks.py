@@ -6,7 +6,7 @@ import pandas as pd
 
 from climmob.config.celery_app import celeryApp
 from climmob.config.celery_class import celeryTask
-from climmob.products.analysisdata.exportToCsv import getRealData
+from climmob.products.analysisdata.celerytasks import get_option_label
 
 
 @celeryApp.task(base=celeryTask, soft_time_limit=7200, time_limit=7200)
@@ -134,7 +134,7 @@ def createErrorLogDocument(
                             and row[firstPart + field["name"]] != None
                             and field["name"] != "qst163"
                         ):
-                            result = getRealData(
+                            result = get_option_label(
                                 lkps,
                                 field["rtable"],
                                 field["rfield"],

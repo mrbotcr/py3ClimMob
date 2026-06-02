@@ -2,7 +2,15 @@ import json
 import xml.etree.ElementTree as ET
 
 from climmob.models.repository import sql_execute, execute_two_sqls
-from climmob.processes import getProjectData, getQuestionOptionsByQuestionCode
+from climmob.processes import (
+    getProjectData,
+    getQuestionOptionsByQuestionCode,
+    get_sensitive_questions_anonymity_by_project_id,
+)
+from climmob.processes.db.anonymized import update_anonymized
+from climmob.processes.db.assessment import get_assessment_data_by_qst163
+from climmob.processes.db.registry import get_registry_data_by_qst162
+from climmob.utility import get_question_by_field_name, QuestionAnonymity
 
 
 def get_FieldsByType(types, file):
@@ -329,9 +337,14 @@ def fillDataTable(
     return json.dumps(ret)
 
 
-def update_edited_data(userOwner, projectCod, form, data, file, code, by):
+def update_edited_data(
+    userOwner, projectCod, form, data, file, code, by, project_id, request
+):
 
     data = json.loads(data[0])
+
+    schema = userOwner + "_" + projectCod
+    questions = get_sensitive_questions_anonymity_by_project_id(project_id, request)
 
     for row in data:
         del row["id"]
@@ -341,6 +354,7 @@ def update_edited_data(userOwner, projectCod, form, data, file, code, by):
                 form.upper() + code,
             )
             del row["flag_update"]
+            to_anonymize = []
             for key in row:
                 val = ""
                 addField = True
@@ -352,21 +366,37 @@ def update_edited_data(userOwner, projectCod, form, data, file, code, by):
                 else:
                     if key in get_FieldsByType(["select1"], file):
                         if row[key] and row[key] != "None":
-                            val = (
-                                "'"
-                                + str(row[key]).replace("[", "").replace("]", "")
-                                + "'"
-                            )
+                            val = str(row[key]).replace("[", "").replace("]", "")
                         else:
                             addField = False
                     else:
                         if key in get_FieldsByType(["select"], file):
-                            val = "'" + " ".join(row[key]) + "'"
+                            val = " ".join(row[key])
                         else:
-                            val = "'" + str(row[key]) + "'"
+                            val = str(row[key])
 
                 if addField:
-                    query_update += key + "=" + val + ", "
+                    query_update += key + "='" + val + "', "
+                    question = get_question_by_field_name(key, questions)
+                    if (
+                        question
+                        and question.question_anonymity
+                        != QuestionAnonymity.REMOVE.value
+                    ):
+                        to_anonymize.append(
+                            {"field_name": key, "value": val, "question": question}
+                        )
+
+            reg_id = row["qst162"] if form == "reg" else row["qst163"]
+            form_id = "-" if form == "reg" else code
+            columns = [field["field_name"] for field in to_anonymize]
+
+            if form_id == "-":
+                current = get_registry_data_by_qst162(schema, reg_id, columns)
+            else:
+                current = get_assessment_data_by_qst163(
+                    schema, form_id, reg_id, columns
+                )
 
             query_update = (
                 query_update[:-2] + " where rowuuid ='" + str(row["rowuuid"]) + "';"
@@ -377,7 +407,11 @@ def update_edited_data(userOwner, projectCod, form, data, file, code, by):
                 execute_two_sqls(
                     "SET @odktools_current_user = '" + by + "'; ", query_update
                 )
+                update_anonymized(
+                    to_anonymize, schema, form_id, reg_id, request, current
+                )
             except Exception as e:
                 print(str(e))
                 return 0, str(e)
+
     return 1, ""

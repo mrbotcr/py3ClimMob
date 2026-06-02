@@ -21,10 +21,12 @@ from climmob.views.validators.BaseValidator import BaseValidator
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 from climmob.views.validators.assessment import AssessmentExistsValidator
 from climmob.views.validators.field.FieldValidator import FieldValidator
+from climmob.views.validators.project.ProjectOpenValidator import ProjectOpenValidator
 from climmob.views.validators.project import (
     CanEditProjectValidator,
+    HasAccessToProjectValidator,
 )
-from climmob.views.validators.project.ProjectOpenValidator import ProjectOpenValidator
+
 from climmob.views.validators.question.QuestionMinMaxValidator import (
     QuestionMinMaxValidator,
 )
@@ -151,6 +153,24 @@ class TestCanEditProjectValidatorRun(unittest.TestCase):
 
     def test_run_invalid(self):
         self.view.context.access_type = 4
+        with self.assertRaises(HTTPForbidden):
+            self.validator.run()
+
+
+class TestHasAccessToProjectValidatorRun(unittest.TestCase):
+    def setUp(self):
+        self.request = MagicMock()
+        self.view = MagicMock()
+        self.view.request = self.request
+
+        self.validator = HasAccessToProjectValidator(self.view)
+
+    def test_run_valid(self):
+        self.view.context.access_type = MagicMock(int)
+        self.validator.run()
+
+    def test_run_invalid(self):
+        self.view.context.access_type = None
         with self.assertRaises(HTTPForbidden):
             self.validator.run()
 

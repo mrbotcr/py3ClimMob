@@ -41,6 +41,8 @@
 
 {% include "snippets/maze_loader.jinja2" %}
 
+{% from 'snippets/dashboard/downloads.jinja2' import downloads with context %}
+
 {% if request.registry.settings.get('session.show_expired_modal', "false") == 'true' %}
     {% include 'snippets/expired_session.jinja2' %}
 {% endif %}
@@ -91,11 +93,9 @@
                                         </a>
                                         <ul class="dropdown-menu animated fadeInRight m-t-xs">
                                             {% block mnavusermitems %}
-                                                <li><a href="{{ request.route_url('profile') }}">{{ _("Profile") }}</a>
-                                                </li>
+                                                <li><a href="{{ request.route_url('profile') }}">{{ _("Profile") }}</a></li>
                                                 <li class="divider"></li>
-                                                <li><a href="{{ request.route_url('logout') }}">{{ _("Logout") }}</a>
-                                                </li>
+                                                <li><a href="{{ request.route_url('logout') }}">{{ _("Logout") }}</a></li>
                                             {% endblock mnavusermitems %}
                                         </ul>
                                     {% endblock mnavuserdm %}
@@ -776,16 +776,6 @@
                                                                                 {{ _('View data') }}
                                                                            {% endif %}</a>
 
-                                                                        <a class="btn btn-success btn-rounded btn-block"
-                                                                           style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
-                                                                           href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry', formatid='csv') }}"><i
-                                                                                class="fa fa-cloud-download"></i> {{ _("Download data in .CSV format") }}
-                                                                        </a>
-                                                                        <a class="btn btn-success btn-rounded btn-block"
-                                                                           style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
-                                                                           href="{{ request.route_url('downloadDataRegistry',user=activeProject["owner"].user_name,project=activeProject.project_cod,formid='registry', formatid='xlsx') }}"><i
-                                                                                class="fa fa-cloud-download"></i> {{ _("Download data in .XLSX format") }}
-                                                                        </a>
 
                                                                         {% block dataprivacy_download_data_registry %}
 
@@ -808,6 +798,8 @@
                                                             </tr>
                                                             </tbody>
                                                         </table>
+
+                                                        {{ downloads("downloadDataRegistry", "registry") }}
                                                     </div>
                                                 </div>
                                             {% endif %}
@@ -979,16 +971,6 @@
                                                                                         {{ _("View and edit data") }} {% else %}
                                                                                         {{ _('View data') }} {% endif %}
                                                                                 </a>
-                                                                                <a class="btn btn-success btn-rounded btn-block"
-                                                                                   style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
-                                                                                   href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod, formatid='csv') }}"><i
-                                                                                        class="fa fa-cloud-download"></i> {{ _("Download data in .CSV format") }}
-                                                                                </a>
-                                                                                <a class="btn btn-success btn-rounded btn-block"
-                                                                                   style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
-                                                                                   href="{{ request.route_url('downloadDataAssessment',user=activeProject["owner"].user_name, project=activeProject.project_cod,formid='assessment',codeid=assessment.ass_cod, formatid='xlsx') }}"><i
-                                                                                        class="fa fa-cloud-download"></i> {{ _("Download data in .XLSX format") }}
-                                                                                </a>
 
                                                                                 {% block dataprivacy_download_data_assessment scoped %}
 
@@ -1015,6 +997,7 @@
                                                                 </tr>
                                                                 </tbody>
                                                             </table>
+                                                            {{ downloads("downloadDataAssessment", "assessment", assessment.ass_cod) }}
                                                         </div>
                                                     </div>
                                                     {% if is_open and can_edit %}

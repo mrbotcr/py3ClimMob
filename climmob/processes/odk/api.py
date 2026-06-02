@@ -16,15 +16,13 @@ from pyramid.httpexceptions import HTTPNotFound
 from pyramid.response import FileResponse
 
 from climmob.models import Project, storageErrors, Assessment
-from climmob.processes import (
-    isRegistryOpen,
-    isAssessmentOpen,
-    assessmentExists,
-    projectExists,
-    packageExist,
-    getTheProjectIdForOwner,
-)
+
+from climmob.processes.db.registry import isRegistryOpen, packageExist
+from climmob.processes.db.assessment import isAssessmentOpen, assessmentExists
+from climmob.processes.db.validators import projectExists, getTheProjectIdForOwner
+
 from climmob.processes.db.json import addJsonLog
+from climmob.processes.db.anonymized import anonymize_questions
 
 log = logging.getLogger(__name__)
 
@@ -103,7 +101,7 @@ def getFormList(userid, enumerator, request, userOwner=None, projectCod=None):
         if project.project_regstatus == 1:
             path = os.path.join(
                 request.registry.settings["user.repository"],
-                *[project.user_name, project.project_cod, "odk", "reg", "*.json"]
+                *[project.user_name, project.project_cod, "odk", "reg", "*.json"],
             )
             files = glob.glob(path)
             if files:
@@ -140,7 +138,7 @@ def getFormList(userid, enumerator, request, userOwner=None, projectCod=None):
                     "ass",
                     assessment.ass_cod,
                     "*.json",
-                ]
+                ],
             )
             files = glob.glob(path)
             if files:
@@ -172,7 +170,7 @@ def getManifest(user, userOwner, projectId, projectCod, request):
     if prjdat.project_regstatus == 1:
         path = os.path.join(
             request.registry.settings["user.repository"],
-            *[userOwner, projectCod, "odk", "reg", "media", "*.*"]
+            *[userOwner, projectCod, "odk", "reg", "media", "*.*"],
         )
 
     files = glob.glob(path)
@@ -210,7 +208,7 @@ def getAssessmentManifest(
     if prjdat.ass_status == 1:
         path = os.path.join(
             request.registry.settings["user.repository"],
-            *[userOwner, projectCod, "odk", "ass", assessmentid, "media", "*.*"]
+            *[userOwner, projectCod, "odk", "ass", assessmentid, "media", "*.*"],
         )
     else:
         raise HTTPNotFound()
@@ -246,7 +244,7 @@ def getXMLForm(userOwner, projectId, projectCod, request):
     if prjdat.project_regstatus == 1:
         path = os.path.join(
             request.registry.settings["user.repository"],
-            *[userOwner, projectCod, "odk", "reg", "*.xml"]
+            *[userOwner, projectCod, "odk", "reg", "*.xml"],
         )
 
     files = glob.glob(path)
@@ -270,7 +268,7 @@ def getAssessmentXMLForm(userOwner, projectId, projectCod, assessmentid, request
     if prjdat.ass_status == 1:
         path = os.path.join(
             request.registry.settings["user.repository"],
-            *[userOwner, projectCod, "odk", "ass", assessmentid, "*.xml"]
+            *[userOwner, projectCod, "odk", "ass", assessmentid, "*.xml"],
         )
     else:
         raise HTTPNotFound()
@@ -292,7 +290,7 @@ def getMediaFile(userOwner, projectId, projectCod, fileid, request):
     if prjdat.project_regstatus == 1:
         path = os.path.join(
             request.registry.settings["user.repository"],
-            *[userOwner, projectCod, "odk", "reg", "media", fileid]
+            *[userOwner, projectCod, "odk", "reg", "media", fileid],
         )
     else:
         raise HTTPNotFound()
@@ -318,7 +316,7 @@ def getAssessmentMediaFile(
     if prjdat.ass_status == 1:
         path = os.path.join(
             request.registry.settings["user.repository"],
-            *[userOwner, projectCod, "odk", "ass", assessmentid, "media", fileid]
+            *[userOwner, projectCod, "odk", "ass", assessmentid, "media", fileid],
         )
     else:
         raise HTTPNotFound()
@@ -388,20 +386,21 @@ def storeJSONInMySQL(
     projectId,
 ):
     schema = userOwner + "_" + projectCod
+
     if type == "REG":
         manifestFile = os.path.join(
             request.registry.settings["user.repository"],
-            *[userOwner, projectCod, "db", "reg", "manifest.xml"]
+            *[userOwner, projectCod, "db", "reg", "manifest.xml"],
         )
         jsFile = os.path.join(
             request.registry.settings["user.repository"],
-            *[userOwner, projectCod, "db", "reg", "custom.js"]
+            *[userOwner, projectCod, "db", "reg", "custom.js"],
         )
 
     else:
         manifestFile = os.path.join(
             request.registry.settings["user.repository"],
-            *[userOwner, projectCod, "db", "ass", assessmentid, "manifest.xml"]
+            *[userOwner, projectCod, "db", "ass", assessmentid, "manifest.xml"],
         )
         jsFile = ""
 
@@ -462,7 +461,18 @@ def storeJSONInMySQL(
                 projectId,
             )
 
-    return True
+    with open(JSONFile, "r", encoding="utf-8") as f:
+        data = json.load(f)
+        form_id = "-"
+        if type == "ASS":
+            form_id = assessmentid
+        success, msg = anonymize_questions(
+            request, data, form_id, projectId, userOwner, projectCod
+        )
+        if not success:
+            return False, msg
+
+    return True, ""
 
 
 def convertXMLToJSON(
@@ -480,12 +490,12 @@ def convertXMLToJSON(
     if submissionType == "REG":
         path = os.path.join(
             request.registry.settings["user.repository"],
-            *[userOwner, projectCod, "odk", "reg", "*.xml"]
+            *[userOwner, projectCod, "odk", "reg", "*.xml"],
         )
     if submissionType == "ASS":
         path = os.path.join(
             request.registry.settings["user.repository"],
-            *[userOwner, projectCod, "odk", "ass", assessmentID, "*.xml"]
+            *[userOwner, projectCod, "odk", "ass", assessmentID, "*.xml"],
         )
 
     files = glob.glob(path)
@@ -623,7 +633,7 @@ def storeSubmission(userid, userEnum, request):
 
                 pathTemp = os.path.join(
                     request.registry.settings["user.repository"],
-                    *[userid, "data", "xml", str(iniqueIDTemp)]
+                    *[userid, "data", "xml", str(iniqueIDTemp)],
                 )
 
                 os.makedirs(pathTemp)
@@ -664,7 +674,7 @@ def storeSubmission(userid, userEnum, request):
             dirs = glob.glob(
                 os.path.join(
                     request.registry.settings["user.repository"],
-                    *[userOwner, projectCod, "data", "reg", "xml"]
+                    *[userOwner, projectCod, "data", "reg", "xml"],
                 )
                 + "/*",
                 recursive=True,
@@ -673,7 +683,7 @@ def storeSubmission(userid, userEnum, request):
             dirs = glob.glob(
                 os.path.join(
                     request.registry.settings["user.repository"],
-                    *[userOwner, projectCod, "data", "ass", assessmentID, "xml"]
+                    *[userOwner, projectCod, "data", "ass", assessmentID, "xml"],
                 )
                 + "/*",
                 recursive=True,
@@ -688,14 +698,14 @@ def storeSubmission(userid, userEnum, request):
         if submissionType == "REG":
             path = os.path.join(
                 request.registry.settings["user.repository"],
-                *[userOwner, projectCod, "data", "reg", "xml", str(iniqueID)]
+                *[userOwner, projectCod, "data", "reg", "xml", str(iniqueID)],
             )
             if not os.path.exists(path):
                 os.makedirs(path)
                 os.makedirs(
                     os.path.join(
                         request.registry.settings["user.repository"],
-                        *[userOwner, projectCod, "data", "reg", "json", str(iniqueID)]
+                        *[userOwner, projectCod, "data", "reg", "json", str(iniqueID)],
                     )
                 )
 
@@ -710,7 +720,7 @@ def storeSubmission(userid, userEnum, request):
                     assessmentID,
                     "xml",
                     str(iniqueID),
-                ]
+                ],
             )
             if not os.path.exists(path):
                 os.makedirs(path)
@@ -725,7 +735,7 @@ def storeSubmission(userid, userEnum, request):
                             assessmentID,
                             "json",
                             str(iniqueID),
-                        ]
+                        ],
                     )
                 )
 

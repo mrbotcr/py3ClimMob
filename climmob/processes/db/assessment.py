@@ -21,7 +21,7 @@ from climmob.models import (
     I18nQstoption,
 )
 
-from climmob.models.repository import sql_fetch_one, sql_execute
+from climmob.models.repository import sql_fetch_one, sql_execute, execute_two_sqls
 from climmob.models.schema import mapFromSchema, mapToSchema
 from climmob.processes.db.project import (
     addQuestionsToAssessment,
@@ -83,6 +83,8 @@ __all__ = [
     "copy_assessment_questions",
     "copy_assessment_sections",
     "get_assessment_questions_by_project",
+    "delete_assessment_data_by_qst163",
+    "get_assessment_data_by_qst163",
 ]
 
 log = logging.getLogger(__name__)
@@ -862,7 +864,7 @@ def getAssessmentQuestions(
         "SELECT asssection.section_id,asssection.section_name,asssection.section_content,asssection.section_order,asssection.section_private,"
         "question.question_id,COALESCE(i18n_question.lang_code,question.question_lang) as language, COALESCE(i18n_question.question_desc,question.question_desc) as question_desc,COALESCE(i18n_question.question_name, question.question_name) as question_name,question.question_notes,question.question_dtype, "
         " COALESCE(i18n_question.question_posstm, question.question_posstm) as question_posstm, COALESCE(i18n_question.question_negstm ,question.question_negstm) as question_negstm, COALESCE(i18n_question.question_perfstmt, question.question_perfstmt) as question_perfstmt,IFNULL(assdetail.question_order,0) as question_order,"
-        "question.question_reqinasses, question.question_tied, question.question_notobserved, question.question_requiredvalue, question.question_quantitative, question.user_name, (select user_fullname from user where user_name=question.user_name) as user_fullname FROM asssection LEFT JOIN assdetail ON assdetail.section_project_id = asssection.project_id "
+        "question.question_reqinasses, question.question_tied, question.question_notobserved, question.question_requiredvalue, question.question_quantitative, question.user_name, question.question_sensitive, question.question_anonymity, question.question_code, (select user_fullname from user where user_name=question.user_name) as user_fullname FROM asssection LEFT JOIN assdetail ON assdetail.section_project_id = asssection.project_id "
         " AND assdetail.section_assessment = asssection.ass_cod AND assdetail.section_id = asssection.section_id "
         " LEFT JOIN i18n_question ON assdetail.question_id = i18n_question.question_id  AND i18n_question.lang_code = '"
         + language
@@ -1814,3 +1816,32 @@ def get_assessment_questions_by_project(request, project_id, lang_code):
     )
 
     return assessment_questions
+
+
+def get_assessment_data_by_qst163(schema, ass_id, qst163, columns):
+    query = (
+        f"SELECT {','.join(columns)} FROM "
+        + schema
+        + ".ASS"
+        + ass_id
+        + "_geninfo WHERE qst163='"
+        + qst163
+        + "'"
+    )
+    return sql_execute(query).fetchone()
+
+
+def delete_assessment_data_by_qst163(schema, ass_id, qst163, odk_user):
+    query = (
+        "DELETE FROM "
+        + schema
+        + ".ASS"
+        + ass_id
+        + "_geninfo WHERE qst163='"
+        + qst163
+        + "'"
+    )
+    execute_two_sqls(
+        "SET @odktools_current_user = '" + odk_user + "'; ",
+        query,
+    )

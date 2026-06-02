@@ -653,7 +653,7 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                             f.write(json.dumps(_json))
                             f.close()
 
-                            storeJSONInMySQL(
+                            success, msg = storeJSONInMySQL(
                                 self.user.login,
                                 "ASS",
                                 dataworking["user_owner"],
@@ -664,6 +664,15 @@ def ApiAssessmentPushProcess(self, structure, dataworking, activeProjectId):
                                 self.request,
                                 activeProjectId,
                             )
+
+                            if not success:
+                                response = Response(
+                                    status=401,
+                                    body=self._(
+                                        "The data could not be saved. ERROR: " + msg
+                                    ),
+                                )
+                                return response
 
                             logFile = pathfinal.replace(".json", ".log")
                             if os.path.exists(logFile):

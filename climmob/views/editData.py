@@ -12,8 +12,7 @@ from climmob.processes import (
     projectExists,
     getJSONResult,
 )
-from climmob.products.analysisdata.analysisdata import create_datacsv
-from climmob.products.dataxlsx.dataxlsx import create_XLSXToDownload
+from climmob.products.analysisdata.analysisdata import create_raw_data
 from climmob.products.errorLogDocument.errorLogDocument import create_error_log_document
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 from climmob.views.classes import privateView
@@ -32,10 +31,10 @@ class downloadDataView(privateView):
         activeProjectCod = self.request.matchdict["project"]
         formId = self.request.matchdict["formid"]
         formatId = self.request.matchdict["formatid"]
+        anonymize = str(self.request.params.get("anonymize")).lower() == "true"
         includeRegistry = True
         includeAssessment = True
         code = ""
-        formatExtra = ""
 
         if not projectExists(
             self.user.login, activeProjectUser, activeProjectCod, self.request
@@ -58,44 +57,37 @@ class downloadDataView(privateView):
                 else:
                     raise HTTPNotFound()
 
-        info = getJSONResult(
-            activeProjectUser,
-            activeProjectId,
-            activeProjectCod,
-            self.request,
-            includeRegistry,
-            includeAssessment,
-            code,
-        )
+        result_params = {
+            "includeRegistry": includeRegistry,
+            "includeAssessment": includeAssessment,
+            "assessmentCode": code,
+            "anonymize": anonymize,
+        }
 
         if formatId not in ["csv", "xlsx"]:
             raise HTTPNotFound()
 
-        if formatId == "csv":
-            create_datacsv(
-                activeProjectUser,
-                activeProjectId,
-                activeProjectCod,
-                info,
-                self.request,
-                formId,
-                code,
-            )
+        create_raw_data(
+            {
+                "userOwner": activeProjectUser,
+                "projectId": activeProjectId,
+                "projectCod": activeProjectCod,
+            },
+            result_params,
+            self.request,
+            formId,
+            code,
+            file_type=formatId,
+        )
 
-        if formatId == "xlsx":
-            formatExtra = formatId + "_"
-            create_XLSXToDownload(
-                activeProjectUser,
-                activeProjectId,
-                activeProjectCod,
-                self.request,
-                formId,
-                code,
-            )
+        format_extra = "xlsx_" if formatId == "xlsx" else ""
+        product_id_extra = "-shareable" if anonymize else ""
 
         url = self.request.route_url(
             "productList",
-            _query={"product1": "create_data_" + formatExtra + formId + "_" + code},
+            _query={
+                "product1": f"create_data{product_id_extra}_{format_extra}{formId}_{code}"
+            },
         )
         self.returnRawViewResult = True
         return HTTPFound(location=url)
@@ -199,7 +191,7 @@ class EditDataView(privateView):
         formId = self.request.matchdict["formid"]
         code = ""
 
-        # todo refactor the function on get and post
+        # TODO: refactor the function on get and post
 
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request
@@ -213,7 +205,7 @@ class EditDataView(privateView):
 
         path = os.path.join(
             self.request.registry.settings["user.repository"],
-            *[activeProjectUser, activeProjectCod]
+            *[activeProjectUser, activeProjectCod],
         )
         if code == "":
             paths = ["db", formId, "create.xml"]
@@ -263,6 +255,8 @@ class EditDataView(privateView):
                         path,
                         code,
                         self.user.login,
+                        activeProjectId,
+                        self.request,
                     )
 
         dataXML = getNamesEditByColums(path)

@@ -9,7 +9,7 @@ def createProductDirectory(request, userID, projectID, product):
         if p.product_found(product):
             path = os.path.join(
                 request.registry.settings["user.repository"],
-                *[userID, projectID, "products", product]
+                *[userID, projectID, "products", product],
             )
             if not os.path.exists(path):
                 os.makedirs(path)
@@ -29,7 +29,7 @@ def getProductDirectory(request, userID, projectID, product):
         if p.product_found(product):
             path = os.path.join(
                 request.registry.settings["user.repository"],
-                *[userID, projectID, "products", product]
+                *[userID, projectID, "products", product],
             )
             return path
         else:
@@ -228,6 +228,18 @@ def register_products(config):
     )
     products.append(datacsv)
 
+    datacsv_anonymized = addProduct(
+        "datacsv-shareable", "Information collected in the project anonymized."
+    )
+    addMetadataToProduct(datacsv_anonymized, "author", "Johann Ávalos")
+    addMetadataToProduct(datacsv_anonymized, "version", "1.0")
+    addMetadataToProduct(
+        datacsv_anonymized,
+        "Licence",
+        "Copyright 2025, MrBot Software Solutions",
+    )
+    products.append(datacsv_anonymized)
+
     # FORM
     documentform = addProduct(
         "documentform", "Create a document pdf to collect information."
@@ -361,6 +373,19 @@ def register_products(config):
         "Copyright 2022, MrBot Software Solutions",
     )
     products.append(dataxlsx)
+
+    dataxlsx_anonymized = addProduct(
+        "dataxlsx-shareable",
+        "Information collected in the project anonymized in XLSX format.",
+    )
+    addMetadataToProduct(dataxlsx_anonymized, "author", "Johann Ávalos")
+    addMetadataToProduct(dataxlsx_anonymized, "version", "1.0")
+    addMetadataToProduct(
+        dataxlsx_anonymized,
+        "Licence",
+        "Copyright 2025, MrBot Software Solutions",
+    )
+    products.append(dataxlsx_anonymized)
 
     # INPUT FILES
     datajson = addProduct(

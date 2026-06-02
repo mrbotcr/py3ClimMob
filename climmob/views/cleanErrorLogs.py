@@ -17,6 +17,9 @@ from climmob.processes import (
     getTheProjectIdForOwner,
     getActiveProject,
     getQuestionsStructure,
+    delete_assessment_data_by_qst163,
+    delete_registry_data_by_qst162,
+    delete_anonymized_values_by_form_id_and_reg_id,
 )
 from climmob.processes.odk.api import storeJSONInMySQL
 from climmob.utility.project import ProjectStatus
@@ -35,6 +38,8 @@ class CleanErrorLogsView(privateView):
     def processView(self):
         activeProjectUser = self.request.matchdict["user"]
         activeProjectCod = self.request.matchdict["project"]
+
+        schema = activeProjectUser + "_" + activeProjectCod
 
         activeProjectId = getTheProjectIdForOwner(
             activeProjectUser, activeProjectCod, self.request
@@ -108,21 +113,15 @@ class CleanErrorLogsView(privateView):
                                     if str(dataworking["txt_oldvalue"]) == str(
                                         dataworking["newqst"].split("-")[1]
                                     ):
-
-                                        query = (
-                                            "Delete from "
-                                            + activeProjectUser
-                                            + "_"
-                                            + activeProjectCod
-                                            + ".REG_geninfo where qst162='"
-                                            + dataworking["newqst"].split("-")[1]
-                                            + "'"
+                                        delete_registry_data_by_qst162(
+                                            schema,
+                                            dataworking["newqst"].split("-")[1],
+                                            self.user.login,
                                         )
-                                        execute_two_sqls(
-                                            "SET @odktools_current_user = '"
-                                            + self.user.login
-                                            + "';",
-                                            query,
+                                        delete_anonymized_values_by_form_id_and_reg_id(
+                                            schema,
+                                            "-",
+                                            dataworking["newqst"].split("-")[1],
                                         )
 
                                     storeJSONInMySQL(
@@ -173,22 +172,15 @@ class CleanErrorLogsView(privateView):
                                     if str(dataworking["txt_oldvalue"]) == str(
                                         dataworking["newqst2"]
                                     ):
-                                        query = (
-                                            "Delete from "
-                                            + activeProjectUser
-                                            + "_"
-                                            + activeProjectCod
-                                            + ".ASS"
-                                            + codeId
-                                            + "_geninfo where qst163='"
-                                            + dataworking["newqst2"]
-                                            + "'"
+                                        delete_assessment_data_by_qst163(
+                                            schema,
+                                            codeId,
+                                            dataworking["newqst2"],
+                                            self.user.login,
                                         )
-                                        execute_two_sqls(
-                                            "SET @odktools_current_user = '"
-                                            + self.user.login
-                                            + "'; ",
-                                            query,
+
+                                        delete_anonymized_values_by_form_id_and_reg_id(
+                                            schema, codeId, dataworking["newqst2"]
                                         )
 
                                     storeJSONInMySQL(
@@ -267,20 +259,15 @@ class CleanErrorLogsView(privateView):
                                     if str(dataworking["txt_oldvalue"]) == str(
                                         dataworking["newqst"].split("-")[1]
                                     ):
-                                        query = (
-                                            "Delete from "
-                                            + activeProjectUser
-                                            + "_"
-                                            + activeProjectCod
-                                            + ".REG_geninfo where qst162='"
-                                            + dataworking["newqst"].split("-")[1]
-                                            + "'"
+                                        delete_registry_data_by_qst162(
+                                            schema,
+                                            dataworking["newqst"].split("-")[1],
+                                            self.user.login,
                                         )
-                                        execute_two_sqls(
-                                            "SET @odktools_current_user = '"
-                                            + self.user.login
-                                            + "'; ",
-                                            query,
+                                        delete_anonymized_values_by_form_id_and_reg_id(
+                                            schema,
+                                            "-",
+                                            dataworking["newqst"].split("-")[1],
                                         )
 
                                     update_registry_status_log(
@@ -304,22 +291,14 @@ class CleanErrorLogsView(privateView):
                                     if str(dataworking["txt_oldvalue"]) == str(
                                         dataworking["newqst2"]
                                     ):
-                                        query = (
-                                            "Delete from "
-                                            + activeProjectUser
-                                            + "_"
-                                            + activeProjectCod
-                                            + ".ASS"
-                                            + codeId
-                                            + "_geninfo where qst163='"
-                                            + dataworking["newqst2"]
-                                            + "'"
+                                        delete_assessment_data_by_qst163(
+                                            schema,
+                                            codeId,
+                                            dataworking["newqst2"],
+                                            self.user.login,
                                         )
-                                        execute_two_sqls(
-                                            "SET @odktools_current_user = '"
-                                            + self.user.login
-                                            + "'; ",
-                                            query,
+                                        delete_anonymized_values_by_form_id_and_reg_id(
+                                            schema, codeId, dataworking["newqst2"]
                                         )
 
                                     update_assessment_status_log(
@@ -392,7 +371,7 @@ class CleanErrorLogsView(privateView):
                 # Edited by Brandon
                 path = os.path.join(
                     self.request.registry.settings["user.repository"],
-                    *[activeProjectUser, activeProjectCod]
+                    *[activeProjectUser, activeProjectCod],
                 )
                 paths = ["db", "ass", codeId, "create.xml"]
                 path = os.path.join(path, *paths)

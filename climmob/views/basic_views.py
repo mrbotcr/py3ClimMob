@@ -4,7 +4,6 @@ import json
 import logging
 import secrets
 import uuid
-from datetime import datetime
 
 from jinja2 import ext
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound

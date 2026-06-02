@@ -1,4 +1,6 @@
 import json
+import re
+from datetime import datetime
 
 from sqlalchemy import func, or_, and_
 
@@ -40,7 +42,14 @@ __all__ = [
     "getDefaultQuestionLanguage",
     "getQuestionOwner",
     "knowIfUserHasCreatedTranslations",
+    "get_sensitive_questions_anonymity_by_project_id",
+    "get_registry_key_question",
+    "get_assessment_key_question",
 ]
+
+from climmob.models.climmobv4 import AnonymizationParameter
+from climmob.processes.db.anonymization_params import save_anonymization_params
+
 
 log = logging.getLogger(__name__)
 
@@ -53,6 +62,7 @@ def addQuestion(data, request):
     try:
         request.dbsession.add(newQuestion)
         request.dbsession.flush()
+        save_anonymization_params(newQuestion.question_id, data, request)
         return True, newQuestion.question_id
     except DatabaseError as e:
         save_point.rollback()
@@ -129,6 +139,7 @@ def updateQuestion(data, request):
         request.dbsession.query(Question).filter(
             Question.user_name == data["user_name"]
         ).filter(Question.question_id == data["question_id"]).update(mappeData)
+        save_anonymization_params(data["question_id"], data, request)
         return True, data["question_id"]
     except DatabaseError as e:
         log.error("Error creating the question. The question is very long")
@@ -328,6 +339,16 @@ def userQuestionDetailsById(userOwner, questionId, request, language="default"):
         data["num_options"] = len(options)
         data["question_options"] = options
 
+    if data["question_sensitive"]:
+        params = (
+            request.dbsession.query(
+                AnonymizationParameter.name, AnonymizationParameter.value
+            )
+            .filter(AnonymizationParameter.question_id == data["question_id"])
+            .all()
+        )
+        data.update(params)
+
     return data
 
 
@@ -514,3 +535,44 @@ def knowIfUserHasCreatedTranslations(request, userId):
         return True
 
     return False
+
+
+def get_sensitive_questions_anonymity_by_project_id(project_id, request):
+    """
+    Retrieve all sensitive questions of a project by its id. Includes the registry and all the assessments.
+    """
+    query = (
+        request.dbsession.query(
+            Question.question_id,
+            Question.question_dtype,
+            Question.question_code,
+            Question.question_anonymity,
+        )
+        .join(Registry, Registry.question_id == Question.question_id)
+        .filter(Registry.project_id == project_id)
+        .filter(Question.question_sensitive == 1)
+        .union(
+            request.dbsession.query(
+                Question.question_id,
+                Question.question_dtype,
+                Question.question_code,
+                Question.question_anonymity,
+            )
+            .join(AssDetail, AssDetail.question_id == Question.question_id)
+            .filter(AssDetail.project_id == project_id)
+            .filter(Question.question_sensitive == 1)
+        )
+    )
+    return query.all()
+
+
+def get_registry_key_question(request):
+    return (
+        request.dbsession.query(Question).filter(Question.question_regkey == 1).first()
+    )
+
+
+def get_assessment_key_question(request):
+    return (
+        request.dbsession.query(Question).filter(Question.question_asskey == 1).first()
+    )

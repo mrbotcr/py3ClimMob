@@ -67,7 +67,18 @@ __all__ = [
     "update_project_status",
     "get_user_access_type_in_project",
     "get_project_status",
+    "get_project_cod_by_id",
 ]
+
+
+def get_project_cod_by_id(project_id, request):
+    res = mapFromSchema(
+        request.dbsession.query(Project.project_cod)
+        .filter(Project.project_id == project_id)
+        .first()
+    )
+
+    return res["project_cod"]
 
 
 def getTotalNumberOfProjectsInClimMob(request):

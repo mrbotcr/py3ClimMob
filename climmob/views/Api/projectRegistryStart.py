@@ -1299,7 +1299,8 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
                                 f = open(pathfinal, "w")
                                 f.write(json.dumps(_json))
                                 f.close()
-                                storeJSONInMySQL(
+
+                                success, msg = storeJSONInMySQL(
                                     self.user.login,
                                     "REG",
                                     dataworking["user_owner"],
@@ -1310,6 +1311,16 @@ def ApiRegistrationPushProcess(self, structure, dataworking, activeProjectId):
                                     self.request,
                                     activeProjectId,
                                 )
+
+                                if not success:
+                                    response = Response(
+                                        status=401,
+                                        body=self._(
+                                            "The data could not be registered. ERROR: "
+                                            + msg
+                                        ),
+                                    )
+                                    return response
 
                                 logFile = pathfinal.replace(".json", ".log")
                                 if os.path.exists(logFile):

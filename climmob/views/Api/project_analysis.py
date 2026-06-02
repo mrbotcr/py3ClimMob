@@ -10,67 +10,70 @@ from climmob.processes import (
     getProjectData,
     getTheProjectIdForOwner,
     getAccessTypeForProject,
+    project_needs_to_start_anonymization,
+    get_project_anonymization_status,
 )
+from climmob.products.analysisdata.analysisdata import create_raw_data
+from climmob.utility import AnonymizationStatus
 from climmob.views.classes import apiView
 from climmob.views.project_analysis import processToGenerateTheReport
+from climmob.views.validators import TextField
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import HasAccessToProjectValidator
 
 
 class ReadDataOfProjectViewApi(apiView):
-    def processView(self):
+    validators = (ProjectExistsValidator, HasAccessToProjectValidator)
+    valid_fields = (
+        TextField("project_cod"),
+        TextField("user_owner"),
+    )
 
-        if self.request.method == "GET":
+    def get(self):
+        if project_needs_to_start_anonymization(
+            self.context.active_project_id, self.request
+        ):
+            create_raw_data(
+                {
+                    "userOwner": self.context.body["user_owner"],
+                    "projectId": self.context.active_project_id,
+                    "projectCod": self.context.body["project_cod"],
+                },
+                {"anonymize": True},
+                self.request,
+                "Report",
+                "",
+            )
+            return Response(
+                status="200",
+                body=self._(
+                    "ClimMob is starting to generate the shareable values for your project. Please try again in a moment."
+                ),
+            )
+        anon_status = get_project_anonymization_status(
+            self.context.active_project_id, self.request
+        )
+        if anon_status == AnonymizationStatus.IN_PROGRESS:
+            return Response(
+                status="200",
+                body=self._(
+                    "ClimMob is currently generating the shareable values for your project. Please try again in a moment."
+                ),
+            )
 
-            obligatory = ["project_cod", "user_owner"]
-            try:
-                dataworking = json.loads(self.body)
-            except:
-                response = Response(
-                    status=401,
-                    body=self._(
-                        "Error in the JSON, It does not have the 'body' parameter."
-                    ),
-                )
-                return response
-
-            if sorted(obligatory) == sorted(dataworking.keys()):
-
-                exitsproject = projectExists(
-                    self.user.login,
-                    dataworking["user_owner"],
-                    dataworking["project_cod"],
+        response = Response(
+            status="200",
+            body=json.dumps(
+                getJSONResult(
+                    self.context.body["user_owner"],
+                    self.context.active_project_id,
+                    self.context.body["project_cod"],
                     self.request,
+                    anonymize=True,
                 )
-                if exitsproject:
-
-                    activeProjectId = getTheProjectIdForOwner(
-                        dataworking["user_owner"],
-                        dataworking["project_cod"],
-                        self.request,
-                    )
-
-                    response = Response(
-                        status=200,
-                        body=json.dumps(
-                            getJSONResult(
-                                dataworking["user_owner"],
-                                activeProjectId,
-                                dataworking["project_cod"],
-                                self.request,
-                            )
-                        ),
-                    )
-                    return response
-                else:
-                    response = Response(
-                        status=401, body=self._("This project does not exist.")
-                    )
-                    return response
-            else:
-                response = Response(status=401, body=self._("Error in the JSON."))
-                return response
-        else:
-            response = Response(status=401, body=self._("Only accepts GET method."))
-            return response
+            ),
+        )
+        return response
 
 
 class ReadVariablesForAnalysisViewApi(apiView):
