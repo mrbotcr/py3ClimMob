@@ -583,7 +583,7 @@
                  <div class="form-group" id="anonymization-bounds-div">
                     <label class="col-sm-4 control-label" for="anonymization-lower-bound-input">
                         <i class="fa fa-info-circle"
-                           title="{{ _("The lowest and highest possible data values to be included in the aggregation bins.") }}">
+                           title="{{ _("The lowest and highest values used to create the bins.") }}">
                         </i>
                         {{ _("Bounds") }}
                     </label>
@@ -595,7 +595,7 @@
                 <div class="form-group" id="anonymization-interval-div">
                     <label class="col-sm-4 control-label" for="anonymization-interval-input">
                         <i class="fa fa-info-circle"
-                           title="{{ _("The numerical increment that defines the size of each bin. (e.g., an interval of 10 creates bins of 10 values each).") }}">
+                           title="{{ _("Size of each bin. E.g., an interval of 10 creates bins such as 0-10, 10-20...") }}">
                         </i>
                         {{ _("Interval") }}
                     </label>
