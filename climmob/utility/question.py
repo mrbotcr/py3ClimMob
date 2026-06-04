@@ -127,8 +127,9 @@ def get_question_types_with_anonymity_labeled(request):
     result = []
     for q_type in QuestionType:
         order = QuestionTypeOrder[q_type.name].value
+        display = True
         if order == -1:
-            continue
+            display = False
         anonymity_opts = []
         for anonymity in QuestionTypeAnonymity[q_type.name].value:
             anonymity_name = QuestionAnonymityLabel[anonymity.name].value
@@ -143,6 +144,7 @@ def get_question_types_with_anonymity_labeled(request):
                 "name": q_type_name,
                 "anonymity_opts": anonymity_opts,
                 "order": order,
+                "display": display
             }
         )
     result = sorted(result, key=lambda x: x["order"])

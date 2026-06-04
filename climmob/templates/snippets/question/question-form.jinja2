@@ -30,7 +30,9 @@
         <div class="col-sm-8">
             <select id="question_dtype" name="question_dtype" class="form-control inputForQuestionSelect">
                 {% for q_type in question_types %}
-                    <option value="{{ q_type.id }}">{{ q_type.name }}</option>
+                    {% if q_type.display %}
+                        <option value="{{ q_type.id }}">{{ q_type.name }}</option>
+                    {% endif %}
                 {% endfor %}
                 {% block qstformqtypes_extra %}
                 {% endblock qstformqtypes_extra %}
