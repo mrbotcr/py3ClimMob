@@ -144,7 +144,7 @@ def get_question_types_with_anonymity_labeled(request):
                 "name": q_type_name,
                 "anonymity_opts": anonymity_opts,
                 "order": order,
-                "display": display
+                "display": display,
             }
         )
     result = sorted(result, key=lambda x: x["order"])

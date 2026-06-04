@@ -466,25 +466,32 @@ def getData(
     return result
 
 
-def get_registry_submission_count(user_owner, project_cod):
-    sql = (
-        "SELECT count(*)" + " FROM " + user_owner + "_" + project_cod + ".REG_geninfo "
-    )
+# def get_registry_submission_count(user_owner, project_cod):
+#     sql = (
+#         "SELECT count(*)" + " FROM " + user_owner + "_" + project_cod + ".REG_geninfo "
+#     )
+#     data = sql_fetch_all(sql)
+#     return data[0][0]
+
+
+def get_registry_submission_count(user_owner, project_cod, columns):
+    fields = [f"({col} IS NOT NULL)" for col in columns]
+    sql = f"""
+        SELECT 
+            SUM( {" + ".join(fields)} ) AS non_null_count
+        FROM {user_owner}_{project_cod}.REG_geninfo;
+    """
     data = sql_fetch_all(sql)
     return data[0][0]
 
 
-def get_assessment_submission_count(user_owner, project_cod, assessment_code):
-    sql = (
-        "SELECT count(*)"
-        + " FROM "
-        + user_owner
-        + "_"
-        + project_cod
-        + ".ASS"
-        + assessment_code
-        + "_geninfo"
-    )
+def get_assessment_submission_count(user_owner, project_cod, assessment_code, columns):
+    fields = [f"({col} IS NOT NULL)" for col in columns]
+    sql = f"""
+        SELECT 
+            SUM( {" + ".join(fields)} ) AS non_null_count
+        FROM {user_owner}_{project_cod}.ASS{assessment_code}_geninfo;
+    """
     data = sql_fetch_all(sql)
     return data[0][0]
 

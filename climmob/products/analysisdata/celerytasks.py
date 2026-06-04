@@ -78,12 +78,16 @@ def process_anonymization(project_id, request):
             start_anonymization = False
 
     if start_anonymization:
+        print(f"Anonymizing project {project_id}")
+        print(f"Before: {perc:.2f}%")
         set_project_anonymization_status(
             project_id, AnonymizationStatus.IN_PROGRESS.value, request
         )
         success, msg = anonymize_project(project_id, request)
 
         perc = get_anonymization_percentage(project_id, request)
+        print(f"success: {success}")
+        print(f"After: {perc:.2f}%")
 
         if success and perc == 100.0:
             set_project_anonymization_status(
