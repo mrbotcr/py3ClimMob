@@ -29,8 +29,8 @@ from climmob.processes.db.question import (
 )
 from climmob.processes.db.results import (
     getJSONResult,
-    get_registry_submission_count,
-    get_assessment_submission_count,
+    get_registry_non_null_fields_count,
+    get_assessment_non_null_fields_count,
 )
 from climmob.utility import (
     get_question_by_field_name,
@@ -373,7 +373,7 @@ def get_anonymization_percentage(project_id: str, request) -> float:
         if q["question_sensitive"]
         and q["question_anonymity"] != QuestionAnonymity.REMOVE.value
     ]
-    reg_count = get_registry_submission_count(user_owner, project_code, columns)
+    reg_count = get_registry_non_null_fields_count(user_owner, project_code, columns)
 
     counts = {"-": reg_count}
     expected_count = reg_count
@@ -408,7 +408,7 @@ def get_anonymization_percentage(project_id: str, request) -> float:
             if q["question_sensitive"]
             and q["question_anonymity"] != QuestionAnonymity.REMOVE.value
         ]
-        count = get_assessment_submission_count(user_owner, project_code, code, columns)
+        count = get_assessment_non_null_fields_count(user_owner, project_code, code, columns)
         counts[code] = count
         expected_count += count
 
