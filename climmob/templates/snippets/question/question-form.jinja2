@@ -30,7 +30,9 @@
         <div class="col-sm-8">
             <select id="question_dtype" name="question_dtype" class="form-control inputForQuestionSelect">
                 {% for q_type in question_types %}
-                    <option value="{{ q_type.id }}">{{ q_type.name }}</option>
+                    {% if q_type.display %}
+                        <option value="{{ q_type.id }}">{{ q_type.name }}</option>
+                    {% endif %}
                 {% endfor %}
                 {% block qstformqtypes_extra %}
                 {% endblock qstformqtypes_extra %}
@@ -558,7 +560,7 @@
                 </select>
 {#                REMOVE  #}
                 <i class="fa fa-info-circle anonymity-description" style="display: none;" id="anonymity-description-remove"
-                    title="This method completely removes the question from result.">
+                    title={{ _("This method completely removes the question from result.") }}>
                 </i>
 {#                PSEUDO  #}
                 <i class="fa fa-info-circle anonymity-description" style="display: none;" id="anonymity-description-pseudo"
@@ -621,8 +623,7 @@
                         <input required id="anonymization-pseudonym-input" name="anonym_param_pseudonym"
                                class="form-control inputForQuestion"/>
                         <span class="help-block m-b-none text-left">
-                            {{ _("Enter the prefix for the anonymous ID. You must include {} as a placeholder,
-                            which will be replaced by a unique number. Example: Farmer-{} becomes Farmer-1") }}
+                            {{ _("Enter the prefix for the anonymous ID. You must include {} as a placeholder, which will be replaced by a unique number. Example: Farmer-{} becomes Farmer-1") }}
                         </span>
                     </div>
                 </div>

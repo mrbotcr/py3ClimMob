@@ -4566,7 +4566,7 @@ msgstr "Voulez-vous vraiment supprimer cette question ?"
 
 #: climmob/templates/question/library.jinja2:722
 msgid "Must contain '{}' once."
-msgstr "Doit contenir \"{}\" une seule fois."
+msgstr "Doit contenir '{}' une seule fois."
 
 #: climmob/templates/question/library.jinja2:738
 msgid "Must be integer"

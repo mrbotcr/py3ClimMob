@@ -29,8 +29,8 @@ from climmob.processes.db.question import (
 )
 from climmob.processes.db.results import (
     getJSONResult,
-    get_registry_submission_count,
-    get_assessment_submission_count,
+    get_registry_non_null_fields_count,
+    get_assessment_non_null_fields_count,
 )
 from climmob.utility import (
     get_question_by_field_name,
@@ -354,12 +354,6 @@ def get_anonymization_percentage(project_id: str, request) -> float:
         print("Registry not started yet. Anonymization percentage is 0%.")
         return 0
 
-    reg_count = get_registry_submission_count(user_owner, project_code)
-
-    counts = {"-": reg_count}
-
-    expected_count = 0
-
     projectLabels = [
         projectDetails["project_label_a"],
         projectDetails["project_label_b"],
@@ -372,6 +366,18 @@ def get_anonymization_percentage(project_id: str, request) -> float:
         projectLabels,
         onlyShowTheBasicQuestions=True,
     )
+
+    columns = [
+        q["question_code"]
+        for q in registry_questions
+        if q["question_sensitive"]
+        and q["question_anonymity"] != QuestionAnonymity.REMOVE.value
+    ]
+    reg_count = get_registry_non_null_fields_count(user_owner, project_code, columns)
+
+    counts = {"-": reg_count}
+    expected_count = reg_count
+
     questions = []
     for q in registry_questions:
         if not q["question_sensitive"] or q["question_sensitive"] == 0:
@@ -381,8 +387,6 @@ def get_anonymization_percentage(project_id: str, request) -> float:
             "question_code": q["question_code"],
         }
         questions.append(new)
-        if q["question_anonymity"] != QuestionAnonymity.REMOVE.value:
-            expected_count += reg_count
 
     assessments = getProjectAssessments(project_id, request)
 
@@ -390,8 +394,6 @@ def get_anonymization_percentage(project_id: str, request) -> float:
         if assessment["ass_status"] == 0:
             continue
         code = assessment["ass_cod"]
-        count = get_assessment_submission_count(user_owner, project_code, code)
-        counts[code] = count
         assessment_questions = getAssessmentQuestions(
             user_owner,
             project_id,
@@ -400,6 +402,15 @@ def get_anonymization_percentage(project_id: str, request) -> float:
             projectLabels,
             onlyShowTheBasicQuestions=True,
         )
+        columns = [
+            q["question_code"]
+            for q in assessment_questions
+            if q["question_sensitive"]
+            and q["question_anonymity"] != QuestionAnonymity.REMOVE.value
+        ]
+        count = get_assessment_non_null_fields_count(user_owner, project_code, code, columns)
+        counts[code] = count
+        expected_count += count
 
         for q in assessment_questions:
             if not q["question_sensitive"] or q["question_sensitive"] == 0:
@@ -409,8 +420,7 @@ def get_anonymization_percentage(project_id: str, request) -> float:
                 "question_code": q["question_code"],
             }
             questions.append(new)
-            if q["question_anonymity"] != QuestionAnonymity.REMOVE.value:
-                expected_count += count
+
     found_count = get_anonymized_count(user_owner + "_" + project_code)
     return found_count / expected_count * 100 if expected_count > 0 else 0
 
