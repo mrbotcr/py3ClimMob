@@ -408,7 +408,9 @@ def get_anonymization_percentage(project_id: str, request) -> float:
             if q["question_sensitive"]
             and q["question_anonymity"] != QuestionAnonymity.REMOVE.value
         ]
-        count = get_assessment_non_null_fields_count(user_owner, project_code, code, columns)
+        count = get_assessment_non_null_fields_count(
+            user_owner, project_code, code, columns
+        )
         counts[code] = count
         expected_count += count
 
