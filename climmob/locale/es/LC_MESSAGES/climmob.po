@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: climmob 4.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-03 13:23-0600\n"
-"PO-Revision-Date: 2026-06-03 13:26-0600\n"
+"POT-Creation-Date: 2026-06-08 11:01-0600\n"
+"PO-Revision-Date: 2026-06-08 11:45-0600\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -1435,7 +1435,7 @@ msgstr ""
 "sido cerrado"
 
 #: climmob/templates/dashboard/dashboard.jinja2:657
-#: climmob/templates/snippets/question/question-form.jinja2:515
+#: climmob/templates/snippets/question/question-form.jinja2:517
 msgid "Participant registration"
 msgstr "Registro de participantes"
 
@@ -1554,7 +1554,7 @@ msgstr "Este proyecto ha sido cerrado. El proyecto ahora está bloqueado"
 
 #: climmob/templates/dashboard/dashboard.jinja2:875
 #: climmob/templates/snippets/project/project_form.jinja2:355
-#: climmob/templates/snippets/question/question-form.jinja2:516
+#: climmob/templates/snippets/question/question-form.jinja2:518
 msgid "Trial data collection"
 msgstr "Recolección de datos del ensayo"
 
@@ -3227,12 +3227,12 @@ msgstr ""
 #: climmob/templates/snippets/Metadata/metadata-form.jinja2:37
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:27
 #: climmob/templates/snippets/project/project_form.jinja2:266
-#: climmob/templates/snippets/question/question-form.jinja2:438
-#: climmob/templates/snippets/question/question-form.jinja2:453
-#: climmob/templates/snippets/question/question-form.jinja2:489
-#: climmob/templates/snippets/question/question-form.jinja2:502
-#: climmob/templates/snippets/question/question-form.jinja2:528
-#: climmob/templates/snippets/question/question-form.jinja2:548
+#: climmob/templates/snippets/question/question-form.jinja2:440
+#: climmob/templates/snippets/question/question-form.jinja2:455
+#: climmob/templates/snippets/question/question-form.jinja2:491
+#: climmob/templates/snippets/question/question-form.jinja2:504
+#: climmob/templates/snippets/question/question-form.jinja2:530
+#: climmob/templates/snippets/question/question-form.jinja2:550
 msgid "Yes"
 msgstr "Si"
 
@@ -3243,12 +3243,12 @@ msgstr "Si"
 #: climmob/templates/snippets/Metadata/metadata-form.jinja2:38
 #: climmob/templates/snippets/enumerators/enumerator-form.jinja2:27
 #: climmob/templates/snippets/project/project_form.jinja2:266
-#: climmob/templates/snippets/question/question-form.jinja2:439
-#: climmob/templates/snippets/question/question-form.jinja2:454
-#: climmob/templates/snippets/question/question-form.jinja2:490
-#: climmob/templates/snippets/question/question-form.jinja2:503
-#: climmob/templates/snippets/question/question-form.jinja2:528
-#: climmob/templates/snippets/question/question-form.jinja2:549
+#: climmob/templates/snippets/question/question-form.jinja2:441
+#: climmob/templates/snippets/question/question-form.jinja2:456
+#: climmob/templates/snippets/question/question-form.jinja2:492
+#: climmob/templates/snippets/question/question-form.jinja2:505
+#: climmob/templates/snippets/question/question-form.jinja2:530
+#: climmob/templates/snippets/question/question-form.jinja2:551
 msgid "No"
 msgstr "No"
 
@@ -4572,7 +4572,7 @@ msgstr "caracteres"
 #: climmob/templates/snippets/project/previewForm.jinja2:85
 #: climmob/templates/snippets/project/previewForm.jinja2:86
 #: climmob/templates/snippets/project/previewForm.jinja2:87
-#: climmob/templates/snippets/question/question-form.jinja2:411
+#: climmob/templates/snippets/question/question-form.jinja2:413
 #: climmob/views/question.py:637
 msgid "Option"
 msgstr "Opción"
@@ -4617,7 +4617,7 @@ msgstr "El mínimo debe ser menor que el máximo"
 #: climmob/templates/question/library.jinja2:928
 #: climmob/templates/question/library.jinja2:929
 #: climmob/templates/question/library.jinja2:1296
-#: climmob/templates/snippets/question/question-form.jinja2:416
+#: climmob/templates/snippets/question/question-form.jinja2:418
 msgid "Other"
 msgstr "Otro"
 
@@ -4630,7 +4630,7 @@ msgstr "El valor es Otro"
 #: climmob/templates/question/library.jinja2:950
 #: climmob/templates/question/library.jinja2:951
 #: climmob/templates/question/library.jinja2:1303
-#: climmob/templates/snippets/question/question-form.jinja2:421
+#: climmob/templates/snippets/question/question-form.jinja2:423
 msgid "Not applicable"
 msgstr "No aplica"
 
@@ -4710,7 +4710,7 @@ msgstr "Nombre de la variable"
 #: climmob/templates/question/translations.jinja2:155
 #: climmob/templates/question/translations.jinja2:216
 #: climmob/templates/question/translations.jinja2:249
-#: climmob/templates/snippets/question/question-form.jinja2:359
+#: climmob/templates/snippets/question/question-form.jinja2:361
 #: climmob/templates/snippets/question/values/char-form.jinja2:2
 #: climmob/templates/snippets/question/values/perf-form.jinja2:2
 msgid "Question asked"
@@ -4718,7 +4718,7 @@ msgstr "Pregunta formulada"
 
 #: climmob/templates/question/translations.jinja2:134
 #: climmob/templates/question/translations.jinja2:228
-#: climmob/templates/snippets/question/question-form.jinja2:367
+#: climmob/templates/snippets/question/question-form.jinja2:369
 msgid "Unit"
 msgstr "Unidad"
 
@@ -4745,7 +4745,7 @@ msgstr "Escriba el nombre de la variable."
 
 #: climmob/templates/question/translations.jinja2:217
 #: climmob/templates/question/translations.jinja2:250
-#: climmob/templates/snippets/question/question-form.jinja2:361
+#: climmob/templates/snippets/question/question-form.jinja2:363
 msgid "Write the question asked."
 msgstr "Escriba la pregunta formulada."
 
@@ -5611,32 +5611,32 @@ msgstr ""
 "especiales. Por ejemplo, 'rendimientodelgrano'."
 
 # | msgid "Delete question"
-#: climmob/templates/snippets/question/question-form.jinja2:45
+#: climmob/templates/snippets/question/question-form.jinja2:47
 msgid "Text question"
 msgstr "Pregunta de texto"
 
 # | msgid "Edit treatment"
 # | msgid "Write the statement."
-#: climmob/templates/snippets/question/question-form.jinja2:49
+#: climmob/templates/snippets/question/question-form.jinja2:51
 msgid "Free text response."
 msgstr "Respuesta de texto libre."
 
 # | msgid "Delete question"
-#: climmob/templates/snippets/question/question-form.jinja2:61
+#: climmob/templates/snippets/question/question-form.jinja2:63
 msgid "Decimal question"
 msgstr "Pregunta de decimales"
 
 # | msgid "Delete question"
-#: climmob/templates/snippets/question/question-form.jinja2:65
+#: climmob/templates/snippets/question/question-form.jinja2:67
 msgid "Decimal input."
 msgstr "Pregunta de decimales."
 
 # | msgid "How to describe a characteristic"
-#: climmob/templates/snippets/question/question-form.jinja2:75
+#: climmob/templates/snippets/question/question-form.jinja2:77
 msgid "How to describe the ranking variable"
 msgstr "Como describir la variable de ranking"
 
-#: climmob/templates/snippets/question/question-form.jinja2:79
+#: climmob/templates/snippets/question/question-form.jinja2:81
 msgid ""
 "A ranking of options is a type of question that is used to compare two of more "
 "technologies based on a criterion. In tricot, we compare three options, so we "
@@ -5648,7 +5648,7 @@ msgstr ""
 "dos preguntas."
 
 # | msgid "How to describe a characteristic"
-#: climmob/templates/snippets/question/question-form.jinja2:89
+#: climmob/templates/snippets/question/question-form.jinja2:91
 msgid "How to describe a comparison with check"
 msgstr "Como describir la comparación con referencia"
 
@@ -5658,7 +5658,7 @@ msgstr "Como describir la comparación con referencia"
 # "
 # | "farmer. For example, if a project is evaluating three different varieties
 # | "of bean then the performance questions would be:"
-#: climmob/templates/snippets/question/question-form.jinja2:93
+#: climmob/templates/snippets/question/question-form.jinja2:95
 msgid ""
 "Comparison with check is a type of question that is used to compare the "
 "technologies being tested in a project with the current one in use by the farmer "
@@ -5671,108 +5671,108 @@ msgstr ""
 "un proyecto se evalúan tres variedades diferentes de judías, las preguntas de "
 "rendimiento serían:"
 
-#: climmob/templates/snippets/question/question-form.jinja2:96
 #: climmob/templates/snippets/question/question-form.jinja2:98
 #: climmob/templates/snippets/question/question-form.jinja2:100
+#: climmob/templates/snippets/question/question-form.jinja2:102
 msgid "In terms of taste, how does variety"
 msgstr "En términos de sabor, ¿Cómo es la variedad"
 
-#: climmob/templates/snippets/question/question-form.jinja2:96
 #: climmob/templates/snippets/question/question-form.jinja2:98
 #: climmob/templates/snippets/question/question-form.jinja2:100
-#: climmob/templates/snippets/question/question-form.jinja2:107
+#: climmob/templates/snippets/question/question-form.jinja2:102
+#: climmob/templates/snippets/question/question-form.jinja2:109
 #: climmob/templates/snippets/question/values/perf-form.jinja2:5
 msgid "compares with the variety you usually use?"
 msgstr "comparada con la variedad que usualmente utiliza ?"
 
-#: climmob/templates/snippets/question/question-form.jinja2:103
+#: climmob/templates/snippets/question/question-form.jinja2:105
 msgid "In ClimMob you define this with one statement with the wildcard"
 msgstr "En ClimMob definimos esto con el comodín"
 
-#: climmob/templates/snippets/question/question-form.jinja2:104
-#: climmob/templates/snippets/question/question-form.jinja2:107
+#: climmob/templates/snippets/question/question-form.jinja2:106
+#: climmob/templates/snippets/question/question-form.jinja2:109
 #: climmob/templates/snippets/question/values/perf-form.jinja2:5
 msgid "option"
 msgstr "option"
 
-#: climmob/templates/snippets/question/question-form.jinja2:104
+#: climmob/templates/snippets/question/question-form.jinja2:106
 #: climmob/templates/technologies/curationoftechnologies.jinja2:55
 #: climmob/templates/technologies/curationoftechnologies.jinja2:125
 msgid "For example:"
 msgstr "Por ejemplo:"
 
-#: climmob/templates/snippets/question/question-form.jinja2:107
+#: climmob/templates/snippets/question/question-form.jinja2:109
 #: climmob/templates/snippets/question/values/perf-form.jinja2:5
 msgid "In terms of taste, how does"
 msgstr "En términos de sabor, ¿cómo"
 
-#: climmob/templates/snippets/question/question-form.jinja2:109
+#: climmob/templates/snippets/question/question-form.jinja2:111
 msgid "The user answers it with two choices 'Better' or 'Worse'"
 msgstr "Las respuestas que tiene el usuario son dos opciones 'Mejor' o 'Peor'"
 
 # | msgid "locations"
-#: climmob/templates/snippets/question/question-form.jinja2:121
+#: climmob/templates/snippets/question/question-form.jinja2:123
 msgid "Location question"
 msgstr "Pregunta de localización"
 
-#: climmob/templates/snippets/question/question-form.jinja2:125
+#: climmob/templates/snippets/question/question-form.jinja2:127
 msgid "Write a single GPS coordinate."
 msgstr "Escribe una sola coordenada GPS."
 
 # | msgid "See questions"
-#: climmob/templates/snippets/question/question-form.jinja2:137
+#: climmob/templates/snippets/question/question-form.jinja2:139
 msgid "Integer question"
 msgstr "Pregunta de número entero"
 
 # | msgid "See questions"
-#: climmob/templates/snippets/question/question-form.jinja2:141
+#: climmob/templates/snippets/question/question-form.jinja2:143
 msgid "Integer input."
 msgstr "Pregunta de número entero."
 
 # | msgid "New question"
 # | msgid "Expand question"
-#: climmob/templates/snippets/question/question-form.jinja2:153
+#: climmob/templates/snippets/question/question-form.jinja2:155
 msgid "Geopoint question"
 msgstr "Pregunta de Geopoint"
 
-#: climmob/templates/snippets/question/question-form.jinja2:157
+#: climmob/templates/snippets/question/question-form.jinja2:159
 msgid "Collect a single GPS coordinate."
 msgstr "Recoger una única coordenada GPS."
 
 # | msgid "Delete question"
-#: climmob/templates/snippets/question/question-form.jinja2:169
+#: climmob/templates/snippets/question/question-form.jinja2:171
 msgid "Select one question"
 msgstr "Pregunta de seleccionar una"
 
-#: climmob/templates/snippets/question/question-form.jinja2:173
+#: climmob/templates/snippets/question/question-form.jinja2:175
 msgid "Multiple choice question; only one answer can be selected."
 msgstr ""
 "Pregunta con múltiples opciones; pero sólo se puede seleccionar una respuesta."
 
 # | msgid "Select multiple"
-#: climmob/templates/snippets/question/question-form.jinja2:185
+#: climmob/templates/snippets/question/question-form.jinja2:187
 msgid "Select multiple question"
 msgstr "Pregunta de selección multiple"
 
-#: climmob/templates/snippets/question/question-form.jinja2:189
+#: climmob/templates/snippets/question/question-form.jinja2:191
 msgid "Multiple choice question; multiple answers can be selected."
 msgstr "Pregunta con múltiples opciones; se pueden seleccionar varias respuestas."
 
 # | msgid "Delete question"
-#: climmob/templates/snippets/question/question-form.jinja2:201
+#: climmob/templates/snippets/question/question-form.jinja2:203
 msgid "Geotrace question"
 msgstr "Pregunta de Geotrace"
 
-#: climmob/templates/snippets/question/question-form.jinja2:205
+#: climmob/templates/snippets/question/question-form.jinja2:207
 msgid "Record a line of two or more GPS coordinates."
 msgstr "Registre una línea de dos o más coordenadas GPS."
 
 # | msgid "See questions"
-#: climmob/templates/snippets/question/question-form.jinja2:217
+#: climmob/templates/snippets/question/question-form.jinja2:219
 msgid "Geoshape question"
 msgstr "Pregunta de Geoshape"
 
-#: climmob/templates/snippets/question/question-form.jinja2:221
+#: climmob/templates/snippets/question/question-form.jinja2:223
 msgid ""
 "Record a polygon of multiple GPS coordinates; the last point is the same as the "
 "first point."
@@ -5781,117 +5781,117 @@ msgstr ""
 "que el primero."
 
 # | msgid "Delete question"
-#: climmob/templates/snippets/question/question-form.jinja2:233
+#: climmob/templates/snippets/question/question-form.jinja2:235
 msgid "Date question"
 msgstr "Pregunta de fecha"
 
-#: climmob/templates/snippets/question/question-form.jinja2:237
+#: climmob/templates/snippets/question/question-form.jinja2:239
 msgid "Date input."
 msgstr "Selecciona una fecha."
 
 # | msgid "Delete question"
-#: climmob/templates/snippets/question/question-form.jinja2:249
+#: climmob/templates/snippets/question/question-form.jinja2:251
 msgid "Time question"
 msgstr "Pregunta de hora"
 
-#: climmob/templates/snippets/question/question-form.jinja2:253
+#: climmob/templates/snippets/question/question-form.jinja2:255
 msgid "Time input."
 msgstr "Establece un tiempo (Horas-Minutos-Segundos)."
 
 # | msgid "Delete question"
-#: climmob/templates/snippets/question/question-form.jinja2:265
+#: climmob/templates/snippets/question/question-form.jinja2:267
 msgid "DateTime question"
 msgstr "Pregunta de fecha y hora"
 
-#: climmob/templates/snippets/question/question-form.jinja2:269
+#: climmob/templates/snippets/question/question-form.jinja2:271
 msgid "Accepts a date and a time input."
 msgstr "Acepta una fecha y una hora."
 
 # | msgid "See questions"
-#: climmob/templates/snippets/question/question-form.jinja2:281
+#: climmob/templates/snippets/question/question-form.jinja2:283
 msgid "Image question"
 msgstr "Pregunta de imagen"
 
-#: climmob/templates/snippets/question/question-form.jinja2:285
+#: climmob/templates/snippets/question/question-form.jinja2:287
 msgid "Take a picture or upload an image file."
 msgstr "Haz una foto o sube un archivo de imagen."
 
 # | msgid "New question"
 # | msgid "Expand question"
-#: climmob/templates/snippets/question/question-form.jinja2:297
+#: climmob/templates/snippets/question/question-form.jinja2:299
 msgid "Audio question"
 msgstr "Pregunta de audio"
 
-#: climmob/templates/snippets/question/question-form.jinja2:301
+#: climmob/templates/snippets/question/question-form.jinja2:303
 msgid "Take an audio recording or upload an audio file."
 msgstr "Realiza una grabación de audio o sube un archivo de audio."
 
 # | msgid "See questions"
-#: climmob/templates/snippets/question/question-form.jinja2:313
+#: climmob/templates/snippets/question/question-form.jinja2:315
 msgid "Video question"
 msgstr "Pregunta de video"
 
-#: climmob/templates/snippets/question/question-form.jinja2:317
+#: climmob/templates/snippets/question/question-form.jinja2:319
 msgid "Take a video recording or upload a video file."
 msgstr "Graba un vídeo o sube un archivo de vídeo."
 
 # | msgid "New question"
 # | msgid "Expand question"
-#: climmob/templates/snippets/question/question-form.jinja2:329
+#: climmob/templates/snippets/question/question-form.jinja2:331
 msgid "Barcode/QR question"
 msgstr "Pregunta de Código de barra/QR"
 
-#: climmob/templates/snippets/question/question-form.jinja2:333
+#: climmob/templates/snippets/question/question-form.jinja2:335
 msgid "Scan a barcode or QR"
 msgstr "Escanear un código de barras o QR"
 
-#: climmob/templates/snippets/question/question-form.jinja2:341
+#: climmob/templates/snippets/question/question-form.jinja2:343
 msgid "Category"
 msgstr "Categoría"
 
-#: climmob/templates/snippets/question/question-form.jinja2:362
+#: climmob/templates/snippets/question/question-form.jinja2:364
 msgid "Text of the question as shown in the ODK Collect app."
 msgstr "Texto de la pregunta como se muestra en la aplicación ODK Collect."
 
-#: climmob/templates/snippets/question/question-form.jinja2:375
+#: climmob/templates/snippets/question/question-form.jinja2:377
 msgid "Minimum"
 msgstr "Mínimo"
 
-#: climmob/templates/snippets/question/question-form.jinja2:378
+#: climmob/templates/snippets/question/question-form.jinja2:380
 msgid "Leave empty to not set a minimum."
 msgstr "Déjelo vacío para no fijar un mínimo."
 
-#: climmob/templates/snippets/question/question-form.jinja2:382
+#: climmob/templates/snippets/question/question-form.jinja2:384
 msgid "Maximum"
 msgstr "Máximo"
 
-#: climmob/templates/snippets/question/question-form.jinja2:385
+#: climmob/templates/snippets/question/question-form.jinja2:387
 msgid "Leave empty to not set a maximum."
 msgstr "Déjelo vacío para no establecer un máximo."
 
-#: climmob/templates/snippets/question/question-form.jinja2:403
+#: climmob/templates/snippets/question/question-form.jinja2:405
 msgid "Options for select"
 msgstr "Opciones para seleccionar"
 
-#: climmob/templates/snippets/question/question-form.jinja2:433
+#: climmob/templates/snippets/question/question-form.jinja2:435
 msgid "Answer required"
 msgstr "Respuesta requerida"
 
-#: climmob/templates/snippets/question/question-form.jinja2:440
+#: climmob/templates/snippets/question/question-form.jinja2:442
 msgid "Providing an answer to this question is obligatory during data collection."
 msgstr ""
 "La respuesta a esta pregunta es obligatoria durante la recolección de datos."
 
 # | msgid "New question"
-#: climmob/templates/snippets/question/question-form.jinja2:448
+#: climmob/templates/snippets/question/question-form.jinja2:450
 msgid "Expand question"
 msgstr "Expandir la pregunta"
 
-#: climmob/templates/snippets/question/question-form.jinja2:462
+#: climmob/templates/snippets/question/question-form.jinja2:464
 msgid "What does 'Expand question' mean?"
 msgstr "¿Qué significa 'expandir una pregunta'?"
 
-#: climmob/templates/snippets/question/question-form.jinja2:466
+#: climmob/templates/snippets/question/question-form.jinja2:468
 msgid ""
 "Expands a given question to all options A, B, C in your tricot project, given to "
 "you a unique answer to each of your tested options"
@@ -5900,57 +5900,57 @@ msgstr ""
 "tricot, dándole una respuesta única a cada una de sus opciones probadas"
 
 # | msgid "For example:"
-#: climmob/templates/snippets/question/question-form.jinja2:466
+#: climmob/templates/snippets/question/question-form.jinja2:468
 msgid "Example:"
 msgstr "Ejemplo:"
 
 # | msgid "yield"
-#: climmob/templates/snippets/question/question-form.jinja2:469
 #: climmob/templates/snippets/question/question-form.jinja2:471
 #: climmob/templates/snippets/question/question-form.jinja2:473
+#: climmob/templates/snippets/question/question-form.jinja2:475
 msgid "Yield in kg"
 msgstr "Rendimiento en kg"
 
 # | msgid "option"
-#: climmob/templates/snippets/question/question-form.jinja2:469
+#: climmob/templates/snippets/question/question-form.jinja2:471
 #: climmob/views/cloneProjects/cloneProjects.py:109 climmob/views/project.py:123
 msgid "Option A"
 msgstr "Opción A"
 
 # | msgid "option"
-#: climmob/templates/snippets/question/question-form.jinja2:471
+#: climmob/templates/snippets/question/question-form.jinja2:473
 #: climmob/views/cloneProjects/cloneProjects.py:110 climmob/views/project.py:124
 msgid "Option B"
 msgstr "Opción B"
 
 # | msgid "option"
-#: climmob/templates/snippets/question/question-form.jinja2:473
+#: climmob/templates/snippets/question/question-form.jinja2:475
 #: climmob/views/cloneProjects/cloneProjects.py:111 climmob/views/project.py:125
 msgid "Option C"
 msgstr "Opción C"
 
-#: climmob/templates/snippets/question/question-form.jinja2:484
+#: climmob/templates/snippets/question/question-form.jinja2:486
 msgid "Should a 'tie' be allowed as answer?"
 msgstr "¿Debería permitirse un \"empate\" como respuesta?"
 
-#: climmob/templates/snippets/question/question-form.jinja2:497
+#: climmob/templates/snippets/question/question-form.jinja2:499
 msgid "Should a 'not observed' be allowed as an answer?"
 msgstr "¿Debería permitirse un \"No observado\" como respuesta?"
 
-#: climmob/templates/snippets/question/question-form.jinja2:512
+#: climmob/templates/snippets/question/question-form.jinja2:514
 msgid "Forms in which the question can be added"
 msgstr "Formularios en los que se puede agregar la pregunta"
 
-#: climmob/templates/snippets/question/question-form.jinja2:517
+#: climmob/templates/snippets/question/question-form.jinja2:519
 msgid "All forms"
 msgstr "Todos los formularios"
 
 # | msgid "Unable to create user"
-#: climmob/templates/snippets/question/question-form.jinja2:525
+#: climmob/templates/snippets/question/question-form.jinja2:527
 msgid "Available to users"
 msgstr "Disponible para los usuarios"
 
-#: climmob/templates/snippets/question/question-form.jinja2:540
+#: climmob/templates/snippets/question/question-form.jinja2:542
 msgid ""
 "Privacy-preserved and excluded from shareable versions of the trial results "
 "dataset."
@@ -5958,15 +5958,19 @@ msgstr ""
 "Protegido para preservar la privacidad y excluido de las versiones compartibles "
 "del conjunto de datos de resultados del ensayo."
 
-#: climmob/templates/snippets/question/question-form.jinja2:542
+#: climmob/templates/snippets/question/question-form.jinja2:544
 msgid "Contains confidential information"
 msgstr "Contiene información confidencial"
 
-#: climmob/templates/snippets/question/question-form.jinja2:555
+#: climmob/templates/snippets/question/question-form.jinja2:557
 msgid "Privacy-preserving method"
 msgstr "Método de protección de la privacidad"
 
-#: climmob/templates/snippets/question/question-form.jinja2:565
+#: climmob/templates/snippets/question/question-form.jinja2:563
+msgid "This method completely removes the question from result."
+msgstr "Este método elimina completamente la pregunta de los resultados."
+
+#: climmob/templates/snippets/question/question-form.jinja2:567
 msgid ""
 "Replaces the source ID with a unique code to protect identity while allowing "
 "data tracking across forms."
@@ -5974,7 +5978,7 @@ msgstr ""
 "Reemplaza el ID de origen por un código único para proteger la identidad "
 "mientras permite el seguimiento de datos entre formularios."
 
-#: climmob/templates/snippets/question/question-form.jinja2:569
+#: climmob/templates/snippets/question/question-form.jinja2:571
 msgid ""
 "This method anonymizes numerical values by grouping them into bins. Define the "
 "bounds and the interval to determine the boundaries of each bin."
@@ -5982,43 +5986,51 @@ msgstr ""
 "Este método anonimiza valores numéricos agrupándolos en rangos. Defina los "
 "límites y el intervalo utilizados para crear la agrupación."
 
-#: climmob/templates/snippets/question/question-form.jinja2:573
+#: climmob/templates/snippets/question/question-form.jinja2:575
 msgid "Displaces the location in a random direction."
 msgstr "Desplaza la ubicación en una dirección aleatoria."
 
-#: climmob/templates/snippets/question/question-form.jinja2:577
+#: climmob/templates/snippets/question/question-form.jinja2:579
 msgid "Leaves only the month and year."
 msgstr "Conserva únicamente el mes y el año."
 
-#: climmob/templates/snippets/question/question-form.jinja2:586
+#: climmob/templates/snippets/question/question-form.jinja2:588
 msgid "The lowest and highest values used to create the bins."
 msgstr "Los valores mínimo y máximo utilizados para crear los rangos."
 
-#: climmob/templates/snippets/question/question-form.jinja2:588
+#: climmob/templates/snippets/question/question-form.jinja2:590
 msgid "Bounds"
 msgstr "Límites"
 
-#: climmob/templates/snippets/question/question-form.jinja2:598
+#: climmob/templates/snippets/question/question-form.jinja2:593
+msgid "Lower"
+msgstr "Inferior"
+
+#: climmob/templates/snippets/question/question-form.jinja2:594
+msgid "Upper"
+msgstr "Superior"
+
+#: climmob/templates/snippets/question/question-form.jinja2:600
 msgid ""
 "Size of each bin. E.g., an interval of 10 creates bins such as 0-10, 10-20..."
 msgstr ""
 "Tamaño de cada rango. Por ejemplo, un intervalo de 10 crea rangos como 0–10, 10–"
 "20, etc."
 
-#: climmob/templates/snippets/question/question-form.jinja2:600
+#: climmob/templates/snippets/question/question-form.jinja2:602
 msgid "Interval"
 msgstr "Intervalo"
 
-#: climmob/templates/snippets/question/question-form.jinja2:605
+#: climmob/templates/snippets/question/question-form.jinja2:607
 msgid "E.g., 0 (lower), 100 (upper), and 10 (interval) create groups of 10."
 msgstr "E.g., 0 (inferior), 100 (superior) y 10 (intervalo) crean grupos de 10."
 
-#: climmob/templates/snippets/question/question-form.jinja2:618
+#: climmob/templates/snippets/question/question-form.jinja2:620
 #: climmob/utility/question.py:93
 msgid "Pseudonym"
 msgstr "Seudónimo"
 
-#: climmob/templates/snippets/question/question-form.jinja2:624
+#: climmob/templates/snippets/question/question-form.jinja2:626
 msgid ""
 "Enter the prefix for the anonymous ID. You must include {} as a placeholder, "
 "which will be replaced by a unique number. Example: Farmer-{} becomes Farmer-1"

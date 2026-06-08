@@ -560,7 +560,7 @@
                 </select>
 {#                REMOVE  #}
                 <i class="fa fa-info-circle anonymity-description" style="display: none;" id="anonymity-description-remove"
-                    title={{ _("This method completely removes the question from result.") }}>
+                    title="{{ _("This method completely removes the question from result.") }}">
                 </i>
 {#                PSEUDO  #}
                 <i class="fa fa-info-circle anonymity-description" style="display: none;" id="anonymity-description-pseudo"
@@ -590,8 +590,8 @@
                         {{ _("Bounds") }}
                     </label>
                     <div class="col-sm-8" style="display: flex; gap: 1em;">
-                        <input required type="number" placeholder="Lower" step="any" id="anonymization-lower-bound-input" name="anonym_param_lower_bound" class="form-control inputForQuestion"/>
-                        <input required type="number" placeholder="Upper" step="any" id="anonymization-upper-bound-input" name="anonym_param_upper_bound" class="form-control inputForQuestion"/>
+                        <input required type="number" placeholder="{{ _("Lower") }}" step="any" id="anonymization-lower-bound-input" name="anonym_param_lower_bound" class="form-control inputForQuestion"/>
+                        <input required type="number" placeholder="{{ _("Upper") }}" step="any" id="anonymization-upper-bound-input" name="anonym_param_upper_bound" class="form-control inputForQuestion"/>
                     </div>
                 </div>
                 <div class="form-group" id="anonymization-interval-div">
