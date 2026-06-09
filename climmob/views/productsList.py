@@ -1,4 +1,5 @@
 import os
+import re
 
 from pyramid.httpexceptions import HTTPFound
 from pyramid.httpexceptions import HTTPNotFound
@@ -30,8 +31,7 @@ from climmob.processes import (
     getPrjLangDefaultInProject,
 )
 from climmob.products import product_found
-from climmob.products.analysisdata.analysisdata import create_datacsv
-from climmob.products.dataxlsx.dataxlsx import create_XLSXToDownload
+from climmob.products.analysisdata.analysisdata import create_raw_data
 from climmob.products.colors.colors import create_colors_cards
 from climmob.products.errorLogDocument.errorLogDocument import create_error_log_document
 from climmob.products.fieldagents.fieldagents import create_fieldagents_report
@@ -87,11 +87,31 @@ class productsView(climmobPrivateView):
         productsAvailable = []
         assessments = []
 
+        schema = (
+            activeProjectData["owner"]["user_name"]
+            + "_"
+            + activeProjectData["project_cod"]
+        )
+
         if activeProjectData:
 
             products = getDataProduct(activeProjectData["project_id"], self.request)
 
             for product in products:
+
+                if (
+                    product["product_id"]
+                    in [
+                        "datacsv-shareable",
+                        "dataxlsx-shareable",
+                    ]
+                    and self.request.registry.settings.get(
+                        "module.dataprivacy", "false"
+                    )
+                    == "false"
+                ):
+                    continue
+
                 if product_found(product["product_id"]):
                     contentType = product["output_mimetype"]
                     filename = product["output_id"]
@@ -110,22 +130,28 @@ class productsView(climmobPrivateView):
                     if product["product_id"] in [
                         "documentform",
                         "datacsv",
+                        "dataxlsx",
+                        "datacsv-shareable",
+                        "dataxlsx-shareable",
                         "errorlogdocument",
                         "multimediadownloads",
                         "uploaddata",
-                        "dataxlsx",
                         "observationcards",
                         "climmobexplanationkit",
                     ]:
-                        assessId = product["process_name"].split("_")[3]
-                        if product["product_id"] == "dataxlsx":
-                            assessId = product["process_name"].split("_")[4]
-
-                        product["extraInformation"] = get_project_assessment_info(
-                            activeProjectData["project_id"],
-                            assessId,
-                            self.request,
+                        product["extraInformation"] = None
+                        pattern = re.compile(
+                            r".+?(?:(?:Assessment))_"  # not captured
+                            r"([a-f0-9]+)"  # captured (group 1)
                         )
+                        match = pattern.fullmatch(product["process_name"])
+                        if match:
+                            assess_id = match.group(1)
+                            product["extraInformation"] = get_project_assessment_info(
+                                activeProjectData["project_id"],
+                                assess_id,
+                                self.request,
+                            )
 
                     productsAvailable.append(product)
 
@@ -280,53 +306,38 @@ class generateProductView(privateView):
                             listOfLabels,
                         )
 
-        if productid == "datacsv":
-            locale = self.request.locale_name
+        if productid in [
+            "datacsv",
+            "datacsv-shareable",
+            "dataxlsx",
+            "dataxlsx-shareable",
+        ]:
+            anonymized = productid in ["datacsv-shareable", "dataxlsx-shareable"]
+            file_type = "csv" if "csv" in productid else "xlsx"
             infoProduct = processname.split("_")
+            if file_type == "xlsx":
+                infoProduct[2] = infoProduct[3]
+                infoProduct[3] = infoProduct[4]
+
+            result_params = {"anonymize": anonymized}
+
             if infoProduct[2] == "Registration":
-                info = getJSONResult(
-                    activeProjectData["owner"]["user_name"],
-                    activeProjectData["project_id"],
-                    activeProjectData["project_cod"],
-                    self.request,
-                    includeAssessment=False,
-                )
+                result_params["includeAssessment"] = False
             else:
                 if infoProduct[2] == "Assessment":
-                    info = getJSONResult(
-                        activeProjectData["owner"]["user_name"],
-                        activeProjectData["project_id"],
-                        activeProjectData["project_cod"],
-                        self.request,
-                        assessmentCode=infoProduct[3],
-                    )
-                else:
-                    info = getJSONResult(
-                        activeProjectData["owner"]["user_name"],
-                        activeProjectData["project_id"],
-                        activeProjectData["project_cod"],
-                        self.request,
-                    )
+                    result_params["assessmentCode"] = infoProduct[3]
 
-            create_datacsv(
-                activeProjectData["owner"]["user_name"],
-                activeProjectData["project_id"],
-                activeProjectData["project_cod"],
-                info,
+            create_raw_data(
+                {
+                    "userOwner": activeProjectData["owner"]["user_name"],
+                    "projectId": activeProjectData["project_id"],
+                    "projectCod": activeProjectData["project_cod"],
+                },
+                result_params,
                 self.request,
                 infoProduct[2],
                 infoProduct[3],
-            )
-
-        if productid == "dataxlsx":
-            infoProduct = processname.split("_")
-            create_XLSXToDownload(
-                activeProjectData["owner"]["user_name"],
-                activeProjectData["project_id"],
-                activeProjectData["project_cod"],
-                self.request,
-                infoProduct[3],
-                infoProduct[4],
+                file_type=file_type,
             )
 
         if productid == "documentform":

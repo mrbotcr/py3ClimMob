@@ -21,7 +21,10 @@ from climmob.views.Api.projectAssessments import (
 from climmob.views.validators import TextField, IntegerField, BinaryField
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 from climmob.views.validators.assessment import AssessmentExistsValidator
-from climmob.views.validators.project import CanEditProjectValidator
+from climmob.views.validators.project import (
+    CanEditProjectValidator,
+    ProjectOpenValidator,
+)
 
 
 class ProjectAssessmentBaseTest(ViewBaseTest):
@@ -182,7 +185,13 @@ class TestAddNewAssessmentView(ProjectAssessmentBaseTest):
             )
 
     def test_has_validators(self):
-        self.assertEqual(self.view.validators, (ProjectExistsValidator,))
+        self.assertEqual(
+            self.view.validators,
+            (
+                ProjectExistsValidator,
+                ProjectOpenValidator,
+            ),
+        )
 
     def test_has_valid_fields(self):
         self.assertEqual(
@@ -274,7 +283,9 @@ class TestUpdateProjectAssessmentView(ProjectAssessmentBaseTest):
             )
 
     def test_has_validators(self):
-        self.assertEqual(self.view.validators, (ProjectExistsValidator,))
+        self.assertEqual(
+            self.view.validators, (ProjectExistsValidator, ProjectOpenValidator)
+        )
 
     def test_has_valid_fields(self):
         self.assertEqual(
@@ -377,7 +388,9 @@ class TestDeleteProjectAssessmentView(ProjectAssessmentBaseTest):
             )
 
     def test_has_validators(self):
-        self.assertEqual(self.view.validators, (ProjectExistsValidator,))
+        self.assertEqual(
+            self.view.validators, (ProjectExistsValidator, ProjectOpenValidator)
+        )
 
     def test_has_valid_fields(self):
         self.assertEqual(
@@ -495,6 +508,7 @@ class TestCloneAssessmentApiView(ProjectAssessmentBaseTest):
                 ProjectExistsValidator,
                 CanEditProjectValidator,
                 AssessmentExistsValidator,
+                ProjectOpenValidator,
             ),
         )
 
@@ -737,7 +751,9 @@ class TestCreateAssessmentGroupView(ProjectAssessmentBaseTest):
             )
 
     def test_has_validators(self):
-        self.assertEqual(self.view.validators, (ProjectExistsValidator,))
+        self.assertEqual(
+            self.view.validators, (ProjectExistsValidator, ProjectOpenValidator)
+        )
 
     def test_has_valid_fields(self):
         self.assertEqual(
@@ -899,7 +915,9 @@ class TestUpdateAssessmentGroupView(ProjectAssessmentBaseTest):
             )
 
     def test_has_validators(self):
-        self.assertEqual(self.view.validators, (ProjectExistsValidator,))
+        self.assertEqual(
+            self.view.validators, (ProjectExistsValidator, ProjectOpenValidator)
+        )
 
     def test_has_valid_fields(self):
         self.assertEqual(
@@ -1083,7 +1101,9 @@ class TestDeleteAssessmentGroupView(ProjectAssessmentBaseTest):
             )
 
     def test_has_validators(self):
-        self.assertEqual(self.view.validators, (ProjectExistsValidator,))
+        self.assertEqual(
+            self.view.validators, (ProjectExistsValidator, ProjectOpenValidator)
+        )
 
     def test_has_valid_fields(self):
         self.assertEqual(
@@ -1214,7 +1234,13 @@ class TestReadPossibleQuestionForAssessmentGroupView(ProjectAssessmentBaseTest):
     request_body = json.dumps(body)
 
     def test_has_validators(self):
-        self.assertEqual(self.view.validators, (ProjectExistsValidator,))
+        self.assertEqual(
+            self.view.validators,
+            (
+                ProjectExistsValidator,
+                ProjectOpenValidator,
+            ),
+        )
 
     def test_has_valid_fields(self):
         self.assertEqual(
@@ -1411,7 +1437,13 @@ class TestAddQuestionToGroupAssessmentView(ProjectAssessmentBaseTest):
             )
 
     def test_has_validators(self):
-        self.assertEqual(self.view.validators, (ProjectExistsValidator,))
+        self.assertEqual(
+            self.view.validators,
+            (
+                ProjectExistsValidator,
+                ProjectOpenValidator,
+            ),
+        )
 
     def test_has_valid_fields(self):
         self.assertEqual(
@@ -1643,7 +1675,9 @@ class TestDeleteQuestionFromGroupAssessmentView(ProjectAssessmentBaseTest):
             )
 
     def test_has_validators(self):
-        self.assertEqual(self.view.validators, (ProjectExistsValidator,))
+        self.assertEqual(
+            self.view.validators, (ProjectExistsValidator, ProjectOpenValidator)
+        )
 
     def test_has_valid_fields(self):
         self.assertEqual(
@@ -1877,7 +1911,9 @@ class TestOrderAssessmentQuestionsView(ProjectAssessmentBaseTest):
             )
 
     def test_has_validators(self):
-        self.assertEqual(self.view.validators, (ProjectExistsValidator,))
+        self.assertEqual(
+            self.view.validators, (ProjectExistsValidator, ProjectOpenValidator)
+        )
 
     def test_has_valid_fields(self):
         self.assertEqual(

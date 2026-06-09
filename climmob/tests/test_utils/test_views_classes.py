@@ -656,7 +656,8 @@ class TestPrivateView(unittest.TestCase):
         }
 
         with patch("climmob.views.classes.counterChat", return_value=5), patch(
-            "climmob.views.classes.getActiveProject", return_value={"project_id": 1}
+            "climmob.views.classes.getActiveProject",
+            return_value={"project_id": 1, "project_status": 1},
         ), patch(
             "climmob.views.classes.getActiveForm",
             return_value=(True, {"form_name": "Survey"}),
@@ -1136,19 +1137,25 @@ class TestApiView(unittest.TestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.body, b"This Apikey does not exist or is inactive.")
 
-    @patch("climmob.views.classes.getUserByApiKey", return_value={"login": "test_user"})
+    @patch(
+        "climmob.views.classes.getUserByApiKey",
+        return_value=MagicMock(name="user", login="test_user"),
+    )
     def test_call_valid_apikey_with_body(self, mock_getUserByApiKey):
         self.request.params = {"Apikey": "valid", "Body": '{"key": "value"}'}
         response = self.view()
-        self.assertEqual(self.view.user["login"], "test_user")
+        self.assertEqual(self.view.user.login, "test_user")
         self.assertEqual(self.view.body, '{"key": "value"}')
         # Here the verification of update_last_login was removed
 
-    @patch("climmob.views.classes.getUserByApiKey", return_value={"login": "test_user"})
+    @patch(
+        "climmob.views.classes.getUserByApiKey",
+        return_value=MagicMock(login="test_user"),
+    )
     def test_call_valid_apikey_without_body(self, mock_getUserByApiKey):
         self.request.params = {"Apikey": "valid", "key1": "value1", "key2": "value2"}
         response = self.view()
-        self.assertEqual(self.view.user["login"], "test_user")
+        self.assertEqual(self.view.user.login, "test_user")
         self.assertEqual(
             json.loads(self.view.body), {"key1": "value1", "key2": "value2"}
         )

@@ -192,7 +192,7 @@ tests_require = [
 
 setup(
     name="climmob",
-    version="3.9.2",
+    version="3.9.5",
     description="Climmob",
     long_description=README + "\n\n" + CHANGES,
     classifiers=[
@@ -225,6 +225,7 @@ setup(
             "mysqldumps_climmob_dbs = climmob.scripts.mysqldumpclimmobdbs:main",
             "configure_tests = climmob.scripts.configuretests:main",
             "generate_project_summary_table = climmob.scripts.generate_project_summary_table:main",
+            "anonymize_project = climmob.scripts.anonymize_project:main",
         ],
     },
 )

@@ -8,7 +8,7 @@ from climmob.processes import (
     getProjectProgress,
 )
 from climmob.products.analysis.analysis import create_analysis
-from climmob.products.analysisdata.analysisdata import create_datacsv
+from climmob.products.analysisdata.analysisdata import create_raw_data
 from climmob.views.classes import privateView
 
 
@@ -106,6 +106,7 @@ class analysisDataView(privateView):
             raise HTTPNotFound()
 
 
+# TODO: test
 def processToGenerateTheReport(
     activeProjectData, request, variables, infosheet, variablesSplit, combinationRerence
 ):
@@ -134,6 +135,7 @@ def processToGenerateTheReport(
                                 )
 
     locale = request.locale_name
+
     info = getJSONResult(
         activeProjectData["owner"]["user_name"],
         activeProjectData["project_id"],
@@ -155,11 +157,13 @@ def processToGenerateTheReport(
         combinationRerence,
     )
 
-    create_datacsv(
-        activeProjectData["owner"]["user_name"],
-        activeProjectData["project_id"],
-        activeProjectData["project_cod"],
-        info,
+    create_raw_data(
+        {
+            "userOwner": activeProjectData["owner"]["user_name"],
+            "projectId": activeProjectData["project_id"],
+            "projectCod": activeProjectData["project_cod"],
+        },
+        {},
         request,
         "Report",
         "",

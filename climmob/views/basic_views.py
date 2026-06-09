@@ -4,7 +4,6 @@ import json
 import logging
 import secrets
 import uuid
-from datetime import datetime
 
 from jinja2 import ext
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
@@ -70,6 +69,10 @@ class RefreshSessionTokensView(publicView):
 
 class HomeView(publicView):
     def get(self):
+        showMainPage = False
+        if not showMainPage:
+            return HTTPFound(location=self.request.route_url("login"))
+
         cookies = self.request.cookies
         if "climmob_cookie_question" in cookies.keys():
             ask_for_cookies = False
@@ -117,9 +120,13 @@ class NotFoundView(publicView):
 
 
 class ForbiddenView(publicView):
+    def __init__(self, context, request):
+        super().__init__(request)
+        self.context = context
+
     def get(self):
         self.request.response.status = 403
-        return {}
+        return {"message": self.context.detail}
 
 
 class StoreCookieView(publicView):

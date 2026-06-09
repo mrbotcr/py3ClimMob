@@ -39,8 +39,11 @@ from climmob.processes import (
     add_project_location_unit_objective,
     delete_all_project_location_unit_objective,
 )
+from climmob.utility.project import ProjectAccessType
 from climmob.views.classes import apiView
 from climmob.views.project import function_create_clone
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import ProjectOpenValidator
 
 
 class ReadListOfTemplatesView(apiView):
@@ -792,6 +795,11 @@ class ReadProjectsView(apiView):
 
 
 class UpdateProjectView(apiView):
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
+
     def processView(self):
 
         if self.request.method == "POST":
@@ -1266,6 +1274,11 @@ class UpdateProjectView(apiView):
 
 
 class DeleteProjectViewApi(apiView):
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
+
     def processView(self):
 
         if self.request.method == "POST":
@@ -1293,7 +1306,7 @@ class DeleteProjectViewApi(apiView):
                     self.user.login, activeProjectId, self.request
                 )
 
-                if accessType in [4]:
+                if accessType in [ProjectAccessType.MEMBER.value]:
                     response = Response(
                         status=401,
                         body=self._(
@@ -1364,87 +1377,78 @@ class ReadCollaboratorsView(apiView):
 
 
 class AddCollaboratorView(apiView):
-    def processView(self):
+    validators = (
+        ProjectExistsValidator,
+        ProjectOpenValidator,
+    )
 
-        if self.request.method == "POST":
+    def post(self):
 
-            obligatory = [
-                "project_cod",
-                "user_owner",
-                "user_collaborator",
-                "access_type",
-            ]
-            dataworking = json.loads(self.body)
+        obligatory = [
+            "project_cod",
+            "user_owner",
+            "user_collaborator",
+            "access_type",
+        ]
+        dataworking = json.loads(self.body)
 
-            if sorted(obligatory) == sorted(dataworking.keys()):
+        if sorted(obligatory) == sorted(dataworking.keys()):
 
-                if not projectExists(
-                    self.user.login,
-                    dataworking["user_owner"],
-                    dataworking["project_cod"],
+            activeProjectId = getTheProjectIdForOwner(
+                dataworking["user_owner"], dataworking["project_cod"], self.request
+            )
+            accessType = getAccessTypeForProject(
+                self.user.login, activeProjectId, self.request
+            )
+
+            if accessType in [ProjectAccessType.MEMBER.value]:
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "The access assigned for this project does not allow you to add collaborators to the project."
+                    ),
+                )
+                return response
+
+            if getUserInfo(self.request, dataworking["user_collaborator"]):
+
+                if not theUserBelongsToTheProject(
+                    dataworking["user_collaborator"],
+                    activeProjectId,
                     self.request,
                 ):
-                    response = Response(
-                        status=401, body=self._("This project does not exist.")
-                    )
-                    return response
+                    if dataworking["access_type"] in [
+                        ProjectAccessType.ADMIN.value,
+                        ProjectAccessType.EDITOR.value,
+                        ProjectAccessType.MEMBER.value,
+                        str(ProjectAccessType.ADMIN.value),
+                        str(ProjectAccessType.EDITOR.value),
+                        str(ProjectAccessType.MEMBER.value),
+                    ]:
 
-                activeProjectId = getTheProjectIdForOwner(
-                    dataworking["user_owner"], dataworking["project_cod"], self.request
-                )
-                accessType = getAccessTypeForProject(
-                    self.user.login, activeProjectId, self.request
-                )
+                        dataworking["access_type"] = int(dataworking["access_type"])
+                        dataworking["project_id"] = activeProjectId
+                        dataworking["user_name"] = dataworking["user_collaborator"]
+                        dataworking["project_dashboard"] = 0
+                        added, message = add_project_collaborator(
+                            self.request, dataworking
+                        )
 
-                if accessType in [4]:
-                    response = Response(
-                        status=401,
-                        body=self._(
-                            "The access assigned for this project does not allow you to add collaborators to the project."
-                        ),
-                    )
-                    return response
-
-                if getUserInfo(self.request, dataworking["user_collaborator"]):
-
-                    if not theUserBelongsToTheProject(
-                        dataworking["user_collaborator"],
-                        activeProjectId,
-                        self.request,
-                    ):
-                        if dataworking["access_type"] in [2, 3, 4, "2", "3", "4"]:
-
-                            dataworking["access_type"] = int(dataworking["access_type"])
-                            dataworking["project_id"] = activeProjectId
-                            dataworking["user_name"] = dataworking["user_collaborator"]
-                            dataworking["project_dashboard"] = 0
-                            added, message = add_project_collaborator(
-                                self.request, dataworking
-                            )
-
-                            if added:
-                                response = Response(
-                                    status=200,
-                                    body=self._("Collaborator added successfully."),
-                                )
-                                return response
-
-                            else:
-                                response = Response(status=401, body=message)
-                                return response
-                        else:
+                        if added:
                             response = Response(
-                                status=401,
-                                body=self._(
-                                    "The types of access for collaborators are as follows: 2=Admin, 3=Editor, 4=Member."
-                                ),
+                                status=200,
+                                body=self._("Collaborator added successfully."),
                             )
+                            return response
+
+                        else:
+                            response = Response(status=401, body=message)
                             return response
                     else:
                         response = Response(
                             status=401,
                             body=self._(
-                                "The collaborator you want to add already belongs to the project."
+                                "The types of access for collaborators are as follows: 2=Admin, 3=Editor, 4=Member."
                             ),
                         )
                         return response
@@ -1452,99 +1456,92 @@ class AddCollaboratorView(apiView):
                     response = Response(
                         status=401,
                         body=self._(
-                            "The user you want to add as a collaborator does not exist."
+                            "The collaborator you want to add already belongs to the project."
                         ),
                     )
                     return response
             else:
-                response = Response(status=401, body=self._("Error in the JSON."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "The user you want to add as a collaborator does not exist."
+                    ),
+                )
                 return response
         else:
-            response = Response(status=401, body=self._("Only accepts POST method."))
+            response = Response(status=401, body=self._("Error in the JSON."))
             return response
 
 
 class DeleteCollaboratorView(apiView):
-    def processView(self):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
 
-        if self.request.method == "POST":
+    def post(self):
+        obligatory = ["project_cod", "user_owner", "user_collaborator"]
+        dataworking = json.loads(self.body)
 
-            obligatory = ["project_cod", "user_owner", "user_collaborator"]
-            dataworking = json.loads(self.body)
+        if sorted(obligatory) == sorted(dataworking.keys()):
 
-            if sorted(obligatory) == sorted(dataworking.keys()):
+            if not projectExists(
+                self.user.login,
+                dataworking["user_owner"],
+                dataworking["project_cod"],
+                self.request,
+            ):
+                response = Response(
+                    status=401, body=self._("This project does not exist.")
+                )
+                return response
 
-                if not projectExists(
-                    self.user.login,
-                    dataworking["user_owner"],
-                    dataworking["project_cod"],
+            activeProjectId = getTheProjectIdForOwner(
+                dataworking["user_owner"], dataworking["project_cod"], self.request
+            )
+            accessType = getAccessTypeForProject(
+                self.user.login, activeProjectId, self.request
+            )
+
+            if accessType in [ProjectAccessType.MEMBER.value]:
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "The access assigned for this project does not allow you to delete collaborators from the project."
+                    ),
+                )
+                return response
+
+            if getUserInfo(self.request, dataworking["user_collaborator"]):
+
+                if theUserBelongsToTheProject(
+                    dataworking["user_collaborator"],
+                    activeProjectId,
                     self.request,
                 ):
-                    response = Response(
-                        status=401, body=self._("This project does not exist.")
-                    )
-                    return response
+                    if dataworking["user_owner"] != dataworking["user_collaborator"]:
 
-                activeProjectId = getTheProjectIdForOwner(
-                    dataworking["user_owner"], dataworking["project_cod"], self.request
-                )
-                accessType = getAccessTypeForProject(
-                    self.user.login, activeProjectId, self.request
-                )
+                        remove, message = remove_collaborator(
+                            self.request,
+                            activeProjectId,
+                            dataworking["user_collaborator"],
+                            self,
+                        )
 
-                if accessType in [4]:
-                    response = Response(
-                        status=401,
-                        body=self._(
-                            "The access assigned for this project does not allow you to delete collaborators from the project."
-                        ),
-                    )
-                    return response
-
-                if getUserInfo(self.request, dataworking["user_collaborator"]):
-
-                    if theUserBelongsToTheProject(
-                        dataworking["user_collaborator"],
-                        activeProjectId,
-                        self.request,
-                    ):
-                        if (
-                            dataworking["user_owner"]
-                            != dataworking["user_collaborator"]
-                        ):
-
-                            remove, message = remove_collaborator(
-                                self.request,
-                                activeProjectId,
-                                dataworking["user_collaborator"],
-                                self,
-                            )
-
-                            if remove:
-                                response = Response(
-                                    status=200,
-                                    body=self._(
-                                        "The collaborator has been successfully removed."
-                                    ),
-                                )
-                                return response
-
-                            else:
-                                response = Response(status=401, body=message)
-                                return response
-                        else:
+                        if remove:
                             response = Response(
-                                status=401,
+                                status=200,
                                 body=self._(
-                                    "The user who owns the project cannot be deleted."
+                                    "The collaborator has been successfully removed."
                                 ),
                             )
+                            return response
+
+                        else:
+                            response = Response(status=401, body=message)
                             return response
                     else:
                         response = Response(
                             status=401,
                             body=self._(
-                                "You are trying to delete a collaborator that does not belong to this project."
+                                "The user who owns the project cannot be deleted."
                             ),
                         )
                         return response
@@ -1552,13 +1549,18 @@ class DeleteCollaboratorView(apiView):
                     response = Response(
                         status=401,
                         body=self._(
-                            "The user you want to delete as a collaborator does not exist."
+                            "You are trying to delete a collaborator that does not belong to this project."
                         ),
                     )
                     return response
             else:
-                response = Response(status=401, body=self._("Error in the JSON."))
+                response = Response(
+                    status=401,
+                    body=self._(
+                        "The user you want to delete as a collaborator does not exist."
+                    ),
+                )
                 return response
         else:
-            response = Response(status=401, body=self._("Only accepts POST method."))
+            response = Response(status=401, body=self._("Error in the JSON."))
             return response

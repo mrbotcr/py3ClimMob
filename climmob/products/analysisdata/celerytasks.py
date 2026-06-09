@@ -1,44 +1,154 @@
-import json
 import os
-import shutil as sh
+
+import pandas as pd
 
 from climmob.config.celery_app import celeryApp
+from climmob.models.repository import create_request
 from climmob.plugins.utilities import climmobCeleryTask
-from climmob.products.analysisdata.exportToCsv import createCSV
+from climmob.processes import (
+    getJSONResult,
+    anonymize_project,
+    set_project_anonymization_status,
+    get_anonymization_percentage,
+    get_project_anonymization_status,
+)
+from climmob.utility import AnonymizationStatus
 
 
 @celeryApp.task(base=climmobCeleryTask)
-def create_CSV(path, info, projectCod, form, code):
+def create_raw_data_file(request_attrs, project_id, file, result_params):
+    output_path = os.path.join(file["product_path"], "outputs")
+    file_path = os.path.join(output_path, file["name"]) + f'.{file["type"]}'
+    if os.path.exists(file_path):
+        os.remove(file_path)
 
-    # if os.path.exists(path):
-    #    sh.rmtree(path)
+    with create_request(**request_attrs) as request:
+        if result_params.get("anonymize"):
+            success = process_anonymization(project_id, request)
+            if not success:
+                return
 
-    nameOutput = form + "_data"
-    if code != "":
-        nameOutput += "_" + code
+        result_params["request"] = request
+        result = getJSONResult(**result_params)
 
-    pathout = os.path.join(path, "outputs")
-    if not os.path.exists(path):
-        os.makedirs(path)
-        os.makedirs(pathout)
+    output_path = os.path.join(file["product_path"], "outputs")
+    if not os.path.exists(file["product_path"]):
+        os.makedirs(file["product_path"])
+        os.makedirs(output_path)
 
-    if os.path.exists(pathout + "/" + nameOutput + "_" + projectCod + ".csv"):
-        os.remove(pathout + "/" + nameOutput + "_" + projectCod + ".csv")
+    replace_options_with_labels(result)
 
-    pathInputFiles = os.path.join(path, "inputFile")
-    os.makedirs(pathInputFiles)
+    df = pd.DataFrame(result["data"])
+    if file["type"] == "xlsx":
+        df.to_excel(
+            os.path.join(output_path, file["name"]) + f".{file['type']}",
+            index=False,
+        )
+    elif file["type"] == "csv":
+        df.to_csv(
+            os.path.join(output_path, file["name"]) + f".{file['type']}",
+            index=False,
+        )
 
-    with open(pathInputFiles + "/info.json", "w") as outfile:
-        jsonString = json.dumps(info, indent=4, ensure_ascii=False)
-        outfile.write(jsonString)
 
-    if os.path.exists(pathInputFiles + "/info.json"):
-        try:
-            createCSV(
-                pathout + "/" + nameOutput + "_" + projectCod + ".csv",
-                pathInputFiles + "/info.json",
+def process_anonymization(project_id, request):
+    """
+    Handles project anonymization and anonymization status
+    """
+    start_anonymization = True
+
+    perc = get_anonymization_percentage(project_id, request)
+
+    if perc == 100.0:
+        set_project_anonymization_status(
+            project_id, AnonymizationStatus.COMPLETED.value, request
+        )
+        start_anonymization = False
+    else:
+        anonymization_status = get_project_anonymization_status(project_id, request)
+
+        if anonymization_status is None:
+            anonymization_status = AnonymizationStatus.NOT_STARTED
+            set_project_anonymization_status(
+                project_id, anonymization_status.value, request
             )
-        except Exception as e:
-            print("We can't create the CSV." + str(e))
 
-    sh.rmtree(pathInputFiles)
+        # NOT_STARTED, COMPLETED and ERROR leave start_anonymization = True
+        if anonymization_status == AnonymizationStatus.IN_PROGRESS:
+            start_anonymization = False
+
+    if start_anonymization:
+        print(f"Anonymizing project {project_id}")
+        print(f"Before: {perc:.2f}%")
+        set_project_anonymization_status(
+            project_id, AnonymizationStatus.IN_PROGRESS.value, request
+        )
+        success, msg = anonymize_project(project_id, request)
+
+        perc = get_anonymization_percentage(project_id, request)
+        print(f"success: {success}")
+        print(f"After: {perc:.2f}%")
+
+        if success and perc == 100.0:
+            set_project_anonymization_status(
+                project_id, AnonymizationStatus.COMPLETED.value, request
+            )
+        if not success or perc < 100.0:
+            set_project_anonymization_status(
+                project_id, AnonymizationStatus.ERROR.value, request
+            )
+            return False
+    return True
+
+
+def replace_options_with_labels(data):
+    for row in data["data"]:
+        for field in data["registry"]["fields"]:
+            if (
+                field["rtable"] is not None
+                and row.get("REG_" + field["name"]) is not None
+            ):
+                result = get_option_label(
+                    data["registry"]["lkptables"],
+                    field["rtable"],
+                    field["rfield"],
+                    row["REG_" + field["name"]],
+                    field["isMultiSelect"],
+                )
+                row["REG_" + field["name"]] = result
+
+        for assessment in data["assessments"]:
+            for field in assessment["fields"]:
+                if (
+                    field["rtable"] is not None
+                    and row.get("ASS" + assessment["code"] + "_" + field["name"])
+                    is not None
+                ):
+                    result = get_option_label(
+                        assessment["lkptables"],
+                        field["rtable"],
+                        field["rfield"],
+                        row["ASS" + assessment["code"] + "_" + field["name"]],
+                        field["isMultiSelect"],
+                    )
+                    row["ASS" + assessment["code"] + "_" + field["name"]] = result
+
+
+def get_option_label(lkptables, rtable, rfield, value, isMultiSelect):
+    res = None
+    for lkp in lkptables:
+        if lkp["name"] == rtable:
+            for data in lkp["values"]:
+                if isMultiSelect == "true":
+                    for valueSplit in value.split(" "):
+                        if str(data[rfield]) == str(valueSplit):
+                            if res == None:
+                                res = data[rfield[:-3] + "des"]
+                            else:
+                                res += " - " + data[rfield[:-3] + "des"]
+                else:
+                    if data[rfield] == value:
+                        res = data[rfield[:-3] + "des"]
+                        break
+
+    return res

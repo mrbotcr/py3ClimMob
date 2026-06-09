@@ -17,9 +17,12 @@ from climmob.processes import (
     getTheProjectIdForOwner,
 )
 from climmob.views.classes import privateView, publicView
+from climmob.views.validators.project.ProjectOpenValidator import ProjectOpenValidator
 
 
 class dashboard_view(privateView):
+    validators = (ProjectOpenValidator,)
+
     def processView(self):
 
         if "project" in self.request.params.keys():
@@ -77,7 +80,6 @@ class dashboard_view(privateView):
                         total_ass_records = total_ass_records + assessment["asstotal"]
                     else:
                         all_ass_closed = False
-
                 context = {
                     "activeUser": self.user,
                     "activeProject": activeProjectData,

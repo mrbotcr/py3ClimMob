@@ -33,15 +33,17 @@ class BaseTest(unittest.TestCase):
 class ViewBaseTest(BaseTest):
     view_class = None
     request_method = "GET"
+    body = {}
     request_body = None
 
     def setUp(self):
         super().setUp()
         self.request = MagicMock()
         self.request.translate = self.mock_translation
-        with patch("climmob.views.classes.ApiContext"), patch(
+        with patch("climmob.views.classes.ApiContext") as api_context, patch(
             "climmob.views.classes.PrivateContext"
         ):
+            api_context.return_value.body = self.body
             self.view = self.view_class(self.request)
         self.view.request.method = self.request_method
         self.view.user = MagicMock(login="test_user")

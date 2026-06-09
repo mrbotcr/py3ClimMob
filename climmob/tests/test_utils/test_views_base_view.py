@@ -10,7 +10,7 @@ from climmob.views.basic_views import (
     HomeView,
     HealthView,
     NotFoundView,
-    ForbiddenView,
+    # ForbiddenView,
     LoginView,
     RegisterView,
     LogoutView,
@@ -48,29 +48,36 @@ class TestRenderTemplate(unittest.TestCase):
 class TestHomeView(ViewBaseTest):
     view_class = HomeView
 
-    @patch("climmob.views.basic_views.getProjectCount", return_value=8)
-    @patch("climmob.views.basic_views.getUserCount", return_value=2)
-    def test_get_home_view_cookie_none(
-        self, mock_get_user_count, mock_get_project_count
-    ):
-        self.view.request.cookies = {}
-        result = self.view.get()
-        self.assertEqual(
-            result, {"user_count": 2, "project_count": 8, "ask_for_cookies": True}
-        )
-        mock_get_user_count.assert_called_once_with(self.view.request)
-        mock_get_project_count.assert_called_once_with(self.view.request)
+    def test_get_always_redirects_to_login(self):
+        res = self.view.get()
 
-    @patch("climmob.views.basic_views.getProjectCount", return_value=8)
-    @patch("climmob.views.basic_views.getUserCount", return_value=2)
-    def test_get_cookie_true(self, mock_get_user_count, mock_get_project_count):
-        self.view.request.cookies = {"climmob_cookie_question": 1}
-        result = self.view.get()
-        self.assertEqual(
-            result, {"user_count": 2, "project_count": 8, "ask_for_cookies": False}
-        )
-        mock_get_user_count.assert_called_once_with(self.view.request)
-        mock_get_project_count.assert_called_once_with(self.view.request)
+        assert res.status_code == 302
+        assert res.location.endswith("/login")
+
+    #####----------------------------this test was comment because the HomeView does not going to be showed
+    # @patch("climmob.views.basic_views.getProjectCount", return_value=8)
+    # @patch("climmob.views.basic_views.getUserCount", return_value=2)
+    # def test_get_home_view_cookie_none(
+    #     self, mock_get_user_count, mock_get_project_count
+    # ):
+    #     self.view.request.cookies = {}
+    #     result = self.view.get()
+    #     self.assertEqual(
+    #         result, {"user_count": 2, "project_count": 8, "ask_for_cookies": True}
+    #     )
+    #     mock_get_user_count.assert_called_once_with(self.view.request)
+    #     mock_get_project_count.assert_called_once_with(self.view.request)
+    #
+    # @patch("climmob.views.basic_views.getProjectCount", return_value=8)
+    # @patch("climmob.views.basic_views.getUserCount", return_value=2)
+    # def test_get_cookie_true(self, mock_get_user_count, mock_get_project_count):
+    #     self.view.request.cookies = {"climmob_cookie_question": 1}
+    #     result = self.view.get()
+    #     self.assertEqual(
+    #         result, {"user_count": 2, "project_count": 8, "ask_for_cookies": False}
+    #     )
+    #     mock_get_user_count.assert_called_once_with(self.view.request)
+    #     mock_get_project_count.assert_called_once_with(self.view.request)
 
 
 ##*****##
@@ -146,15 +153,6 @@ class TestNotFoundView(ViewBaseTest):
         result = self.view.get()
         self.assertEqual(result, {})
         self.assertEqual(self.view.request.response.status, 404)
-
-
-class TestForbiddenView(ViewBaseTest):
-    view_class = ForbiddenView
-
-    def test_get_not_found_view_success(self):
-        result = self.view.get()
-        self.assertEqual(result, {})
-        self.assertEqual(self.view.request.response.status, 403)
 
 
 class TestStoreCookieView(ViewBaseTest):

@@ -65,8 +65,21 @@ __all__ = [
     "getProjectFullDetailsById",
     "getProjectsByUserThatRequireSetup",
     "update_project_status",
+    "get_user_access_type_in_project",
+    "get_project_status",
+    "get_project_cod_by_id",
     "get_project_status",
 ]
+
+
+def get_project_cod_by_id(project_id, request):
+    res = mapFromSchema(
+        request.dbsession.query(Project.project_cod)
+        .filter(Project.project_id == project_id)
+        .first()
+    )
+
+    return res["project_cod"]
 
 
 def getTotalNumberOfProjectsInClimMob(request):
@@ -455,6 +468,11 @@ def extraDetailsForProject(activeProject, request):
 
     activeProject["languages"] = getPrjLangInProject(
         activeProject["project_id"], request
+    )
+    activeProject["Country"] = mapFromSchema(
+        request.dbsession.query(Country)
+        .filter_by(cnty_cod=activeProject["project_cnty"])
+        .first()
     )
 
     for plugin in p.PluginImplementations(p.IProjectTechnologyOptions):
@@ -956,9 +974,21 @@ def update_project_status(project_id, status, request):
         request.dbsession.query(Project).filter(
             Project.project_id == project_id
         ).update({"project_status": status})
-        return True
+        return True, ""
     except Exception as e:
         return False, str(e)
+
+
+def get_user_access_type_in_project(project_id, user, request):
+    res = mapFromSchema(
+        request.dbsession.query(userProject.access_type)
+        .filter(userProject.user_name == user)
+        .filter(userProject.project_id == project_id)
+        .first()
+    )
+    if res:
+        return True, res["access_type"]
+    return False, ""
 
 
 def get_project_status(project_id, request):

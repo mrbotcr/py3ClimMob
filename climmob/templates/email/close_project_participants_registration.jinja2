@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            text-align: center;
+        !important;
+        }
+
+        .email-container {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 30px;
+            border-radius: 6px;
+            margin: 0 auto;
+            width: 600px;
+            display: inline-block;
+        !important;
+            text-align: left;
+        }
+    </style>
+</head>
+<body><div class="email-container">
+    {% block email_body %}
+        {% block email_hello %}
+            <p style="margin-bottom: 15px;"><strong>{{ _('Congratulations!') }}</strong></p>
+        {% endblock email_hello %}
+
+        {% block email_message %}
+            <p style="margin-bottom: 15px;">
+                {{ _('Your project ') }}
+                <strong>{{ project_info["project_cod"] }} - {{ project_info["project_name"] }}</strong>
+                {{ _('is closed now') }}.
+            </p>
+
+            {% if (project_info['total_ass_records'] > 5 or (project_info.project_registration_and_analysis == 1 and project_info['progress'].regtotal >=5))
+            and project_info['progress'].metadata == True %}
+                        <p style="margin-bottom: 15px;">
+
+                {{ _('Information and results are still available for review') }}. <strong>{{ _("Next steps") }}:</strong>
+                {{ _('Analyze your results and publish your data!') }}
+                        </p>
+            {% endif %}
+
+            <p><strong>{{ _("Project details") }}:</strong></p>
+            <ul>{{ _('Project name') }}: <strong>{{ project_info["project_name"] }}</strong></ul>
+            <ul>{{ _('Project principal investigator') }}: <strong>{{ project_info["project_pi"] }}</strong></ul>
+            <ul>{{ _('Country') }}: <strong>{{ project_info["Country"].cnty_name }}</strong></ul>
+            <ul>{{ _('Status') }}: <strong>
+                {% if project_info["project_status"] == 0 %}
+                    {{ _("Undefined") }}
+                {% elif project_info["project_status"] == 1 %}
+                    {{ _("Definition") }}
+                {% elif project_info["project_status"] == 2 %}
+                    {{ _("In progress") }}
+                {% elif project_info["project_status"] == 3 %}
+                    {{ _("Closed") }}
+                {% endif %}</strong>
+            </ul>
+            {% if collaborators %}
+                <p>
+                    {{ _("This project was previously shared with the following people:") }}<br><br>
+                    {% for collaborator in collaborators %}
+                        {{ collaborator["user_fullname"] }}: {{ collaborator["user_email"] }}<br>
+                    {% endfor %}<br>
+                    {{ _("If you would like to inform them that the project has been closed, you may forward this email.") }}<br><br>
+                </p>
+            {% endif %}
+            <p style="margin-bottom: 15px;">{{ _('Thank you for using ClimMob and contributing to its growing community') }}.</p>
+        {% endblock email_message %}
+
+        {% block email_goodbye %}
+            <p>{{ _('Best regards,') }}<p>
+            <p style="margin-bottom: 0;">{{ _('The ClimMob team') }}</p>
+            <br>
+            <img src="{{ logo }}" style="width:45%; max-width:100px; height:auto;" >
+        {% endblock email_goodbye %}
+    {% endblock email_body %}
+</div>
+</body>
+</html>
+
+

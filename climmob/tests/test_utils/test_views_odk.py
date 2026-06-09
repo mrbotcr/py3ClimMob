@@ -15,6 +15,7 @@ from climmob.views.odk import (
     AssessmentManifestView,
     MediaFileView,
     AssessmentMediaFileView,
+    check_if_project_close_to_avoid_continue,
 )
 
 
@@ -121,7 +122,22 @@ class TestFormListByProjectView(unittest.TestCase):
         self.view = FormListByProjectView(self.mock_request)
         self.view.user = "test_enumerator"
 
+        self.check_close_patcher = patch(
+            "climmob.views.odk.check_if_project_close_to_avoid_continue"
+        )
+        self.mock_check = self.check_close_patcher.start()
+
+        self.mock_check.return_value = MagicMock(return_value=True)
+
+        self.addCleanup(self.check_close_patcher.stop)
+
     def tearDown(self):
+        if self.mock_check.called:
+            self.mock_check.assert_called_with(
+                self.mock_request.matchdict["user"],
+                self.mock_request.matchdict["project"],
+                self.view.request,
+            )
         patch.stopall()
 
     def common_assertions(
@@ -139,6 +155,11 @@ class TestFormListByProjectView(unittest.TestCase):
         )
         if expected_authorize_call:
             mock_authorize.assert_called_once_with("password")
+
+    def test_project_close(self):
+        self.mock_check.return_value = False
+        response = self.view.processView()
+        self.assertEqual(response.status, "403 Forbidden")
 
     @patch("climmob.views.odk.isEnumeratorActive", return_value=True)
     @patch("climmob.views.odk.getEnumeratorPassword", return_value="password")
@@ -473,8 +494,28 @@ class TestSubmissionByProjectView(unittest.TestCase):
         self.view = SubmissionByProjectView(self.mock_request)
         self.view.user = "test_enumerator"
 
+        self.check_close_patcher = patch(
+            "climmob.views.odk.check_if_project_close_to_avoid_continue"
+        )
+        self.mock_check = self.check_close_patcher.start()
+
+        self.mock_check.return_value = MagicMock(return_value=True)
+
+        self.addCleanup(self.check_close_patcher.stop)
+
     def tearDown(self):
+        if self.mock_check.called:
+            self.mock_check.assert_called_with(
+                self.mock_request.matchdict["user"],
+                self.mock_request.matchdict["project"],
+                self.view.request,
+            )
         patch.stopall()
+
+    def test_project_close(self):
+        self.mock_check.return_value = False
+        response = self.view.processView()
+        self.assertEqual(response.status, "403 Forbidden")
 
     @patch("climmob.views.odk.isEnumeratorActive", return_value=True)
     @patch("climmob.views.odk.getTheProjectIdForOwner", return_value="project_id")
@@ -726,7 +767,23 @@ class TestXMLFormView(unittest.TestCase):
         self.view.user = MagicMock()
         self.view.user.login = "test_user_login"
 
+        self.check_close_patcher = patch(
+            "climmob.views.odk.check_if_project_close_to_avoid_continue"
+        )
+        self.mock_check = self.check_close_patcher.start()
+
+        self.mock_check.return_value = MagicMock(return_value=True)
+
+        self.addCleanup(self.check_close_patcher.stop)
+
     def tearDown(self):
+        if self.mock_check.called:
+            self.mock_check.assert_called_with(
+                self.mock_request.matchdict["userowner"],
+                self.mock_request.matchdict["project"],
+                self.view.request,
+                "project_id",
+            )
         patch.stopall()
 
     def common_assertions(
@@ -748,6 +805,15 @@ class TestXMLFormView(unittest.TestCase):
             )
         if authorize_called:
             self.view.authorize.assert_called_once_with("password")
+
+    @patch("climmob.views.odk.getTheProjectIdForOwner", return_value="project_id")
+    def test_project_close(self, mock_getTheProjectIdForOwner):
+        self.mock_check.return_value = False
+        response = self.view.processView()
+        self.assertEqual(response.status, "403 Forbidden")
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "test_owner", "test_project", self.mock_request
+        )
 
     @patch("climmob.views.odk.getXMLForm", return_value="xml_form")
     @patch("climmob.views.odk.getEnumeratorPassword", return_value="password")
@@ -824,6 +890,24 @@ class TestAssessmentXMLFormView(unittest.TestCase):
         self.view.user = MagicMock()
         self.view.user.login = "test_user"
 
+        self.check_close_patcher = patch(
+            "climmob.views.odk.check_if_project_close_to_avoid_continue"
+        )
+        self.mock_check = self.check_close_patcher.start()
+
+        self.mock_check.return_value = MagicMock(return_value=True)
+
+        self.addCleanup(self.check_close_patcher.stop)
+
+    def tearDown(self):
+        if self.mock_check.called:
+            self.mock_check.assert_called_with(
+                self.mock_request.matchdict["userowner"],
+                self.mock_request.matchdict["project"],
+                self.view.request,
+                "project_id",
+            )
+
     def common_assertions(
         self,
         mock_getTheProjectIdForOwner,
@@ -843,6 +927,15 @@ class TestAssessmentXMLFormView(unittest.TestCase):
             )
         if authorize_called:
             self.view.authorize.assert_called_once_with("password")
+
+    @patch("climmob.views.odk.getTheProjectIdForOwner", return_value="project_id")
+    def test_project_close(self, mock_getTheProjectIdForOwner):
+        self.mock_check.return_value = False
+        response = self.view.processView()
+        self.assertEqual(response.status, "403 Forbidden")
+        mock_getTheProjectIdForOwner.assert_called_once_with(
+            "owner_user", "test_project", self.mock_request
+        )
 
     @patch("climmob.views.odk.getTheProjectIdForOwner", return_value="project_id")
     @patch("climmob.views.odk.isEnumeratorinProject", return_value=True)
@@ -1264,6 +1357,52 @@ class TestAssessmentMediaFileView(unittest.TestCase):
             mock_getProjectId, mock_isEnumeratorinProject, authorize_called=False
         )
         self.assertEqual(response.status_code, 401)
+
+
+class TestCheckIfProjectCloseToAvoidContinue(unittest.TestCase):
+    def setUp(self):
+        self.view = MagicMock()
+        self.request = MagicMock()
+        self.user_owner = MagicMock(name="user_owner")
+        self.project_cod = MagicMock(name="project_code")
+        self.request = self.request
+        self.project_id = None
+
+        self.get_project_id_owner_patcher = patch(
+            "climmob.views.odk.getTheProjectIdForOwner"
+        )
+        self.get_project_status_patcher = patch("climmob.views.odk.get_project_status")
+        self.mock_project_id_owner = self.get_project_id_owner_patcher.start()
+        self.mock_project_status = self.get_project_status_patcher.start()
+
+        self.mock_project_id_owner.return_value = self.project_id
+        self.mock_project_status.return_value = 1
+
+        self.addCleanup(self.get_project_id_owner_patcher.stop)
+        self.addCleanup(self.get_project_status_patcher.stop)
+
+    def tearDown(self):
+
+        if self.mock_project_id_owner.called:
+            self.mock_project_id_owner.assert_called_with(
+                self.user_owner, self.project_cod, self.request
+            )
+        if self.mock_project_status.called:
+            self.mock_project_status.assert_called_with(self.project_id, self.request)
+
+    def test_project_close_to_avoid_continue_true(self):
+        self.project_id = MagicMock(name="project_id")
+        result = check_if_project_close_to_avoid_continue(
+            self.user_owner, self.project_cod, self.request, self.project_id
+        )
+        self.assertEqual(result, True)
+
+    def test_project_close_to_avoid_continue_false(self):
+        self.mock_project_status.return_value = 3
+        result = check_if_project_close_to_avoid_continue(
+            self.user_owner, self.project_cod, self.request
+        )
+        self.assertEqual(result, False)
 
 
 if __name__ == "__main__":

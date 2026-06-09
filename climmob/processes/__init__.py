@@ -51,6 +51,9 @@ from climmob.processes.db.project_location_unit_objective import *
 from climmob.processes.db.location_unit_of_analysis_objectives import *
 from climmob.processes.db.affiliation import *
 from climmob.processes.db.project_summary import *
+from climmob.processes.db.anonymized import *
+from climmob.processes.db.anonymization_params import *
+from climmob.processes.db.project_anonymization_status import *
 from climmob.processes.db.project_publish_status import *
 from climmob.processes.db.project_publishing_license import *
 from climmob.processes.db.publishing_license import *

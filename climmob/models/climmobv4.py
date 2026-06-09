@@ -16,7 +16,7 @@ from sqlalchemy import (
     UniqueConstraint,
     Float,
 )
-from sqlalchemy.dialects.mysql import MEDIUMTEXT
+from sqlalchemy.dialects.mysql import MEDIUMTEXT, MEDIUMBLOB
 from sqlalchemy.orm import relationship
 
 from climmob.models.meta import Base
@@ -727,6 +727,28 @@ class Project(Base):
     country = relationship("Country")
 
 
+class AnonymizationStatus(Base):
+    __tablename__ = "anonymization_status"
+
+    anonymization_status_id = Column(Integer, primary_key=True, nullable=False)
+    anonymization_status_name = Column(Unicode(32), nullable=False)
+
+
+class ProjectAnonymizationStatus(Base):
+    __tablename__ = "project_anonymization_status"
+
+    anonymization_status_id = Column(
+        Integer,
+        ForeignKey("anonymization_status.anonymization_status_id"),
+        nullable=False,
+    )
+    project_id = Column(
+        Unicode(64), ForeignKey("project.project_id"), primary_key=True, nullable=False
+    )
+    last_updated_by = Column(Unicode(80), ForeignKey("user.user_name"), nullable=False)
+    last_updated_at = Column(DateTime, nullable=False)
+
+
 class Qstoption(Base):
     __tablename__ = "qstoption"
     __table_args__ = ({"mysql_engine": "InnoDB", "mysql_charset": "utf8"},)
@@ -787,6 +809,14 @@ class Question_subgroup(Base):
     parent_id = Column(Unicode(80), primary_key=True, nullable=True)
 
 
+class QuestionType(Base):
+    __tablename__ = "question_type"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    name = Column(Unicode(64), nullable=False)
+    order = Column(Integer, nullable=False)
+
+
 class Question(Base):
     __tablename__ = "question"
     __table_args__ = (
@@ -805,7 +835,7 @@ class Question(Base):
     question_unit = Column(Unicode(120))
     question_min = Column(Float, nullable=True)
     question_max = Column(Float, nullable=True)
-    question_dtype = Column(Integer)
+    question_dtype = Column(Integer, ForeignKey("question_type.id"))
     question_cmp = Column(Unicode(120))
     question_reqinreg = Column(Integer, server_default=text("'0'"))
     question_reqinasses = Column(Integer, server_default=text("'0'"))
@@ -835,10 +865,37 @@ class Question(Base):
     qstgroups_user = Column(Unicode(80), nullable=True)
     qstgroups_id = Column(Unicode(80), nullable=True)
     question_sensitive = Column(Integer, server_default=text("'0'"))
+    question_anonymity = Column(Integer, ForeignKey("question_anonymity.id"))
     question_lang = Column(ForeignKey("i18n.lang_code"), nullable=True)
     extra = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
     i18n = relationship("I18n")
     user = relationship("User")
+
+
+class QuestionAnonymity(Base):
+    __tablename__ = "question_anonymity"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    name = Column(Unicode(64), nullable=False)
+
+
+class QuestionTypeAnonymity(Base):
+    __tablename__ = "question_type_anonymity"
+
+    type_id = Column(
+        Integer, ForeignKey("question_type.id"), primary_key=True, nullable=False
+    )
+    anonymity_id = Column(
+        Integer, ForeignKey("question_anonymity.id"), primary_key=True, nullable=False
+    )
+
+
+class AnonymizationParameter(Base):
+    __tablename__ = "anonymization_parameter"
+
+    question_id = Column(Integer, primary_key=True, nullable=False)
+    name = Column(Unicode(64), primary_key=True, nullable=False)
+    value = Column(Unicode(64), nullable=False)
 
 
 class Registry(Base):
@@ -1367,7 +1424,7 @@ class MetadataForm(Base):
 
     metadata_id = Column(Unicode(64), primary_key=True)
     metadata_name = Column(Unicode(200), nullable=False)
-    metadata_odk = Column(BLOB, nullable=False)
+    metadata_odk = Column(MEDIUMBLOB, nullable=False)
     metadata_json = Column(JSON, nullable=False)
     metadata_active = Column(Integer, nullable=False, server_default=text("'1'"))
     metadata_for_technology_options = Column(

@@ -29,27 +29,11 @@
         <label class="col-sm-4 control-label">{{ _("Type") }}</label>
         <div class="col-sm-8">
             <select id="question_dtype" name="question_dtype" class="form-control inputForQuestionSelect">
-                <option value="1" >{{ _('Text') }}</option>
-                <option value="9" >{{ _('Ranking of options') }}</option>
-                <option value="10" >{{ _('Comparison with check') }}</option>
-                <option value="27" >{{ _('Location') }}</option>
-                <option value="2" >{{ _('Decimal') }}</option>
-                <option value="3" >{{ _('Integer') }}</option>
-                <option value="4" >{{ _('GeoPoint') }}</option>
-                <option value="5" >{{ _('Select one') }}</option>
-                <option value="6" >{{ _('Select multiple') }}</option>
-                <option value="11" >{{ _('Geotrace') }}</option>
-                <option value="12" >{{ _('Geoshape') }}</option>
-                <option value="13" >{{ _('Date') }}</option>
-                <option value="14" >{{ _('Time ') }}</option>
-                <option value="15" >{{ _('DateTime ') }}</option>
-                <option value="16" >{{ _('Image ') }}</option>
-                <option value="17" >{{ _('Audio ') }}</option>
-                <option value="18" >{{ _('Video ') }}</option>
-                <option value="19" >{{ _('Barcode/QR') }}</option>
-                {# <option value="7" {% if formdata.question_dtype == 7 %}selected {% endif %}>{{ _('Package') }}</option>
-                   <option value="8" {% if formdata.question_dtype == 8 %}selected {% endif %}>{{ _('Observer') }}</option>
-                #}
+                {% for q_type in question_types %}
+                    {% if q_type.display %}
+                        <option value="{{ q_type.id }}">{{ q_type.name }}</option>
+                    {% endif %}
+                {% endfor %}
                 {% block qstformqtypes_extra %}
                 {% endblock qstformqtypes_extra %}
             </select>
@@ -553,13 +537,96 @@
 {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
     <div class="form-group">
-        <label class="col-sm-4 control-label">{{ _("Set as sensitive") }}</label>
+        <label class="col-sm-4 control-label" for="ckb_question_as_sensitive">
+            <i class="fa fa-info-circle"
+               title="{{ _( "Privacy-preserved and excluded from shareable versions of the trial results dataset.") }}">
+            </i>
+            {{ _("Contains confidential information") }}
+        </label>
         <div class="col-sm-8">
             <div class="switch">
                 <input type="checkbox" id="ckb_question_as_sensitive" class="inputForQuestionCheck"
                        name="question_sensitive" data-on-color="success"
                        data-off-color="danger" data-on-text="{{ _('Yes') }}"
-                       data-off-text="{{ _('No') }}" >
+                       data-off-text="{{ _('No') }}">
+            </div>
+        </div>
+    </div>
+    <div id="question-anonymity-div">
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="question_anonymity">{{ _("Privacy-preserving method") }}</label>
+            <div class="col-sm-8" style="display: flex; align-items: center; justify-content: center; gap: 1em;">
+                <select required id="question_anonymity" name="question_anonymity" class="form-control inputForQuestionSelect">
+                </select>
+{#                REMOVE  #}
+                <i class="fa fa-info-circle anonymity-description" style="display: none;" id="anonymity-description-remove"
+                    title="{{ _("This method completely removes the question from result.") }}">
+                </i>
+{#                PSEUDO  #}
+                <i class="fa fa-info-circle anonymity-description" style="display: none;" id="anonymity-description-pseudo"
+                   title="{{ _("Replaces the source ID with a unique code to protect identity while allowing data tracking across forms.") }}">
+                </i>
+{#                BINNING  #}
+                <i class="fa fa-info-circle anonymity-description" style="display: none;" id="anonymity-description-range"
+                   title="{{ _("This method anonymizes numerical values by grouping them into bins. Define the bounds and the interval to determine the boundaries of each bin.") }}">
+                </i>
+{#                NOISE  #}
+                <i class="fa fa-info-circle anonymity-description" style="display: none;" id="anonymity-description-noise"
+                   title="{{ _("Displaces the location in a random direction.") }}">
+                </i>
+{#                NOISE  #}
+                <i class="fa fa-info-circle anonymity-description" style="display: none;" id="anonymity-description-month-year"
+                   title="{{ _("Leaves only the month and year.") }}">
+                </i>
+            </div>
+        </div>
+        <div id="question-anonymization-params">
+            <div id="range-params">
+                 <div class="form-group" id="anonymization-bounds-div">
+                    <label class="col-sm-4 control-label" for="anonymization-lower-bound-input">
+                        <i class="fa fa-info-circle"
+                           title="{{ _("The lowest and highest values used to create the bins.") }}">
+                        </i>
+                        {{ _("Bounds") }}
+                    </label>
+                    <div class="col-sm-8" style="display: flex; gap: 1em;">
+                        <input required type="number" placeholder="{{ _("Lower") }}" step="any" id="anonymization-lower-bound-input" name="anonym_param_lower_bound" class="form-control inputForQuestion"/>
+                        <input required type="number" placeholder="{{ _("Upper") }}" step="any" id="anonymization-upper-bound-input" name="anonym_param_upper_bound" class="form-control inputForQuestion"/>
+                    </div>
+                </div>
+                <div class="form-group" id="anonymization-interval-div">
+                    <label class="col-sm-4 control-label" for="anonymization-interval-input">
+                        <i class="fa fa-info-circle"
+                           title="{{ _("Size of each bin. E.g., an interval of 10 creates bins such as 0-10, 10-20...") }}">
+                        </i>
+                        {{ _("Interval") }}
+                    </label>
+                    <div class="col-sm-8">
+                        <input required type="number" step="any" id="anonymization-interval-input" name="anonym_param_interval" class="form-control inputForQuestion"/>
+                    <span class="help-block m-b-none text-left">
+                        {{ _("E.g., 0 (lower), 100 (upper), and 10 (interval) create groups of 10.") }}
+                    </span>
+                    </div>
+                </div>
+            </div>
+            <div id="pseudonym-params">
+                <div class="form-group" id="anonymization-pseudonym-div">
+                    <label class="col-sm-4 control-label" for="anonymization-pseudonym-input">
+{#                        <i class="fa fa-info-circle"#}
+{#                           title="{{ _("This method anonymizes the source of the data.#}
+{#                           It allows responses to be tracked across forms without revealing#}
+{#                           the source's true ID.") }}">#}
+{#                        </i>#}
+                        {{ _("Pseudonym") }}
+                    </label>
+                    <div class="col-sm-8">
+                        <input required id="anonymization-pseudonym-input" name="anonym_param_pseudonym"
+                               class="form-control inputForQuestion"/>
+                        <span class="help-block m-b-none text-left">
+                            {{ _("Enter the prefix for the anonymous ID. You must include {} as a placeholder, which will be replaced by a unique number. Example: Farmer-{} becomes Farmer-1") }}
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

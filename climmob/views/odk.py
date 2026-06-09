@@ -14,7 +14,9 @@ from climmob.processes import (
     getAssessmentMediaFile,
     getTheProjectIdForOwner,
     isEnumeratorAssigned,
+    get_project_status,
 )
+from climmob.utility.project import ProjectStatus
 from climmob.views.classes import odkView
 
 
@@ -34,9 +36,16 @@ class FormlistView(odkView):
 
 class FormListByProjectView(odkView):
     def processView(self):
+        """send the form data to odk collect"""
         userOwner = self.request.matchdict["user"]
         projectCod = self.request.matchdict["project"]
         userCollaborator = self.request.matchdict["collaborator"]
+
+        if not check_if_project_close_to_avoid_continue(
+            userOwner, projectCod, self.request
+        ):
+            return Response(status=403)
+
         if isEnumeratorActive(userCollaborator, self.user, self.request):
             if self.authorize(
                 getEnumeratorPassword(userCollaborator, self.user, self.request)
@@ -86,6 +95,8 @@ class PushView(odkView):
 
 
 class SubmissionView(odkView):
+    """receive the forms"""
+
     def processView(self):
         userid = self.request.matchdict["userid"]
         if self.request.method == "HEAD":
@@ -129,6 +140,12 @@ class SubmissionByProjectView(odkView):
         userOwner = self.request.matchdict["user"]
         projectCod = self.request.matchdict["project"]
         userCollaborator = self.request.matchdict["collaborator"]
+
+        if not check_if_project_close_to_avoid_continue(
+            userOwner, projectCod, self.request
+        ):
+            return Response(status=403)
+
         if self.request.method == "HEAD":
             if isEnumeratorActive(userCollaborator, self.user, self.request):
 
@@ -192,10 +209,15 @@ class SubmissionByProjectView(odkView):
 
 class XMLFormView(odkView):
     def processView(self):
+        """allows to download the form in the odk Collect"""
         user = self.request.matchdict["user"]
         projectUserOwner = self.request.matchdict["userowner"]
         projectCod = self.request.matchdict["project"]
         projectId = getTheProjectIdForOwner(projectUserOwner, projectCod, self.request)
+        if not check_if_project_close_to_avoid_continue(
+            projectUserOwner, projectCod, self.request, projectId
+        ):
+            return Response(status=403)
 
         if isEnumeratorinProject(projectId, self.user, self.request):
             if self.authorize(getEnumeratorPassword(user, self.user, self.request)):
@@ -214,6 +236,10 @@ class AssessmentXMLFormView(odkView):
         projectId = getTheProjectIdForOwner(projectUserOwner, projectCod, self.request)
         assessmentid = self.request.matchdict["assessmentid"]
 
+        if not check_if_project_close_to_avoid_continue(
+            projectUserOwner, projectCod, self.request, projectId
+        ):
+            return Response(status=403)
         if isEnumeratorinProject(projectId, self.user, self.request):
             if self.authorize(getEnumeratorPassword(user, self.user, self.request)):
                 return getAssessmentXMLForm(
@@ -313,3 +339,14 @@ class AssessmentMediaFileView(odkView):
                 return self.askForCredentials()
         else:
             return self.askForCredentials()
+
+
+def check_if_project_close_to_avoid_continue(
+    user_owner, project_cod, request, project_id=None
+):
+    if not project_id:
+        project_id = getTheProjectIdForOwner(user_owner, project_cod, request)
+    project_status = get_project_status(project_id, request)
+    if project_status == ProjectStatus.FINALIZED.value:
+        return False
+    return True

@@ -12,15 +12,16 @@ from climmob.processes import (
     projectExists,
     getJSONResult,
 )
-from climmob.products.analysisdata.analysisdata import create_datacsv
-from climmob.products.dataxlsx.dataxlsx import create_XLSXToDownload
+from climmob.products.analysisdata.analysisdata import create_raw_data
 from climmob.products.errorLogDocument.errorLogDocument import create_error_log_document
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 from climmob.views.classes import privateView
 from climmob.views.editDataDB import (
     getNamesEditByColums,
     fillDataTable,
     update_edited_data,
 )
+from climmob.views.validators.project import ProjectOpenValidator
 
 
 class downloadDataView(privateView):
@@ -30,10 +31,10 @@ class downloadDataView(privateView):
         activeProjectCod = self.request.matchdict["project"]
         formId = self.request.matchdict["formid"]
         formatId = self.request.matchdict["formatid"]
+        anonymize = str(self.request.params.get("anonymize")).lower() == "true"
         includeRegistry = True
         includeAssessment = True
         code = ""
-        formatExtra = ""
 
         if not projectExists(
             self.user.login, activeProjectUser, activeProjectCod, self.request
@@ -56,44 +57,37 @@ class downloadDataView(privateView):
                 else:
                     raise HTTPNotFound()
 
-        info = getJSONResult(
-            activeProjectUser,
-            activeProjectId,
-            activeProjectCod,
-            self.request,
-            includeRegistry,
-            includeAssessment,
-            code,
-        )
+        result_params = {
+            "includeRegistry": includeRegistry,
+            "includeAssessment": includeAssessment,
+            "assessmentCode": code,
+            "anonymize": anonymize,
+        }
 
         if formatId not in ["csv", "xlsx"]:
             raise HTTPNotFound()
 
-        if formatId == "csv":
-            create_datacsv(
-                activeProjectUser,
-                activeProjectId,
-                activeProjectCod,
-                info,
-                self.request,
-                formId,
-                code,
-            )
+        create_raw_data(
+            {
+                "userOwner": activeProjectUser,
+                "projectId": activeProjectId,
+                "projectCod": activeProjectCod,
+            },
+            result_params,
+            self.request,
+            formId,
+            code,
+            file_type=formatId,
+        )
 
-        if formatId == "xlsx":
-            formatExtra = formatId + "_"
-            create_XLSXToDownload(
-                activeProjectUser,
-                activeProjectId,
-                activeProjectCod,
-                self.request,
-                formId,
-                code,
-            )
+        format_extra = "xlsx_" if formatId == "xlsx" else ""
+        product_id_extra = "-shareable" if anonymize else ""
 
         url = self.request.route_url(
             "productList",
-            _query={"product1": "create_data_" + formatExtra + formId + "_" + code},
+            _query={
+                "product1": f"create_data{product_id_extra}_{format_extra}{formId}_{code}"
+            },
         )
         self.returnRawViewResult = True
         return HTTPFound(location=url)
@@ -187,7 +181,9 @@ class downloadErroLogDocument_view(privateView):
         return HTTPFound(location=url)
 
 
-class editDataView(privateView):
+class EditDataView(privateView):
+    validators = (ProjectExistsValidator, ProjectOpenValidator)
+
     def processView(self):
 
         activeProjectUser = self.request.matchdict["user"]
@@ -195,102 +191,95 @@ class editDataView(privateView):
         formId = self.request.matchdict["formid"]
         code = ""
 
-        if not projectExists(
-            self.user.login, activeProjectUser, activeProjectCod, self.request
-        ):
+        # TODO: refactor the function on get and post
+
+        activeProjectId = getTheProjectIdForOwner(
+            activeProjectUser, activeProjectCod, self.request
+        )
+        if not formId in ["registry", "assessment"]:
             raise HTTPNotFound()
+
+        formId = formId[:3].lower()
+        if formId == "ass":
+            code = self.request.matchdict["codeid"]
+
+        path = os.path.join(
+            self.request.registry.settings["user.repository"],
+            *[activeProjectUser, activeProjectCod],
+        )
+        if code == "":
+            paths = ["db", formId, "create.xml"]
         else:
+            paths = ["db", formId, code, "create.xml"]
 
-            activeProjectId = getTheProjectIdForOwner(
-                activeProjectUser, activeProjectCod, self.request
-            )
+        path = os.path.join(path, *paths)
 
-            if formId == "registry":
-                formId = "reg"
+        dataworking = {}  #
+        dataworking["error"] = ""
+        dataworking["data"] = False
+
+        if "btn_EditData" in self.request.POST:
+            selected_contacts = self.request.POST.getall("q_reg")
+            if len(selected_contacts) == 0:  # if non selected columns in check options
+
+                dataworking["error"] = "byC"
+                dataworking["msg"] = True
             else:
-                if formId == "assessment":
-                    formId = "ass"
-                    code = self.request.matchdict["codeid"]
-                else:
-                    raise HTTPNotFound()
 
-            path = os.path.join(
-                self.request.registry.settings["user.repository"],
-                *[activeProjectUser, activeProjectCod]
-            )
-            if code == "":
-                paths = ["db", formId, "create.xml"]
-            else:
-                paths = ["db", formId, code, "create.xml"]
+                dataworking["data"] = True
+                dataworking["fill"] = fillDataTable(
+                    self,
+                    activeProjectUser,
+                    activeProjectId,
+                    activeProjectCod,
+                    formId,
+                    selected_contacts,
+                    path,
+                    code,
+                )
+                dataworking["error"] = ""
 
-            path = os.path.join(path, *paths)
+        else:
+            if "json_data" in self.request.POST:
+                json_data = self.request.POST.getall("json_data")
+                dataworking["error"] = "byC"
+                dataworking["data"] = False
+                dataworking["msg"] = False
 
-            dataworking = {}  #
-            dataworking["error"] = ""
-            dataworking["data"] = False
-
-            if "btn_EditData" in self.request.POST:
-                selected_contacts = self.request.POST.getall("q_reg")
-                if (
-                    len(selected_contacts) == 0
-                ):  # if non selected columns in check options
-
-                    dataworking["error"] = "byC"
-                    dataworking["msg"] = True
-                else:
-
-                    dataworking["data"] = True
-                    dataworking["fill"] = fillDataTable(
-                        self,
+                if json_data[0] != "":
+                    dataworking["msg_flag"], message = update_edited_data(
                         activeProjectUser,
-                        activeProjectId,
                         activeProjectCod,
                         formId,
-                        selected_contacts,
+                        json_data,
                         path,
                         code,
+                        self.user.login,
+                        activeProjectId,
+                        self.request,
                     )
-                    dataworking["error"] = ""
 
-            else:
-                if "json_data" in self.request.POST:
-                    json_data = self.request.POST.getall("json_data")
-                    dataworking["error"] = "byC"
-                    dataworking["data"] = False
-                    dataworking["msg"] = False
+        dataXML = getNamesEditByColums(path)
 
-                    if json_data[0] != "":
-                        dataworking["msg_flag"], message = update_edited_data(
-                            activeProjectUser,
-                            activeProjectCod,
-                            formId,
-                            json_data,
-                            path,
-                            code,
-                            self.user.login,
-                        )
+        dataOriginal = getQuestionsStructure(activeProjectId, code, self.request)
+        newStructure = []
+        for originalData in dataOriginal:
+            questInfo = {}
+            questInfo["name"] = originalData["name"]
+            questInfo["id"] = originalData["id"]
+            questInfo["vars"] = []
+            for vars in originalData["vars"]:
+                for xmldata in dataXML:
+                    if vars["name"].lower() == xmldata[0]:
+                        xmldata.append(vars["validation"].lower())
+                        questInfo["vars"].append(xmldata)
 
-            dataXML = getNamesEditByColums(path)
+            newStructure.append(questInfo)
 
-            dataOriginal = getQuestionsStructure(activeProjectId, code, self.request)
-            newStructure = []
-            for originalData in dataOriginal:
-                questInfo = {}
-                questInfo["name"] = originalData["name"]
-                questInfo["id"] = originalData["id"]
-                questInfo["vars"] = []
-                for vars in originalData["vars"]:
-                    for xmldata in dataXML:
-                        if vars["name"].lower() == xmldata[0]:
-                            xmldata.append(vars["validation"].lower())
-                            questInfo["vars"].append(xmldata)
-
-                newStructure.append(questInfo)
-
-            return {
-                "activeProject": getActiveProject(self.user.login, self.request),
-                "dataworking": dataworking,
-                "activeUser": self.user,
-                "formId": formId,
-                "newStructure": newStructure,
-            }
+        return {
+            "activeProject": getActiveProject(self.user.login, self.request),
+            "dataworking": dataworking,
+            "activeUser": self.user,
+            "formId": formId,
+            "newStructure": newStructure,
+        }

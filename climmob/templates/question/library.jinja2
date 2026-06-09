@@ -213,8 +213,31 @@
 
         {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
-            var elem_ckb_question_sensitive = document.querySelector('#ckb_question_as_sensitive');
-            var ckb_question_sensitive = new Switchery(elem_ckb_question_sensitive, { color: '#1AB394' });
+            let elem_ckb_question_sensitive = document.querySelector('#ckb_question_as_sensitive');
+            let ckb_question_sensitive = new Switchery(elem_ckb_question_sensitive, { color: '#1AB394' });
+
+            let anonymity_select = document.getElementById("question_anonymity");
+
+            let anonymity_container = $("#question-anonymity-div")
+
+            elem_ckb_question_sensitive.addEventListener('change', function() {
+                anonymity_select.value = saved_anonymity_id
+                if (anonymity_select.value === "") {
+                    anonymity_select.selectedIndex = 0;
+                }
+                $(anonymity_select).trigger('change.select2');
+                setAnonymityInputsDisplay(elem_ckb_question_sensitive.checked, parseInt(anonymity_select.value))
+            });
+
+            $(anonymity_select).on('change', function() {
+                setAnonymityInputsDisplay(elem_ckb_question_sensitive.checked, parseInt(anonymity_select.value))
+            });
+
+            const anonymity_inputs_selector = $('#question-anonymity-div input')
+
+            anonymity_inputs_selector.on('change', function() {
+                this.setCustomValidity("");
+            });
 
         {% endif %}
 
@@ -241,6 +264,70 @@
             $("#question_min").val("");
             $("#question_max").val("");
         }
+
+        const q_types = {{ question_types | tojson }};
+
+        {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+
+        let saved_anonymity_id = null;
+
+        function update_anonymity_types(value, current_anonymity_id=-1) {
+            let option;
+            anonymity_select.innerHTML = "";
+            let anonymity_index = 0;
+            for (const q_type of q_types) {
+                if (value === q_type.id) {
+                    q_type.anonymity_opts.forEach((anonymity, j) => {
+                        option = new Option(anonymity.name, anonymity.id);
+                        anonymity_select.appendChild(option);
+                        if (anonymity.id === current_anonymity_id) {
+                            anonymity_index = j;
+                        }
+                    });
+                    break;
+                }
+            }
+            anonymity_select.selectedIndex = anonymity_index;
+            $(anonymity_select).trigger('change.select2');
+            setAnonymityInputsDisplay(elem_ckb_question_sensitive.checked, parseInt(anonymity_select.value))
+        }
+
+        /**
+         * @param {boolean} show
+         * @param {int} anonymity
+         */
+        function setAnonymityInputsDisplay(show, anonymity=-1) {
+            const display = show ? 'block' : 'none'
+            anonymity_container.css('display', display);
+            $('.anonymity-description').css('display', 'none');
+            anonymity_inputs_selector.prop('disabled', true);
+            $('#question-anonymization-params > *').css('display', 'none');
+            if (anonymity === {{ QuestionAnonymity.PSEUDONYM }}) {
+                $('#pseudonym-params').css('display', 'block');
+                $('#pseudonym-params input').prop('disabled', false);
+                $('#anonymity-description-pseudo').css('display', 'block');
+            }
+            else if (anonymity === {{ QuestionAnonymity.RANGE }}) {
+                $('#range-params').css('display', 'block');
+                $('#range-params input').prop('disabled', false);
+                $('#anonymity-description-range').css('display', 'block');
+            }
+            else if (anonymity === {{ QuestionAnonymity.REMOVE }}) {
+                $('#anonymity-description-remove').css('display', 'block');
+            }
+            else if (anonymity === {{ QuestionAnonymity.NOISE }}) {
+                $('#anonymity-description-noise').css('display', 'block');
+            }
+            else if (anonymity === {{ QuestionAnonymity.MONTH_YEAR }}) {
+                $('#anonymity-description-month-year').css('display', 'block');
+            }
+        }
+
+        function clean_anonymization_section() {
+            anonymity_inputs_selector.prop('value', "");
+        }
+
+        {% endif %}
 
         $(document).ready(function() {
 
@@ -347,6 +434,10 @@
             $("#question_dtype").select2();
             var type = $('#question_dtype').val();
 
+            {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+                update_anonymity_types(parseInt(type));
+            {% endif %}
+
             var question_requiredvalue = 0;
             var objQRequired = $("#ckb_required_value");
             if (objQRequired.is(':checked'))
@@ -372,7 +463,12 @@
             {
                 clean_extra_fields();
 
-                var value = $('#question_dtype').val();
+                const value = $('#question_dtype').val();
+
+                {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+                    const current_anonymity_id = $(anonymity_select).val();
+                    update_anonymity_types(parseInt(value), parseInt(saved_anonymity_id));
+                {% endif %}
 
                 $("#question"+value).css("display",'initial');
 
@@ -569,7 +665,12 @@
 
         function showDeleteQuestion() {
             var urlAction = '{{ request.application_url }}/question/'+$('#question_id').val()+'/delete'
-            showDelete(urlAction,'{{ _("Do you really want to remove this question ?") }}','{{ request.session.get_csrf_token() }}', {% if nextPage %}"{{ request.route_url("qlibrary", user_name=activeUser.login, _query={'next': nextPage} ) }}" {% else %} "{{ request.route_url("qlibrary", user_name=activeUser.login ) }}" {% endif %})
+            showDelete(
+                urlAction,
+                '{{ _("Do you really want to remove this question ?") }}',
+                '{{ request.session.get_csrf_token() }}',
+                "{% if nextPage %}{{ request.route_url("qlibrary", user_name=activeUser.login, _query={'next': nextPage} ) }}{% else %}{{ request.route_url("qlibrary", user_name=activeUser.login ) }}{% endif %}"
+            )
             $(this).parent().parent().remove();
         }
 
@@ -607,6 +708,54 @@
             setTimeout(() => checkIsVisibleAndHide(selector), 100);
         }
 
+        /**
+         * @param {Object} anonymity_body
+         * @param {int} q_type_id
+         * @returns {boolean} True if the string is valid, false otherwise.
+         */
+        function validate_anonymization_params(anonymity_body, q_type_id) {
+            let invalid_input = null;
+            if (anonymity_body["question_anonymity"] === {{ QuestionAnonymity.PSEUDONYM }}){
+                const regex = /^[^{}]*{}[^{}]*$/;
+                if (!regex.test(anonymity_body["anonym_param_pseudonym"])) {
+                    invalid_input = {name: "anonym_param_pseudonym",
+                                     msg: "{{ _("Must contain '{}' once.") | safe }}" }
+                }
+            }
+            else if (anonymity_body["question_anonymity"] === {{ QuestionAnonymity.RANGE }}) {
+                const lower_bound =  Number(anonymity_body["anonym_param_lower_bound"])
+                const upper_bound =  Number(anonymity_body["anonym_param_upper_bound"])
+                const interval =  Number(anonymity_body["anonym_param_interval"])
+
+                if (q_type_id === {{ QuestionType.INTEGER }}) {
+                    if (!Number.isInteger(lower_bound))
+                        invalid_input = {name: "anonym_param_lower_bound"}
+                    else if (!Number.isInteger(upper_bound))
+                        invalid_input = {name: "anonym_param_upper_bound"}
+                    else if (!Number.isInteger(interval))
+                        invalid_input = {name: "anonym_param_interval"}
+                    if (invalid_input)
+                        invalid_input.msg = "{{ _("Must be integer") }}"
+                }
+                if (lower_bound >= upper_bound) {
+                    invalid_input = {name: "anonym_param_upper_bound",
+                                     msg: "{{ _("Must be higher than the lower bound.") }}" }
+                } else if (interval <= 0) {
+                    invalid_input = {name: "anonym_param_interval",
+                                     msg: "{{ _("Must be greater than zero.") }}" }
+                } else if (interval >= upper_bound - lower_bound) {
+                    invalid_input = {name: "anonym_param_interval",
+                                     msg: "{{ _("Must fit within the bounds.") }}" }
+                }
+            }
+            if (invalid_input) {
+                const input = document.querySelector(`input[name="${invalid_input.name}"]`);
+                input.setCustomValidity(invalid_input.msg);
+                input.reportValidity();
+            }
+            return invalid_input === null;
+        }
+
         function actionQuestion(action) {
             $("#btn_add_question").prop('disabled', true);
             $("#btn_update_question").prop('disabled', true);
@@ -635,9 +784,32 @@
 
             {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
-                var question_sensitive = 0;
-                if ($("#ckb_question_as_sensitive").is(':checked'))
+                let question_sensitive = 0;
+                let anonymity_body = {};
+                if ($("#ckb_question_as_sensitive").is(':checked')) {
                     question_sensitive = 1;
+                    let anonymity_id = parseInt(anonymity_select.value);
+                    anonymity_body["question_anonymity"] = anonymity_id
+                    let params_container_id = null
+                    if (anonymity_id === {{ QuestionAnonymity.PSEUDONYM }})
+                        params_container_id = "pseudonym-params";
+                    else if (anonymity_id === {{ QuestionAnonymity.RANGE }})
+                        params_container_id = "range-params";
+
+                    $(`#${params_container_id} input`).each(function() {
+                        const name = $(this).attr('name');
+                        const value = $(this).val();
+                        if (name)
+                            anonymity_body[name] = value;
+                    });
+
+                    if (!validate_anonymization_params(anonymity_body, parseInt($('#question_dtype').val()))) {
+                        $("#btn_add_question").prop('disabled', false);
+                        $("#btn_update_question").prop('disabled', false);
+                        checkIsVisibleAndHide("#carga")
+                        return
+                    }
+                }
 
             {% endif %}
 
@@ -692,6 +864,7 @@
                     {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
                         "question_sensitive": question_sensitive,
+                        ...anonymity_body
 
                     {% endif %}
 
@@ -908,15 +1081,20 @@
 
             hideNumericalInputs()
 
+            {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+                update_anonymity_types(q_types[0].id)
+            {% endif %}
+
             loadLanguages();
 
             $(".inputForQuestion").val("")
             $("#question_group").val(category);
             $("#question_forms").val("3");
             $('#question_group').trigger("change.select2");
-            $("#question_dtype").val("1")
+            $("#question_dtype").val(q_types[0].id)
             $('#question_dtype').trigger('change.select2');
             $("#question1").css("display",'initial');
+            saved_anonymity_id = null;
 
 
             //$(".inputForQuestionCheck").bootstrapSwitch('readonly', false);
@@ -942,6 +1120,7 @@
             {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
 
                 setSwitchery(ckb_question_sensitive, false);
+                setAnonymityInputsDisplay(false)
 
             {% endif %}
 
@@ -975,6 +1154,9 @@
             clean_extra_fields();
             clean_extra_section();
             clean_buttoms_question();
+            {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+                clean_anonymization_section();
+            {% endif %}
 
             loadLanguages(user_name);
 
@@ -1052,11 +1234,19 @@
                 {% endif %}
 
                 {% if request.registry.settings.get("module.dataprivacy", "false") != "false" %}
+                    const isSensitive = dataJson["question_sensitive"] === 1;
 
-                    if (dataJson["question_sensitive"] == 1)
-                        setSwitchery(ckb_question_sensitive, true)
-                    else
-                        setSwitchery(ckb_question_sensitive, false)
+                    setSwitchery(ckb_question_sensitive, isSensitive)
+                    saved_anonymity_id = dataJson["question_anonymity"];
+                    update_anonymity_types(dataJson["question_dtype"], saved_anonymity_id)
+
+                    const regex = /anonym_param_([a-z_]+)/;
+                    anonymity_inputs_selector.each(function(index, element) {
+                        const match = regex.exec($(element).attr('name'));
+                        if (match) {
+                            $(element).prop("value", dataJson[match[1]])
+                        }
+                    });
 
                 {% endif %}
 
