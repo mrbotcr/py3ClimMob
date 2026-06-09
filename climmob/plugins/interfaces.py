@@ -68,6 +68,9 @@ class ISikia(Interface):
     def get_sikia_info(self, request, project_id):
         """ """
 
+    def get_sikia_results_for_json_result(self, request, project_id):
+        """ """
+
 
 class IRoutes(Interface):
     """

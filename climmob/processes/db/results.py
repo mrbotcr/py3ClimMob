@@ -3,7 +3,7 @@ import decimal
 import os
 
 from lxml import etree
-
+import climmob.plugins as p
 from climmob.models import Assessment, Question, Project, mapFromSchema
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
 from climmob.processes import getCombinations
@@ -671,6 +671,11 @@ def getJSONResult(
         data["data"] = []
         data["importantfields"] = []
         data["combinations"] = []
+
+    for plugin in p.PluginImplementations(p.ISikia):
+        data["SIKIA_results"] = plugin.get_sikia_results_for_json_result(
+            request, projectId
+        )
 
     return data
 
