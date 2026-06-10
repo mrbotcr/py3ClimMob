@@ -1551,19 +1551,19 @@ class ProjectSummary(Base):
     Project = relationship("Project")
 
 
-class PublishStatus(Base):
-    __tablename__ = "publish_status"
+class PublicationStatus(Base):
+    __tablename__ = "publication_status"
 
-    publish_status_id = Column(Integer, primary_key=True, nullable=False)
-    publish_status_name = Column(Unicode(32), nullable=False)
+    publication_status_id = Column(Integer, primary_key=True, nullable=False)
+    publication_status_name = Column(Unicode(32), nullable=False)
 
 
-class ProjectPublishStatus(Base):
-    __tablename__ = "project_publish_status"
+class ProjectPublicationStatus(Base):
+    __tablename__ = "project_publication_status"
 
-    publish_status_id = Column(
+    publication_status_id = Column(
         Integer,
-        ForeignKey("publish_status.publish_status_id"),
+        ForeignKey("publication_status.publication_status_id"),
         primary_key=True,
         nullable=False,
     )
@@ -1575,18 +1575,19 @@ class ProjectPublishStatus(Base):
     last_updated_at = Column(DateTime, nullable=False)
 
 
-class PublishingLicense(Base):
-    __tablename__ = "publishing_license"
+class PublicationLicense(Base):
+    __tablename__ = "publication_license"
 
-    publishing_license_id = Column(Integer, primary_key=True, nullable=False)
-    publishing_license_name = Column(Unicode(32), nullable=False)
+    publication_license_id = Column(Integer, primary_key=True, nullable=False)
+    publication_license_name = Column(Unicode(32), nullable=False)
 
-class ProjectPublishingLicense(Base):
-    __tablename__ = "project_publishing_license"
 
-    publishing_license_id = Column(
+class ProjectPublicationLicense(Base):
+    __tablename__ = "project_publication_license"
+
+    publication_license_id = Column(
         Integer,
-        ForeignKey("publishing_license.publishing_license_id"),
+        ForeignKey("publication_license.publication_license_id"),
         nullable=False,
     )
     project_id = Column(

@@ -57,14 +57,14 @@ from climmob.processes import (
     getProjectProgress,
     setActiveProject,
     get_collaborators_in_project,
-    save_project_publishing_license,
+    save_project_publication_license,
 )
 from climmob.utility.email import (
     render_template,
     build_email_message_multiple_recipients,
     EmailSender,
 )
-from climmob.processes.db.publishing_license import get_publishing_licenses
+from climmob.processes.db.publication_license import get_publication_licenses
 from climmob.products.jsonResults.jsonresults import create_json_results
 from climmob.views.classes import privateView
 from climmob.views.validators.ActionOnlyForProjectOwnerValidator import (
@@ -1163,7 +1163,7 @@ class PublishProjectView(privateView):
         for plugin in p.PluginImplementations(p.IPublisher):
             destinations.append((plugin.get_destination_name(), plugin.get_label()))
 
-        licenses = get_publishing_licenses(self.request)
+        licenses = get_publication_licenses(self.request)
         return {
             "activeUser": self.user,
             "redirect": False,
@@ -1186,7 +1186,7 @@ class PublishProjectView(privateView):
         destinations = body.get("destination", [])
         license = body.get("license")
 
-        save_project_publishing_license(project["project_id"], license, self.request)
+        save_project_publication_license(project["project_id"], license, self.request)
 
         create_json_results(
             user_apikey,

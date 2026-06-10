@@ -54,6 +54,6 @@ from climmob.processes.db.project_summary import *
 from climmob.processes.db.anonymized import *
 from climmob.processes.db.anonymization_params import *
 from climmob.processes.db.project_anonymization_status import *
-from climmob.processes.db.project_publish_status import *
-from climmob.processes.db.project_publishing_license import *
-from climmob.processes.db.publishing_license import *
+from climmob.processes.db.project_publication_status import *
+from climmob.processes.db.project_publication_license import *
+from climmob.processes.db.publication_license import *
