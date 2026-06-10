@@ -228,6 +228,14 @@ DATA_COLUMNS = [
         "id": 27,
         "show": True,
     },
+{
+        "key": "project_publication_status",
+        "name": "Publication status",
+        "type": "static",
+        "options": None,
+        "id": 28,
+        "show": True,
+    },
     {
         "key": "project_experimental_site",
         "name": "Experimental site",
