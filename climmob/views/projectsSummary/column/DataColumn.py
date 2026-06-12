@@ -1,3 +1,4 @@
+from climmob.utility import get_publication_status_options
 from climmob.utility.project import (
     project_climmob_analytics_get_dict,
     project_active_get_dict,
@@ -228,11 +229,11 @@ DATA_COLUMNS = [
         "id": 27,
         "show": True,
     },
-{
+    {
         "key": "project_publication_status",
         "name": "Publication status",
-        "type": "static",
-        "options": None,
+        "type": "dropdown_publication_status",
+        "options": get_publication_status_options(),
         "id": 28,
         "show": True,
     },

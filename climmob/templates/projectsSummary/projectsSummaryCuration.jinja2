@@ -324,6 +324,26 @@
                             });
                             row += `<td data-column="${col.key}">${cellContent}<span class="d-none filter-value" hidden>${filterValue}</span></td>`;
 
+                        }else if (col.type === "dropdown_publication_status") {
+                            let optionsHtml = ``;
+                            let canEdit = true;
+                            $.each(col.options, function(key, option) {
+                                if (option.value === value) {
+                                    canEdit = option.editable;
+                                }
+                                let selectable = option.selectable === true || option.value === value;
+                                optionsHtml += `<option value="${option}" ${selectable === false ? 'disabled' : ''} ${option.value === value ? 'selected="selected"' : ''}>${option.label}</option>`;
+                            });
+                            cellContent = `<select ${canEdit === false ? 'disabled' : ''} class="Select2_simple form-control select2-hidden-accessible" style="width: 150px">${optionsHtml}</select>`;
+                            let filterValue = '';
+                            $.each(col.options, function(key, id) {
+                                if (id === value) {
+                                    filterValue = key;
+                                    return false;
+                                }
+                            });
+                            row += `<td data-column="${col.key}">${cellContent}<span class="d-none filter-value" hidden>${filterValue}</span></td>`;
+
                         }else if (col.type === "dropdown_affiliation") {
                             let optionsHtml = `<option value="" selected>{{ _("Please select or add one") }}</option>`;
                             let isSelectedExisting = false;
