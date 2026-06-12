@@ -1,10 +1,9 @@
 import datetime
+import json
 import logging
 import os
-import smtplib
-import json
 
-from pyramid.httpexceptions import HTTPFound, HTTPNotFound
+from pyramid.httpexceptions import HTTPFound
 from pyramid.response import FileResponse
 
 from climmob.processes import (
@@ -31,9 +30,9 @@ from climmob.utility.email import (
     render_template,
 )
 from climmob.utility.project import ProjectAdmin
+from climmob.views.basic_views import EmailSender
 from climmob.views.classes import privateView
 from climmob.views.projectsSummary.column.DataColumn import DataColumn
-from climmob.views.basic_views import EmailSender
 from climmob.views.validators import (
     SectionOnlyForAdminValidator,
     SectionOnlyForAdminJsonValidator,
