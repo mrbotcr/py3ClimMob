@@ -68,16 +68,16 @@
                                 <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
                                 <label>
                                     Usage rights:
-                                    <select class="form-control" name="license">
-                                        {% for license in licenses %}
-                                            <option value={{ license.publication_license_id }}>{{ license.publication_license_name }}
-                                                {% if license.publication_license_id == 1 %} {# CC0 #}
-                                                    (Recommended)
-                                                {% endif %}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
                                 </label>
+                                    {% for license in licenses %}
+                                        <label>
+                                            <input type="radio" id="license-{{ license.publication_license_id  }}" name="license" value="{{ license.publication_license_id }}">
+                                            {{ license.publication_license_name }}
+                                            {% if license.publication_license_id == 1 %} {# CC0 #}
+                                                (Recommended)
+                                            {% endif %}
+                                        </label><br>
+                                    {% endfor %}
                                 <section class="flex flex-col">
                                     <h3>Select destinations:</h3>
 
