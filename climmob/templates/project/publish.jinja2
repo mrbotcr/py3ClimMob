@@ -61,15 +61,11 @@
                                  settings. By continuing, you acknowledge that you understand and agree to these terms
                                   and accept full responsibility for your anonymization choices.") }}</p>
                             </div>
-                            <form id="databricks-upload-form" role="form" method="post"
+                            <form id="request-project-publication-form" role="form" method="post"
                                   class="flex flex-col align-i-center"
                                   style="gap: 1em;"
                                   action="{{ request.path }}">
                                 <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
-                                <label for="confirm" onclick="toggle_confirmation(this)">
-                                    <input type="checkbox" id="databricks-confirm"/>
-                                    Accept
-                                </label>
                                 <label>
                                     Usage rights:
                                     <select class="form-control" name="license">
@@ -100,15 +96,30 @@
                                     {% endfor %}
 
                                 </section>
-                                <button class="btn btn-primary" type="button" id="databricks-upload-btn" disabled
-                                        name="upload-btn" style="margin-top: 1em;"
-                                        onclick="upload_to_databricks(this)"> {{ _('Upload') }}</button>
+
+                                <a class="btn btn-primary btn-rounded btn-block"
+                                   data-title="{{ _('Do you want to publish the project') }}?"
+                                   data-text="{{ _("By clicking OK, you are accepting the publication terms and conditions.") }}"
+                                   onclick="swal({ html: true,
+                                           title: this.getAttribute('data-title'),
+                                           text: this.getAttribute('data-text'),
+                                           type: 'warning',
+                                           showCancelButton: true,
+                                           cancelButtonText: '{{ _('Cancel') }}',
+                                           confirmButtonText: '{{ _('OK') }}',
+                                           customClass: 'wide-swal'
+                                           }, function(isConfirm) {if (isConfirm) {document.getElementById('request-project-publication-form').submit();}});return false;">
+                                    {{ _('Request publication') }}
+                                </a>
+                                <a class="btn btn-primary btn-rounded btn-block btn-outline"
+                                   href="{{ request.route_url('dashboard') }}">
+                                    {{ _("Go back to project overview") }}
+                                </a>
                             </form>
                         </div>
                     </div>
                 </div>
-                <a class="btn btn-default"
-                   href="{{ request.route_url('dashboard') }}">{{ _("Go back") }}</a>
+                <br>
             </div>
         {% endblock upload_message %}
     {% endif %}
@@ -141,18 +152,6 @@
                 const confirm = form.querySelector('#databricks-confirm');
                 const button = form.querySelector('#databricks-upload-btn');
                 button.disabled = !confirm.checked;
-            }
-
-            function upload_to_databricks(element) {
-                console.log("upload_to_databricks");
-                console.log(element);
-                const form = element.closest('form');
-                if (!form) return;
-
-                const confirm = form.querySelector('#databricks-confirm');
-                if (confirm.checked) {
-                    form.submit();
-                }
             }
         {% endif %}
     </script>
