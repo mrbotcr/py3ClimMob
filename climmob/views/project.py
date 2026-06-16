@@ -1150,7 +1150,7 @@ class FinishProjectView(privateView):
             return False
 
 
-class PublishProjectView(privateView):
+class RequestProjectPublicationView(privateView):
     validators = (
         ProjectExistsValidator,
         IsProjectOwnerValidator,

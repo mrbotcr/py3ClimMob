@@ -240,7 +240,7 @@ from climmob.views.project import (
     GetUnitOfAnalysisByLocationView,
     GetObjectivesByLocationAndUnitOfAnalysisView,
     FinishProjectView,
-    PublishProjectView,
+    RequestProjectPublicationView,
 )
 from climmob.views.projectHelp.projectHelp import projectHelp_view
 from climmob.views.project_analysis import analysisDataView
@@ -572,7 +572,7 @@ def loadRoutes(config):
         {
             "name": "project_publish",
             "path": "/user/{user}/project/{project}/publish",
-            "view": PublishProjectView,
+            "view": RequestProjectPublicationView,
             "renderer": "project/publish.jinja2",
         }
     )
