@@ -54,10 +54,3 @@ def project_active_get_dict():
 
 def project_checked_get_dict():
     return {opt.name.capitalize(): opt.value for opt in ProjectChecked}
-
-
-class ProjectStatus(Enum):
-    UNDEFINED = 0
-    DEFINITION = 1
-    IN_PROGRESS = 2
-    FINALIZED = 3
