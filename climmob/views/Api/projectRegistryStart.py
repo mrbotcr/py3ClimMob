@@ -30,6 +30,8 @@ from climmob.processes import (
     updateCreatePackages,
     deleteProjectPackages,
     update_project_status,
+    clean_registry_error_logs,
+    delete_anonymized_values_by_form_id,
 )
 from climmob.processes.odk.api import storeJSONInMySQL, review_multimedia_content
 from climmob.products import stopTasksByProcess
@@ -854,12 +856,17 @@ class CancelRegistryApiView(apiView):
                             )
 
                             update_project_status(activeProjectId, 1, self.request)
-
+                            clean_registry_error_logs(self.request, activeProjectId)
                             stopTasksByProcess(
                                 self.request,
                                 activeProjectId,
                             )
-
+                            schema = (
+                                dataworking["user_owner"]
+                                + "_"
+                                + dataworking["project_cod"]
+                            )
+                            delete_anonymized_values_by_form_id(schema, "-")
                             response = Response(
                                 status=200, body=self._("Cancel registration.")
                             )

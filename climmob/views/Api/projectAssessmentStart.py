@@ -24,11 +24,13 @@ from climmob.processes import (
     getTheProjectIdForOwner,
     getAccessTypeForProject,
     update_project_status,
+    delete_anonymized_values_by_form_id,
+    clean_assessments_error_logs,
 )
-from climmob.utility.project import ProjectAccessType
-from climmob.views.Api.projectRegistryStart import functionForProcessAndValidateUpdate
 from climmob.processes.odk.api import storeJSONInMySQL, review_multimedia_content
 from climmob.products.forms.form import create_document_form
+from climmob.utility.project import ProjectAccessType
+from climmob.views.Api.projectRegistryStart import functionForProcessAndValidateUpdate
 from climmob.views.classes import apiView
 from climmob.views.registry import getDataFormPreview
 from climmob.views.validators import TextField
@@ -252,6 +254,9 @@ class CancelAssessmentApiView(apiView):
             dataworking["ass_cod"],
             self.request,
         ):
+            clean_assessments_error_logs(
+                self.request, activeProjectId, dataworking["ass_cod"]
+            )
 
             setAssessmentIndividualStatus(
                 activeProjectId,
@@ -259,6 +264,9 @@ class CancelAssessmentApiView(apiView):
                 0,
                 self.request,
             )
+
+            schema = dataworking["user_owner"] + "_" + dataworking["project_cod"]
+            delete_anonymized_values_by_form_id(schema, dataworking["ass_cod"])
 
             response = Response(status=200, body=self._("Cancel data collection"))
             return response
