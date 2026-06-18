@@ -16,13 +16,10 @@ from pyramid.httpexceptions import HTTPNotFound
 from pyramid.response import FileResponse
 
 from climmob.models import Project, storageErrors, Assessment
-
-from climmob.processes.db.registry import isRegistryOpen, packageExist
 from climmob.processes.db.assessment import isAssessmentOpen, assessmentExists
-from climmob.processes.db.validators import projectExists, getTheProjectIdForOwner
-
 from climmob.processes.db.json import addJsonLog
-from climmob.processes.db.anonymized import anonymize_questions
+from climmob.processes.db.registry import isRegistryOpen, packageExist
+from climmob.processes.db.validators import projectExists, getTheProjectIdForOwner
 
 log = logging.getLogger(__name__)
 
@@ -460,18 +457,6 @@ def storeJSONInMySQL(
                 logFile,
                 projectId,
             )
-
-    with open(JSONFile, "r", encoding="utf-8") as f:
-        data = json.load(f)
-        form_id = "-"
-        if type == "ASS":
-            form_id = assessmentid
-        success, msg = anonymize_questions(
-            request, data, form_id, projectId, userOwner, projectCod
-        )
-        if not success:
-            return False, msg
-
     return True, ""
 
 

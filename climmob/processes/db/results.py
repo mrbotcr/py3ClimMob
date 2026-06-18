@@ -470,7 +470,7 @@ def get_registry_non_null_fields_count(user_owner, project_cod, columns):
     fields = [f"({col} IS NOT NULL)" for col in columns]
     sql = f"""
         SELECT 
-            SUM( {" + ".join(fields)} ) AS non_null_count
+            IFNULL(SUM( {" + ".join(fields)} ), 0) AS non_null_count
         FROM {user_owner}_{project_cod}.REG_geninfo;
     """
     data = sql_fetch_all(sql)
@@ -483,7 +483,7 @@ def get_assessment_non_null_fields_count(
     fields = [f"({col} IS NOT NULL)" for col in columns]
     sql = f"""
         SELECT 
-            SUM( {" + ".join(fields)} ) AS non_null_count
+            IFNULL(SUM( {" + ".join(fields)} ), 0) AS non_null_count
         FROM {user_owner}_{project_cod}.ASS{assessment_code}_geninfo;
     """
     data = sql_fetch_all(sql)

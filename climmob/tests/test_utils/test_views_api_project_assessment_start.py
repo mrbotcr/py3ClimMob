@@ -254,6 +254,12 @@ class TestCancelAssessmentApiView(ViewBaseTest):
             ),
             patch("climmob.views.classes.getUserByApiKey"),
             patch("climmob.views.classes.update_last_login"),
+            patch(
+                "climmob.views.Api.projectAssessmentStart.clean_assessments_error_logs"
+            ),
+            patch(
+                "climmob.views.Api.projectAssessmentStart.delete_anonymized_values_by_form_id"
+            ),
         ]
         self.mock_get_project = patchers_funcs[0].start()
         self.mock_get_access = patchers_funcs[1].start()
@@ -261,6 +267,8 @@ class TestCancelAssessmentApiView(ViewBaseTest):
         self.mock_ind_status = patchers_funcs[3].start()
         self.mock_apiKey = patchers_funcs[4].start()
         self.mock_update_login = patchers_funcs[5].start()
+        self.mock_clean_assessments_error_logs = patchers_funcs[6].start()
+        self.mock_delete_anonymized_values_by_form_id = patchers_funcs[7].start()
 
         for patcher in patchers_funcs:
             self.addCleanup(patcher.stop)
@@ -337,6 +345,13 @@ class TestCancelAssessmentApiView(ViewBaseTest):
         response = self.view.post()
         self.assertEqual(response.status_code, 200)
         self.assertEqual("b'Cancel data collection'", str(response.body))
+        self.mock_clean_assessments_error_logs.assert_called_once_with(
+            self.request, self.mock_get_project.return_value, "ASS123"
+        )
+        schema = "OWNER" + "_" + "123"
+        self.mock_delete_anonymized_values_by_form_id.assert_called_once_with(
+            schema, "ASS123"
+        )
 
 
 class TestCloseAssessmentApiView(ViewBaseTest):

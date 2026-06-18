@@ -41,7 +41,6 @@ from climmob.utility import (
 )
 
 __all__ = [
-    "anonymize_questions",
     "delete_anonymized_values_by_form_id",
     "delete_anonymized_values_by_form_id_and_reg_id",
     "update_anonymized",
@@ -176,47 +175,6 @@ def anonymize_project(project_id, request):
     return True, ""
 
 
-def anonymize_questions(request, form, form_id, project_id, user_owner, project_cod):
-    questions = get_sensitive_questions_anonymity_by_project_id(project_id, request)
-
-    registry_id = None
-
-    schema = user_owner + "_" + project_cod
-
-    pattern = r"grp_\d+/(.+)"
-    to_anonymize = []
-
-    for key in form.keys():
-        match = re.fullmatch(pattern, key)
-        if not match:
-            continue
-        field_name = match.group(1)
-
-        if field_name == "QST162" or field_name == "QST163":
-            match = re.fullmatch(rf"({user_owner}-)?(\d+)(-{project_cod}~)?", form[key])
-            if not match:
-                return False, "Could not anonymize"
-            registry_id = match.group(2)
-            continue
-
-        question = get_question_by_field_name(field_name, questions)
-        if question and question.question_anonymity != QuestionAnonymity.REMOVE.value:
-            to_anonymize.append(
-                {"field_name": field_name, "value": form[key], "question": question}
-            )
-
-    if not to_anonymize:
-        return True, ""
-
-    for field in to_anonymize:
-        anonymize_field_value(field, registry_id, request)
-        success, msg = insert_anonymized_field(field, form_id, registry_id, schema)
-        if not success:
-            return False, msg
-
-    return True, ""
-
-
 def anonymize_field_value(field, registry_id, request):
     params = get_anonymization_params_as_dict(field["question"].question_id, request)
     if field["question"].question_anonymity == QuestionAnonymity.PSEUDONYM.value:
@@ -227,7 +185,12 @@ def anonymize_field_value(field, registry_id, request):
         else:
             parser = float
 
-        field["value"] = parser(field["value"])
+        try:
+            field["value"] = parser(field["value"])
+        except (TypeError, ValueError):
+            field["value"] = ""
+            return True, ""
+
         params["lower_bound"] = parser(params["lower_bound"])
         params["upper_bound"] = parser(params["upper_bound"])
         params["interval"] = parser(params["interval"])
@@ -248,10 +211,13 @@ def anonymize_field_value(field, registry_id, request):
         field["value"] = dt.strftime("%Y-%m")
     elif field["question"].question_anonymity == QuestionAnonymity.NOISE.value:
         geo_point = field["value"].split()
-        geo_point[0], geo_point[1] = add_noise_to_gps_coordinates(
-            float(geo_point[0]), float(geo_point[1]), 3000, 5000
-        )
-        field["value"] = " ".join([str(p) for p in geo_point])
+        try:
+            geo_point[0], geo_point[1] = add_noise_to_gps_coordinates(
+                float(geo_point[0]), float(geo_point[1]), 3000, 5000
+            )
+            field["value"] = " ".join([str(p) for p in geo_point])
+        except Exception as e:
+            field["value"] = ""
 
     return True, ""
 
