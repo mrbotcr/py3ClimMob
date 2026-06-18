@@ -185,7 +185,12 @@ def anonymize_field_value(field, registry_id, request):
         else:
             parser = float
 
-        field["value"] = parser(field["value"])
+        try:
+            field["value"] = parser(field["value"])
+        except (TypeError, ValueError):
+            field["value"] = ""
+            return True, ""
+
         params["lower_bound"] = parser(params["lower_bound"])
         params["upper_bound"] = parser(params["upper_bound"])
         params["interval"] = parser(params["interval"])
@@ -206,10 +211,13 @@ def anonymize_field_value(field, registry_id, request):
         field["value"] = dt.strftime("%Y-%m")
     elif field["question"].question_anonymity == QuestionAnonymity.NOISE.value:
         geo_point = field["value"].split()
-        geo_point[0], geo_point[1] = add_noise_to_gps_coordinates(
-            float(geo_point[0]), float(geo_point[1]), 3000, 5000
-        )
-        field["value"] = " ".join([str(p) for p in geo_point])
+        try:
+            geo_point[0], geo_point[1] = add_noise_to_gps_coordinates(
+                float(geo_point[0]), float(geo_point[1]), 3000, 5000
+            )
+            field["value"] = " ".join([str(p) for p in geo_point])
+        except Exception as e:
+            field["value"] = ""
 
     return True, ""
 
