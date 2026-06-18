@@ -2237,17 +2237,17 @@ class TestCreatePackagesView(unittest.TestCase):
 
 
 class TestCancelRegistryApiView(unittest.TestCase):
+    body = {
+        "project_cod": "PRJ001",
+        "user_owner": "Owner_user",
+    }
+
     def setUp(self):
         self.view = CancelRegistryApiView(MagicMock())
         self.view.request.method = "POST"
         self.view.user = MagicMock(login="test_user")
         self.view._ = MagicMock(side_effect=lambda x: x)
-        self.view.body = json.dumps(
-            {
-                "project_cod": "PRJ001",
-                "user_owner": "Owner_user",
-            }
-        )
+        self.view.body = json.dumps(self.body)
 
     def test_process_cancel_no_set_no_post(self):
         self.view.request.method = ""
@@ -2345,6 +2345,8 @@ class TestCancelRegistryApiView(unittest.TestCase):
         )
         mock_projectRegStatus.assert_called_once_with(1, self.view.request)
 
+    @patch("climmob.views.Api.projectRegistryStart.delete_anonymized_values_by_form_id")
+    @patch("climmob.views.Api.projectRegistryStart.clean_registry_error_logs")
     @patch("climmob.views.Api.projectRegistryStart.stopTasksByProcess")
     @patch("climmob.views.Api.projectRegistryStart.setRegistryStatus")
     @patch(
@@ -2365,24 +2367,32 @@ class TestCancelRegistryApiView(unittest.TestCase):
         mock_projectRegStatus,
         mock_setRegistryStatus,
         mock_stopTasksByProcess,
+        mock_clean_registry_error_logs,
+        mock_delete_anonymized_values_by_form_id,
     ):
         response = self.view.processView()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.body, b"Cancel registration.")
         mock_projectExists.assert_called_once_with(
-            "test_user", "Owner_user", "PRJ001", self.view.request
+            self.view.user.login,
+            self.body["user_owner"],
+            self.body["project_cod"],
+            self.view.request,
         )
         mock_getTheProjectIdForOwner.assert_called_once_with(
-            "Owner_user", "PRJ001", self.view.request
+            self.body["user_owner"], self.body["project_cod"], self.view.request
         )
         mock_getAccessTypeForProject.assert_called_once_with(
-            "test_user", 1, self.view.request
+            self.view.user.login, 1, self.view.request
         )
         mock_projectRegStatus.assert_called_once_with(1, self.view.request)
         mock_setRegistryStatus.assert_called_once_with(
-            "Owner_user", "PRJ001", 1, 0, self.view.request
+            self.body["user_owner"], self.body["project_cod"], 1, 0, self.view.request
         )
         mock_stopTasksByProcess.assert_called_once_with(self.view.request, 1)
+        mock_clean_registry_error_logs.assert_called_once_with(self.view.request, 1)
+        schema = self.body["user_owner"] + "_" + self.body["project_cod"]
+        mock_delete_anonymized_values_by_form_id.assert_called_once_with(schema, "-")
 
 
 class TestReadRegistryStructureView(unittest.TestCase):
