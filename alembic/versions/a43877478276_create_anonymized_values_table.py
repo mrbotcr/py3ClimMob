@@ -29,16 +29,30 @@ def upgrade():
 
     for project in projects:
         user_project = f"{project.user_name}_{project.project_cod}"
-        query = (
-            f"CREATE TABLE IF NOT EXISTS {user_project}.anonymized "
-            "(`form_id` varchar(255) NOT NULL,"
-            "`reg_id` int NOT NULL,"
-            "`col_name` varchar(255) NOT NULL,"
-            "`value` varchar(255) DEFAULT NULL,"
-            "PRIMARY KEY (`form_id`,`reg_id`,`col_name`)"
-            ") ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+
+        query_schema = (
+            f"SELECT EXISTS ( "
+            "SELECT 1 "
+            "FROM INFORMATION_SCHEMA.SCHEMATA "
+            f"WHERE SCHEMA_NAME = '{user_project}' "
+            ") AS schema_exists;"
         )
-        session.execute(query)
+
+        result = session.execute(query_schema).fetchone()
+
+        if result[0] == 1:
+            query = (
+                f"CREATE TABLE IF NOT EXISTS {user_project}.anonymized "
+                "(`form_id` varchar(255) NOT NULL,"
+                "`reg_id` int NOT NULL,"
+                "`col_name` varchar(255) NOT NULL,"
+                "`value` varchar(255) DEFAULT NULL,"
+                "PRIMARY KEY (`form_id`,`reg_id`,`col_name`)"
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+            )
+            session.execute(query)
+        else:
+            print(f"Schema '{user_project}' does not exist.")
 
 
 def downgrade():
