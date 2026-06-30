@@ -3,6 +3,7 @@ import datetime
 __all__ = [
     "save_project_publication_status",
     "get_global_project_publication_status_id",
+    "get_project_publication_status",
 ]
 
 from sqlalchemy import and_
@@ -70,3 +71,12 @@ def get_global_project_publication_status_id(request, project_id: str):
         status.publication_status_id == PublicationStatus.REQUESTED for status in res
     ):
         return PublicationStatus.REQUESTED
+
+
+def get_project_publication_status(request, project_id: str):
+    query = (
+        request.dbsession.query(ProjectPublicationStatus)
+        .filter(ProjectPublicationStatus.project_id == project_id)
+
+    )
+    return query.all()
