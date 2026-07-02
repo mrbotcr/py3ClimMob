@@ -746,7 +746,7 @@ class IUserFlow(Interface):
 
 
 class IPublisher(Interface):
-    def publish(self, settings, user_in_session, path, project_id, crop_name):
+    def publish(self, settings, request, path, project_id, crop_name):
 
         """ """
 
