@@ -1450,22 +1450,27 @@
 {% endblock bodybottom %}
 
 {% block toastr %}
-    {% set toastrmessage = request.session.pop_flash() %}
-    {% if toastrmessage|length > 0 %}
-        <script>
-            toastr.options = {
-                closeButton: true,
-                progressBar: true,
-                showMethod: 'slideDown',
-                timeOut: 4000
-            };
-            {% if toastrmessage[0].startswith("Error. ") %}
-                toastr.error("{{ toastrmessage[0].replace("Error. ", "") }}");
-            {% else %}
-                toastr.success("{{ toastrmessage[0] }}");
-            {% endif %}
-        </script>
-    {% endif %}
+    <script>
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            showMethod: 'slideDown',
+            timeOut: 4000
+        };
+        {% for queue in ['success', 'error', 'info', 'warning', ''] %}
+            {% for msg in request.session.pop_flash(queue=queue) %}
+                {% if queue == '' %} {# default queue #}
+                    {% if msg.startswith("Error. ") %}
+                        toastr["error"]("{{ msg | e }}");
+                    {% else %}
+                        toastr["success"]("{{ msg | e }}");
+                    {% endif %}
+                {% else %}
+                    toastr["{{ queue }}"]("{{ msg | e }}");
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </script>
 {% endblock toastr %}
 
 {% block script %}
