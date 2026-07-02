@@ -334,7 +334,13 @@
                                 let selectable = option.selectable === true || option.value === value;
                                 optionsHtml += `<option value="${option}" ${selectable === false ? 'disabled' : ''} ${option.value === value ? 'selected="selected"' : ''}>${option.label}</option>`;
                             });
-                            cellContent = `<select ${canEdit === false ? 'disabled' : ''} class="Select2_simple form-control select2-hidden-accessible" style="width: 150px">${optionsHtml}</select>`;
+                            cellContent = `<div style="display: flex; align-items: center; gap: 1em;">`;
+                            cellContent += `<select ${canEdit === false ? 'disabled' : ''} class="Select2_simple form-control select2-hidden-accessible" style="width: 150px">${optionsHtml}</select>`;
+                            // TODO: Create tooltip dynamically
+                            cellContent += `<i class="fa fa-info-circle" style="${value === 1 ? 'display:none' : ''}"
+                                    title="ClimMob - {{ _("Published") }}
+                                    Genesys - {{ _("Published") }}"></i>`;
+                            cellContent += `</div>`;
                             let filterValue = '';
                             $.each(col.options, function(key, id) {
                                 if (id === value) {
