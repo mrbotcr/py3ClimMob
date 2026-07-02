@@ -71,7 +71,15 @@
                                 </label>
                                     {% for license in licenses %}
                                         <label>
-                                            <input type="radio" id="license-{{ license.publication_license_id  }}" name="license" value="{{ license.publication_license_id }}">
+                                            <input type="radio" id="license-{{ license.publication_license_id  }}"
+                                                   name="license" value="{{ license.publication_license_id }}"
+                                                    {% if license.publication_license_id == project_license_id %}
+                                                        checked
+                                                    {% endif %}
+                                                    {% if project_license_id %}
+                                                        disabled
+                                                    {% endif %}
+                                                >
                                             {{ license.publication_license_name }}
                                             {% if license.publication_license_id == 1 %} {# CC0 #}
                                                 (Recommended)
@@ -80,18 +88,21 @@
                                     {% endfor %}
                                 <section class="flex flex-col">
                                     <h3>Select destinations:</h3>
-
-                                    <label>
-                                        <input type="checkbox" id="databricks-chk" name="destination"
-                                               value="databricks" disabled checked/>
-                                        Downloads
-                                    </label>
-
-                                    {% for destination, label in destinations %}
+                                    {% for destination, label, disabled, checked, status in destinations %}
                                         <label>
                                             <input type="checkbox" id="{{ destination }}-chk" name="destination"
-                                                   value="{{ destination }}"/>
+                                                   value="{{ destination }}"
+                                                    {% if disabled %}
+                                                   disabled
+                                                    {% endif %}
+                                                    {% if checked %}
+                                                   checked
+                                                    {% endif %}
+                                            />
                                             {{ label }}
+                                            {% if status %}
+                                                - {{ status }}
+                                            {% endif %}
                                         </label>
                                     {% endfor %}
 
@@ -124,12 +135,6 @@
         {% endblock upload_message %}
     {% endif %}
 {% endblock %}
-
-{% if redirect == True %}
-    {% block toastr %}
-        {# Overwrite the toaster so it does not trigger the popup #}
-    {% endblock toastr %}
-{% endif %}
 
 {% block script %}
     <script>
