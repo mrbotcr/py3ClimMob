@@ -4,6 +4,7 @@ import datetime
 import logging
 
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
+
 import climmob.plugins as p
 from climmob.processes import (
     projectInDatabase,
@@ -57,25 +58,26 @@ from climmob.processes import (
     getProjectProgress,
     setActiveProject,
     get_collaborators_in_project,
-    save_project_publication_license,
+    get_project_publication_status,
+    get_project_publication_license_id,
 )
+from climmob.processes.db.publication_license import get_publication_licenses
+from climmob.utility import PublicationStatusLabel, PublicationStatus
 from climmob.utility.email import (
     render_template,
     build_email_message_multiple_recipients,
     EmailSender,
 )
-from climmob.processes.db.publication_license import get_publication_licenses
-from climmob.products.jsonResults.jsonresults import create_json_results
 from climmob.views.classes import privateView
 from climmob.views.validators.ActionOnlyForProjectOwnerValidator import (
     ActionOnlyForProjectOwnerValidator,
 )
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 from climmob.views.validators.project import IsProjectFinalizedValidator
+from climmob.views.validators.project import ProjectOpenValidator
 from climmob.views.validators.project.IsProjectOwnerValidator import (
     IsProjectOwnerValidator,
 )
-from climmob.views.validators.project import ProjectOpenValidator
 
 log = logging.getLogger("climmob")
 
@@ -1157,18 +1159,45 @@ class RequestProjectPublicationView(privateView):
         IsProjectFinalizedValidator,
     )
 
+    # TODO: test
     def get(self):
         self.returnRawViewResult = False
         destinations = []
+        res = get_project_publication_status(
+            self.request, self.context.active_project_id
+        )
         for plugin in p.PluginImplementations(p.IPublisher):
-            destinations.append((plugin.get_destination_name(), plugin.get_label()))
-
+            disabled = getattr(plugin, "disabled", False)
+            checked = disabled
+            status = None
+            for r in res:
+                if r.destination == plugin.get_destination_name():
+                    checked = True
+                    disabled = True
+                    status = PublicationStatusLabel[
+                        PublicationStatus(r.publication_status_id).name
+                    ].value
+                    break
+            destinations.insert(
+                getattr(plugin, "index", 1),
+                (
+                    plugin.get_destination_name(),
+                    plugin.get_label(),
+                    disabled,
+                    checked,
+                    status,
+                ),
+            )
+        project_license_id = get_project_publication_license_id(
+            self.context.active_project_id, self.request
+        )
         licenses = get_publication_licenses(self.request)
         return {
             "activeUser": self.user,
             "redirect": False,
             "destinations": destinations,
             "licenses": licenses,
+            "project_license_id": project_license_id,
         }
 
     def post(self):
