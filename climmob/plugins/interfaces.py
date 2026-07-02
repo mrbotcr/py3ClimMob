@@ -753,3 +753,7 @@ class IPublisher(Interface):
     def get_destination_name(self):
 
         """ """
+
+    def get_label(self):
+
+        """ """
