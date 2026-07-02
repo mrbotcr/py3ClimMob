@@ -4,6 +4,7 @@ import shutil as sh
 
 import climmob.plugins as p
 from climmob.config.celery_app import celeryApp
+from climmob.models.repository import create_request
 from climmob.plugins.utilities import climmobCeleryTask
 
 
@@ -45,9 +46,10 @@ def create_report_json_results(
     with open(file_path, "w") as outfile:
         json.dump(data, outfile, indent=4)
 
-    p.load_all(settings)
-    for plugin in p.PluginImplementations(p.IPublisher):
-        if plugin.get_destination_name() in destinations:
-            plugin.publish(settings, user_in_session, file_path, projectId, cropname)
+    with create_request(settings, locale, user_in_session) as request:
+        p.load_all(settings)
+        for plugin in p.PluginImplementations(p.IPublisher):
+            if plugin.get_destination_name() in destinations:
+                plugin.publish(settings, request, file_path, projectId, cropname)
 
     return ""
