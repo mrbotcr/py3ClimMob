@@ -73,10 +73,10 @@ def get_global_project_publication_status_id(request, project_id: str):
         return PublicationStatus.REQUESTED
 
 
-def get_project_publication_status(request, project_id: str):
-    query = (
-        request.dbsession.query(ProjectPublicationStatus)
-        .filter(ProjectPublicationStatus.project_id == project_id)
-
+def get_project_publication_status(
+    request, project_id: str
+) -> list[ProjectPublicationStatus]:
+    query = request.dbsession.query(ProjectPublicationStatus).filter(
+        ProjectPublicationStatus.project_id == project_id
     )
     return query.all()
