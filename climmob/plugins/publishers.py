@@ -15,3 +15,16 @@ class ClimMobPublisher(SingletonPlugin):
 
     def get_label(self):
         return self.label
+
+
+class GenesysPublisher(SingletonPlugin):
+    implements(IPublisher)
+    destination_name = "genesys"
+    label = "Genesys"
+    disabled = False
+
+    def get_destination_name(self):
+        return self.destination_name
+
+    def get_label(self):
+        return self.label
