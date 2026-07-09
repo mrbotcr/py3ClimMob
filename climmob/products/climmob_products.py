@@ -435,4 +435,6 @@ def register_products(config):
         "Copyright 2026, MrBot Software Solutions",
     )
     products.append(jsonresults)
+
+    # TODO: otro prod con el mismo contenido
     return products

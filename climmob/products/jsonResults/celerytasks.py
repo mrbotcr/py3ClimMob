@@ -7,7 +7,7 @@ from climmob.config.celery_app import celeryApp
 from climmob.models.repository import create_request
 from climmob.plugins.utilities import climmobCeleryTask
 
-
+# TODO: Este se TIENE que ejecutar al hacer le request
 @celeryApp.task(base=climmobCeleryTask)
 def create_report_json_results(
     settings,
@@ -35,6 +35,8 @@ def create_report_json_results(
             },
         }
     }
+
+    # TODO: run R script
 
     if os.path.exists(path):
         sh.rmtree(path)
