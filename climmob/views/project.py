@@ -63,12 +63,12 @@ from climmob.processes import (
     save_project_publication_license,
 )
 from climmob.processes.db.publication_license import get_publication_licenses
+from climmob.services.email_service import EmailService
 from climmob.utility import PublicationStatusLabel, PublicationStatus
 from climmob.utility.email import (
     render_template,
     build_email_message_multiple_recipients,
     EmailSender,
-    EmailBuilder,
 )
 from climmob.views.classes import privateView
 from climmob.views.validators.ActionOnlyForProjectOwnerValidator import (
@@ -1161,6 +1161,10 @@ class RequestProjectPublicationView(privateView):
         IsProjectFinalizedValidator,
     )
 
+    def __init__(self, request):
+        super().__init__(request)
+        self.email_service = EmailService(request)
+
     # TODO: test
     def get(self):
         self.returnRawViewResult = False
@@ -1236,10 +1240,7 @@ class RequestProjectPublicationView(privateView):
                 project["project_id"], license, self.request
             )
 
-        # TODO: Send email to admins and owner about the publication request
-        #  Need recipients, sender, subject, body, and link to the admin page to approve/reject the request
-
-        # self.send_email(project, project_cod, user_owner)
+        self.email_service.send_publication_request_notification(project, self.user)
 
         self.request.session.flash(
             self._("Publication requested successfully."),
@@ -1250,59 +1251,3 @@ class RequestProjectPublicationView(privateView):
                 "project_publish", project=project_cod, user=user_owner
             )
         )
-
-    def send_email(self, project, project_cod, user_owner):
-        admin_users = getAllUserAdmin(self.request)
-        email_builder = (
-            EmailBuilder(self.request.registry.settings)
-            .recipients(getAllUserAdmin(self.request))
-            .subject("Publication request for " + project_cod)
-            .template("email/publication_request.jinja2")
-            .context(
-                {
-                    "date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "project_info": project,
-                    "_": self._,
-                    "link": self.request.route_url(
-                        "project_publish", project=project_cod, user=user_owner
-                    ),
-                    "logo": self.request.url_for_static("landing/climmob2.png"),
-                }
-            )
-        )
-
-        msg = email_builder.build()
-
-        try:
-            recipient_emails = [user["user_email"] for user in admin_users]
-            email_sender = EmailSender(self.request.registry.settings)
-            email_sender.send_email(recipient_emails, msg)
-        except Exception as e:
-            log.error(f"Error sending email: {e}")
-
-        email_builder = (
-            EmailBuilder(self.request.registry.settings)
-            .recipients([{"user_fullname": user_owner, "user_email": self.user.email}])
-            .subject("YOU. Publication request for " + project_cod)
-            .template("email/publication_request.jinja2")
-            .context(
-                {
-                    "date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "project_info": project,
-                    "_": self._,
-                    "link": self.request.route_url(
-                        "project_publish", project=project_cod, user=user_owner
-                    ),
-                    "logo": self.request.url_for_static("landing/climmob2.png"),
-                }
-            )
-        )
-
-        msg = email_builder.build()
-
-        try:
-            recipient_emails = [user["user_email"] for user in admin_users]
-            email_sender = EmailSender(self.request.registry.settings)
-            email_sender.send_email(recipient_emails, msg)
-        except Exception as e:
-            log.error(f"Error sending email: {e}")

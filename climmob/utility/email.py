@@ -15,7 +15,6 @@ __all__ = [
     "build_email_message",
     "build_email_message_multiple_recipients",
     "EmailSender",
-    "build_email",
     "EmailBuilder",
 ]
 
@@ -48,23 +47,6 @@ def build_email_message_multiple_recipients(body, subject, recipients, mail_from
     msg["To"] = to_header
     msg["Date"] = utils.formatdate(time())
 
-    return msg
-
-
-def build_email(mail_from, recipients, subject, template, context):
-    try:
-        text = render_template(template, context)
-    except Exception as e:
-        log.error(f"Error rendering email template: {e}")
-        return
-
-    try:
-        msg = build_email_message_multiple_recipients(
-            text, subject, recipients, mail_from
-        )
-    except Exception as e:
-        log.error(f"Error building email message: {e}")
-        return
     return msg
 
 
@@ -113,13 +95,20 @@ class EmailBuilder:
         if not self._context:
             log.warning("Email didn't send. No context found.")
             return
-        msg = build_email(
-            self._mail_from,
-            self._recipients,
-            self._subject,
-            self._template,
-            self._context,
-        )
+
+        try:
+            text = render_template(self._template, self._context)
+        except Exception as e:
+            log.error(f"Error rendering email template: {e}")
+            return
+
+        try:
+            msg = build_email_message_multiple_recipients(
+                text, self._subject, self._recipients, self._mail_from
+            )
+        except Exception as e:
+            log.error(f"Error building email message: {e}")
+            return
         return msg
 
 
