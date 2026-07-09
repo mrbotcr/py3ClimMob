@@ -437,4 +437,15 @@ def register_products(config):
     products.append(jsonresults)
 
     # TODO: otro prod con el mismo contenido
+    genesys_results = addProduct(
+        "genesys_results", "json with the main information of the project"
+    )
+    addMetadataToProduct(genesys_results, "author", "Johann Ávalos")
+    addMetadataToProduct(genesys_results, "version", "1.0")
+    addMetadataToProduct(
+        genesys_results,
+        "Licence",
+        "Copyright 2026, MrBot Software Solutions",
+    )
+    products.append(genesys_results)
     return products
