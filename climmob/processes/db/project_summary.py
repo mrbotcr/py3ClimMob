@@ -21,7 +21,7 @@ __all__ = [
 ]
 
 from climmob.processes.db.project_publication_status import (
-    get_global_project_publication_status_id,
+    get_global_project_publication_status_label,
 )
 
 
@@ -75,7 +75,7 @@ def get_all_project_summary(request):
     for data in res:
         data["psm_json"][
             "project_publication_status"
-        ] = get_global_project_publication_status_id(request, data["project_id"])
+        ] = get_global_project_publication_status_label(request, data["project_id"])
         data["psm_json"]["admin_user_name"] = data["admin_user_name"]
         data["psm_json"]["admin_update_date"] = data["admin_update_date"]
         all_project.append(data["psm_json"])
@@ -97,7 +97,7 @@ def get_user_project_summary(request, user):
     for project in projects:
         project["psm_json"][
             "project_publication_status"
-        ] = get_global_project_publication_status_id(request, project["project_id"])
+        ] = get_global_project_publication_status_label(request, project["project_id"])
         project["psm_json"]["admin_user_name"] = project["admin_user_name"]
         project["psm_json"]["admin_update_date"] = project["admin_update_date"]
         user_projects.append(project["psm_json"])
@@ -120,7 +120,7 @@ def get_recent_project_summary(request):
     for project in projects:
         project["psm_json"][
             "project_publication_status"
-        ] = get_global_project_publication_status_id(request, project["project_id"])
+        ] = get_global_project_publication_status_label(request, project["project_id"])
         project["psm_json"]["admin_user_name"] = project["admin_user_name"]
         project["psm_json"]["admin_update_date"] = project["admin_update_date"]
         user_projects.append(project["psm_json"])
@@ -151,7 +151,7 @@ def get_published_project_summary(request):
     for project in projects:
         project["psm_json"][
             "project_publication_status"
-        ] = get_global_project_publication_status_id(request, project["project_id"])
+        ] = get_global_project_publication_status_label(request, project["project_id"])
         project["psm_json"]["admin_user_name"] = project["admin_user_name"]
         project["psm_json"]["admin_update_date"] = project["admin_update_date"]
         user_projects.append(project["psm_json"])

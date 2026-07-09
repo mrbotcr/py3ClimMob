@@ -3,13 +3,14 @@ import datetime
 __all__ = [
     "save_project_publication_status",
     "get_global_project_publication_status_id",
+    "get_global_project_publication_status_label",
     "get_project_publication_status",
 ]
 
 from sqlalchemy import and_
 
 from climmob.models.climmobv4 import ProjectPublicationStatus
-from climmob.utility import PublicationStatus
+from climmob.utility import PublicationStatus, PublicationStatusLabel
 
 
 def save_project_publication_status(
@@ -35,42 +36,47 @@ def save_project_publication_status(
         res.update({"publication_status_id": status})
 
 
-def get_global_project_publication_status_id(request, project_id: str):
+def get_global_project_publication_status_label(request, project_id: str) -> str:
+    status_id = get_global_project_publication_status_id(request, project_id)
+    return PublicationStatusLabel[PublicationStatus(status_id).name].value
+
+
+def get_global_project_publication_status_id(request, project_id: str) -> int:
     res = (
         request.dbsession.query(ProjectPublicationStatus)
         .filter(ProjectPublicationStatus.project_id == project_id)
         .all()
     )
     if not res:
-        return PublicationStatus.INITIAL
+        return PublicationStatus.INITIAL.value
 
     if any(status.publication_status_id == PublicationStatus.FAILED for status in res):
-        return PublicationStatus.FAILED
+        return PublicationStatus.FAILED.value
 
     if any(
         status.publication_status_id == PublicationStatus.PUBLISHED for status in res
     ):
-        return PublicationStatus.PUBLISHED
+        return PublicationStatus.PUBLISHED.value
 
     if any(
         status.publication_status_id == PublicationStatus.APPROVED for status in res
     ):
-        return PublicationStatus.APPROVED
+        return PublicationStatus.APPROVED.value
 
     if any(
         status.publication_status_id == PublicationStatus.REJECTED for status in res
     ):
-        return PublicationStatus.REJECTED
+        return PublicationStatus.REJECTED.value
 
     if any(
         status.publication_status_id == PublicationStatus.IN_REVIEW for status in res
     ):
-        return PublicationStatus.IN_REVIEW
+        return PublicationStatus.IN_REVIEW.value
 
     if any(
         status.publication_status_id == PublicationStatus.REQUESTED for status in res
     ):
-        return PublicationStatus.REQUESTED
+        return PublicationStatus.REQUESTED.value
 
 
 def get_project_publication_status(
