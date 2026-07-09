@@ -324,7 +324,7 @@
                             });
                             row += `<td data-column="${col.key}">${cellContent}<span class="d-none filter-value" hidden>${filterValue}</span></td>`;
 
-                        }else if (col.type === "dropdown_publication_status") {
+                        }else if (col.type === "dropdown_publication_approval") {
                             let optionsHtml = ``;
                             let canEdit = true;
                             $.each(col.options, function(key, option) {
@@ -336,10 +336,7 @@
                             });
                             cellContent = `<div style="display: flex; align-items: center; gap: 1em;">`;
                             cellContent += `<select ${canEdit === false ? 'disabled' : ''} class="Select2_simple form-control select2-hidden-accessible" style="width: 150px">${optionsHtml}</select>`;
-                            // TODO: Create tooltip dynamically
-                            cellContent += `<i class="fa fa-info-circle" style="${value === 1 ? 'display:none' : ''}"
-                                    title="ClimMob - {{ _("Published") }}
-                                    Genesys - {{ _("Published") }}"></i>`;
+                            // TODO: Create download link
                             cellContent += `</div>`;
                             let filterValue = '';
                             $.each(col.options, function(key, id) {
@@ -350,6 +347,15 @@
                             });
                             row += `<td data-column="${col.key}">${cellContent}<span class="d-none filter-value" hidden>${filterValue}</span></td>`;
 
+                        }else if (col.type === "static_publication_status") {
+                            cellContent = `<div style="display: flex; align-items: center; gap: 1em;">`;
+                            cellContent += value ? value : '';
+                            // TODO: Create tooltip dynamically
+                            cellContent += `<i class="fa fa-info-circle" style="${value === 1 ? 'display:none' : ''}"
+                                    title="ClimMob - {{ _("Published") }}
+                                    Genesys - {{ _("Published") }}"></i>`;
+                            cellContent += `</div>`;
+                            row += `<td data-column="${col.key}">${cellContent}</td>`;
                         }else if (col.type === "dropdown_affiliation") {
                             let optionsHtml = `<option value="" selected>{{ _("Please select or add one") }}</option>`;
                             let isSelectedExisting = false;

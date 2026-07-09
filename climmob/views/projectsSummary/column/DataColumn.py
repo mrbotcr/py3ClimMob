@@ -232,7 +232,7 @@ DATA_COLUMNS = [
     {
         "key": "project_publication_approval",
         "name": "Publication approval",
-        "type": "dropdown_publication_status",
+        "type": "dropdown_publication_approval",
         "options": get_publication_status_options(),
         "id": 39,
         "show": True,
@@ -240,7 +240,7 @@ DATA_COLUMNS = [
     {
         "key": "project_publication_status",
         "name": "Publication status",
-        "type": "static",
+        "type": "static_publication_status",
         "options": None,
         "id": 28,
         "show": True,

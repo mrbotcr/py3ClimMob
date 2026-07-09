@@ -11,7 +11,8 @@ VALID_TYPES = [
     "dropdown",
     "dropdown_affiliation",
     "dropdown_crop",
-    "dropdown_publication_status",
+    "dropdown_publication_approval",
+    "static_publication_status",
 ]
 
 
