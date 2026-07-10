@@ -3,14 +3,18 @@ import datetime
 __all__ = [
     "save_project_publication_status",
     "get_global_project_publication_status_id",
-    "get_global_project_publication_status_label",
-    "get_project_publication_status",
+    "get_global_project_publication_status_name",
+    "get_all_project_publication_statuses",
 ]
 
 from sqlalchemy import and_
 
-from climmob.models.climmobv4 import ProjectPublicationStatus
-from climmob.utility import PublicationStatus, PublicationStatusLabel
+from climmob.models import mapFromSchema
+from climmob.models.climmobv4 import ProjectPublicationStatus, PublicationStatus
+from climmob.utility import (
+    PublicationStatus as PublicationStatusEnum,
+    PublicationStatusLabel,
+)
 
 
 def save_project_publication_status(
@@ -36,9 +40,9 @@ def save_project_publication_status(
         res.update({"publication_status_id": status})
 
 
-def get_global_project_publication_status_label(request, project_id: str) -> str:
+def get_global_project_publication_status_name(request, project_id: str) -> str:
     status_id = get_global_project_publication_status_id(request, project_id)
-    return PublicationStatusLabel[PublicationStatus(status_id).name].value
+    return PublicationStatusLabel[PublicationStatusEnum(status_id).name].value
 
 
 def get_global_project_publication_status_id(request, project_id: str) -> int:
@@ -48,41 +52,54 @@ def get_global_project_publication_status_id(request, project_id: str) -> int:
         .all()
     )
     if not res:
-        return PublicationStatus.INITIAL.value
-
-    if any(status.publication_status_id == PublicationStatus.FAILED for status in res):
-        return PublicationStatus.FAILED.value
+        return PublicationStatusEnum.INITIAL.value
 
     if any(
-        status.publication_status_id == PublicationStatus.PUBLISHED for status in res
+        status.publication_status_id == PublicationStatusEnum.FAILED for status in res
     ):
-        return PublicationStatus.PUBLISHED.value
+        return PublicationStatusEnum.FAILED.value
 
     if any(
-        status.publication_status_id == PublicationStatus.APPROVED for status in res
+        status.publication_status_id == PublicationStatusEnum.PUBLISHED
+        for status in res
     ):
-        return PublicationStatus.APPROVED.value
+        return PublicationStatusEnum.PUBLISHED.value
 
     if any(
-        status.publication_status_id == PublicationStatus.REJECTED for status in res
+        status.publication_status_id == PublicationStatusEnum.APPROVED for status in res
     ):
-        return PublicationStatus.REJECTED.value
+        return PublicationStatusEnum.APPROVED.value
 
     if any(
-        status.publication_status_id == PublicationStatus.IN_REVIEW for status in res
+        status.publication_status_id == PublicationStatusEnum.REJECTED for status in res
     ):
-        return PublicationStatus.IN_REVIEW.value
+        return PublicationStatusEnum.REJECTED.value
 
     if any(
-        status.publication_status_id == PublicationStatus.REQUESTED for status in res
+        status.publication_status_id == PublicationStatusEnum.IN_REVIEW
+        for status in res
     ):
-        return PublicationStatus.REQUESTED.value
+        return PublicationStatusEnum.IN_REVIEW.value
+
+    if any(
+        status.publication_status_id == PublicationStatusEnum.REQUESTED
+        for status in res
+    ):
+        return PublicationStatusEnum.REQUESTED.value
 
 
-def get_project_publication_status(
+def get_all_project_publication_statuses(
     request, project_id: str
 ) -> list[ProjectPublicationStatus]:
-    query = request.dbsession.query(ProjectPublicationStatus).filter(
-        ProjectPublicationStatus.project_id == project_id
+    query = (
+        request.dbsession.query(
+            ProjectPublicationStatus, PublicationStatus.publication_status_name
+        )
+        .join(
+            PublicationStatus,
+            PublicationStatus.publication_status_id
+            == ProjectPublicationStatus.publication_status_id,
+        )
+        .filter(ProjectPublicationStatus.project_id == project_id)
     )
-    return query.all()
+    return mapFromSchema(query.all())

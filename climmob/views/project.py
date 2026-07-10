@@ -58,7 +58,7 @@ from climmob.processes import (
     getProjectProgress,
     setActiveProject,
     get_collaborators_in_project,
-    get_project_publication_status,
+    get_all_project_publication_statuses,
     get_project_publication_license_id,
     save_project_publication_license,
 )
@@ -1169,7 +1169,7 @@ class RequestProjectPublicationView(privateView):
     def get(self):
         self.returnRawViewResult = False
         destinations = []
-        res = get_project_publication_status(
+        res = get_all_project_publication_statuses(
             self.request, self.context.active_project_id
         )
         for plugin in p.PluginImplementations(p.IPublisher):
