@@ -233,7 +233,7 @@ DATA_COLUMNS = [
         "key": "project_publication_approval",
         "name": "Publication approval",
         "type": "dropdown_publication_approval",
-        "options": get_publication_status_options(),
+        "options": get_publication_status_options(),  # TODO: translate
         "id": 39,
         "show": True,
     },
@@ -297,7 +297,7 @@ DATA_COLUMNS = [
         "key": "climmob_analytics",
         "name": "Dashboard",
         "type": "dropdown",
-        "options": options_dict,
+        "options": options_dict,  # TODO: translate
         "id": 35,
         "show": True,
     },
