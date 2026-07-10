@@ -352,9 +352,8 @@
                             cellContent += value.status ? value.status : '';
                             if (value.repos.length > 0) {
                                 let title = ``;
-                                console.log(value.repos)
                                 $.each(value.repos, function(key, id) {
-                                    title += `${id.destination} - ${id.publication_status_name}\n`
+                                    title += `${id.destination_label} - ${id.publication_status_name}\n`
                                 });
                                 cellContent += `<i class="fa fa-info-circle" style="${value === 1 ? 'display:none' : ''}"
                                         title="${title}">`

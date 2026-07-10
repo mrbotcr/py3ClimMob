@@ -16,6 +16,8 @@ from climmob.utility import (
     PublicationStatusLabel,
 )
 
+import climmob.plugins as p
+
 
 def save_project_publication_status(
     request, project_id: str, status: int, user_name: str, destination: str
@@ -102,4 +104,11 @@ def get_all_project_publication_statuses(
         )
         .filter(ProjectPublicationStatus.project_id == project_id)
     )
-    return mapFromSchema(query.all())
+    result = mapFromSchema(query.all())
+    publishers = p.PluginImplementations(p.IPublisher)
+    for repo in result:
+        for plugin in publishers:
+            if repo["destination"] == plugin.get_destination_name():
+                repo["destination_label"] = plugin.get_label()
+
+    return result
