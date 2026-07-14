@@ -1,5 +1,6 @@
 import os
 import sys
+
 import climmob.plugins as p
 
 if (
@@ -21,6 +22,8 @@ from pyramid_authstack import AuthenticationStackPolicy
 
 import sentry_sdk
 from sentry_sdk.integrations.pyramid import PyramidIntegration
+
+from climmob.services import notification_factory, publication_factory
 
 
 def main(global_config, **settings):
@@ -73,6 +76,8 @@ def main(global_config, **settings):
     config.add_subscriber(
         "climmob.middleware.middleware.CheckMiddleware", "pyramid.events.BeforeRender"
     )
+
+    config.include("pyramid_services")
 
     config.include(".models")
     # Load and configure the host application

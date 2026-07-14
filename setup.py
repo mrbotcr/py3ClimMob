@@ -117,6 +117,7 @@ requires = [
     "pyramid-fanstatic",
     "pyramid-jinja2",
     "pyramid-mako",
+    "pyramid_services",
     "pyramid-tm",
     "pyTelegramBotAPI",
     "pytest",
