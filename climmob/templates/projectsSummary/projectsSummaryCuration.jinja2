@@ -328,11 +328,15 @@
                             let optionsHtml = ``;
                             let canEdit = true;
                             $.each(col.options, function(key, option) {
+                                if (value === 0 && option.value === -1) {
+                                    return // Skip the empty option
+                                }
                                 if (option.value === value) {
                                     canEdit = option.editable;
                                 }
                                 let selectable = option.selectable === true || option.value === value;
-                                optionsHtml += `<option value="${option}" ${selectable === false ? 'disabled' : ''} ${option.value === value ? 'selected="selected"' : ''}>${option.label}</option>`;
+                                let label = option.label;
+                                optionsHtml += `<option value="${option.value}" ${selectable === false ? 'disabled' : ''} ${option.value === value ? 'selected="selected"' : ''}>${label}</option>`;
                             });
                             cellContent = `<div style="display: flex; align-items: center; gap: 1em;">`;
                             cellContent += `<select ${canEdit === false ? 'disabled' : ''} class="Select2_simple form-control select2-hidden-accessible" style="width: 150px">${optionsHtml}</select>`;
@@ -514,6 +518,7 @@
             const fieldCrop = row.querySelector('[data-column="cropname"] select');
             const fieldAnalytics = row.querySelector('[data-column="climmob_analytics"] select');
             const adminMessage = row.querySelector('[data-column="admin_msj"] textarea');
+            const publicationApproval = row.querySelector('[data-column="project_publication_approval"] select');
 
             let error = [];
 
@@ -546,6 +551,7 @@
                     crop: fieldCrop.value.trim(),
                     analytics: fieldAnalytics.value.trim(),
                     admin_message: adminMessage.value,
+                    project_publication_approval: publicationApproval.value,
                     csrf_token: "{{ request.session.get_csrf_token() }}"
                 }
 
