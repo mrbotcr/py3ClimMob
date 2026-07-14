@@ -78,6 +78,8 @@ def main(global_config, **settings):
     )
 
     config.include("pyramid_services")
+    config.register_service_factory(notification_factory, name="notification")
+    config.register_service_factory(publication_factory, name="publication")
 
     config.include(".models")
     # Load and configure the host application
