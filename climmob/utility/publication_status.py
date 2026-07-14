@@ -8,7 +8,7 @@ def _(x):
 class PublicationStatus(IntEnum):
     INITIAL = 1
     REQUESTED = 2
-    # IN_REVIEW = 3 # TODO: update alembic revision
+    # TODO: update alembic revision
     APPROVED = 4
     REJECTED = 5
     PUBLISHED = 6
@@ -18,7 +18,6 @@ class PublicationStatus(IntEnum):
 class PublicationStatusLabel(Enum):
     INITIAL = "Initial"
     REQUESTED = "Requested"
-    # IN_REVIEW = "In review"
     APPROVED = "Approved"
     REJECTED = "Rejected"
     PUBLISHED = "Published"

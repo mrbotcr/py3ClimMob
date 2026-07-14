@@ -94,12 +94,6 @@ def get_global_project_publication_status_id(request, project_id: str) -> int:
         return PublicationStatusEnum.REJECTED.value
 
     if any(
-        status.publication_status_id == PublicationStatusEnum.IN_REVIEW
-        for status in res
-    ):
-        return PublicationStatusEnum.IN_REVIEW.value
-
-    if any(
         status.publication_status_id == PublicationStatusEnum.REQUESTED
         for status in res
     ):
