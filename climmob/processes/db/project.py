@@ -69,7 +69,21 @@ __all__ = [
     "get_project_status",
     "get_project_cod_by_id",
     "get_project_status",
+    "get_project_by_id",
 ]
+
+
+def get_project_by_id(project_id, request):
+    project = mapFromSchema(
+        request.dbsession.query(Project)
+        .filter(Project.project_id == project_id)
+        .first()
+    )
+
+    if project:
+        project = extraDetailsForProject(project, request)
+
+    return project
 
 
 def get_project_cod_by_id(project_id, request):
