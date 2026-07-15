@@ -16,6 +16,11 @@ class ClimMobPublisher(SingletonPlugin):
     def get_label(self):
         return self.label
 
+    def publish(self, settings, request, path, project_id, crop_name):
+        print(
+            f"ClimmobPublisher: Publishing project {project_id} to {self.get_destination_name()}"
+        )
+
 
 class GenesysPublisher(SingletonPlugin):
     implements(IPublisher)
@@ -28,3 +33,8 @@ class GenesysPublisher(SingletonPlugin):
 
     def get_label(self):
         return self.label
+
+    def publish(self, settings, request, path, project_id, crop_name):
+        print(
+            f"GenesysPublisher: Publishing project {project_id} to {self.get_destination_name()}"
+        )
