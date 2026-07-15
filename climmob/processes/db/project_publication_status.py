@@ -31,18 +31,21 @@ def save_project_publication_status(
             ProjectPublicationStatus.destination == destination,
         )
     )
-
-    if res.first() is None:
-        project_publication_status = ProjectPublicationStatus(
-            publication_status_id=status,
-            project_id=project_id,
-            last_updated_by=user_name,
-            last_updated_at=datetime.datetime.now(),
-            destination=destination,
-        )
-        request.dbsession.add(project_publication_status)
-    else:
-        res.update({"publication_status_id": status})
+    try:
+        if res.first() is None:
+            project_publication_status = ProjectPublicationStatus(
+                publication_status_id=status,
+                project_id=project_id,
+                last_updated_by=user_name,
+                last_updated_at=datetime.datetime.now(),
+                destination=destination,
+            )
+            request.dbsession.add(project_publication_status)
+        else:
+            res.update({"publication_status_id": status})
+        return True, ""
+    except Exception as e:
+        return False, str(e)
 
 
 def get_global_project_publication_status_name(request, project_id: str) -> str:
@@ -72,32 +75,27 @@ def get_global_project_publication_status_id(request, project_id: str) -> int:
     if not res:
         return PublicationStatusEnum.INITIAL.value
 
-    if any(
-        status.publication_status_id == PublicationStatusEnum.FAILED for status in res
-    ):
-        return PublicationStatusEnum.FAILED.value
+    global_status = PublicationStatusEnum.INITIAL
 
-    if any(
-        status.publication_status_id == PublicationStatusEnum.PUBLISHED
-        for status in res
-    ):
-        return PublicationStatusEnum.PUBLISHED.value
+    for status in res:
+        if status.publication_status_id == PublicationStatusEnum.FAILED:
+            global_status = PublicationStatusEnum.FAILED
+            break
+        if status.publication_status_id == PublicationStatusEnum.PUBLISHED:
+            if status.destination != "climmob":
+                global_status = PublicationStatusEnum.PUBLISHED
+                break
+        if status.publication_status_id == PublicationStatusEnum.APPROVED:
+            global_status = PublicationStatusEnum.APPROVED
+            break
+        if status.publication_status_id == PublicationStatusEnum.REJECTED:
+            global_status = PublicationStatusEnum.REJECTED
+            break
+        if status.publication_status_id == PublicationStatusEnum.REQUESTED:
+            global_status = PublicationStatusEnum.REQUESTED
+            break
 
-    if any(
-        status.publication_status_id == PublicationStatusEnum.APPROVED for status in res
-    ):
-        return PublicationStatusEnum.APPROVED.value
-
-    if any(
-        status.publication_status_id == PublicationStatusEnum.REJECTED for status in res
-    ):
-        return PublicationStatusEnum.REJECTED.value
-
-    if any(
-        status.publication_status_id == PublicationStatusEnum.REQUESTED
-        for status in res
-    ):
-        return PublicationStatusEnum.REQUESTED.value
+    return global_status.value
 
 
 def get_all_project_publication_statuses(
