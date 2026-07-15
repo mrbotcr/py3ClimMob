@@ -142,6 +142,7 @@ requires = [
     "sgmllib3k",
     "shutilwhich",
     "six",
+    "slack_sdk"
     "sortedcontainers",
     "soupsieve",
     "SQLAlchemy",
