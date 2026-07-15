@@ -1,3 +1,6 @@
+import logging
+
+import climmob.plugins as p
 from climmob.processes import (
     get_all_project_publication_statuses,
     save_project_publication_status,
@@ -9,7 +12,15 @@ from climmob.processes import (
 from climmob.products.projectPublication.project_publication import publish_project
 from climmob.services.notification_service import NotificationService
 from climmob.services.service import Service
-from climmob.utility import PublicationStatus
+from climmob.utility import (
+    PublicationStatus,
+    is_status_approvable,
+    is_status_requestable,
+    is_status_publishable,
+    is_status_rejectable,
+)
+
+log = logging.getLogger("climmob")
 
 
 class PublicationService(Service):
@@ -22,117 +33,150 @@ class PublicationService(Service):
     def request_project_publication(self, project_id, license, destinations):
         save_project_publication_license(project_id, license, self.request)
 
-        # TODO: publish climmob, if it is not already published
-        climmob_status = get_project_publication_status_by_destination_name(
-            self.request, project_id, "climmob"
-        )
-        if (
-            climmob_status
-            and climmob_status["publication_status_id"] != PublicationStatus.PUBLISHED
-        ):
-            self._publish_repository(project_id, "climmob")
-            # TODO: what happens if climmob publish fails
+        success, msg = self._request_repository(project_id, "climmob")
+        if success:
+            success, msg = self._approve_repository(project_id, "climmob")
+        if success:
+            success, msg = self._publish_repository(project_id, "climmob")
+            if not success:
+                self.notification_service.notify_publication_failure()
 
         # TODO: Check if the project is already requested for publication
         #  if it is, match the status accordingly
         #  if it is not, request each destination
 
         for destination in destinations:
-            # TODO: Check if the status is not requested
             self._request_repository(project_id, destination)
 
         self.notification_service.notify_publication_request()
 
     def _request_repository(self, project_id, destination):
-        save_project_publication_status(
-            self.request,
-            project_id,
-            PublicationStatus.REQUESTED,
-            self.request.user_in_session,
-            destination,
+        status = get_project_publication_status_by_destination_name(
+            self.request, project_id, destination
+        )
+        if not status or is_status_requestable(status["publication_status_id"]):
+            success, msg = save_project_publication_status(
+                self.request,
+                project_id,
+                PublicationStatus.REQUESTED.value,
+                self.request.user_in_session,
+                status["destination"],
+            )
+            return success, msg
+        return (
+            False,
+            f"Cannot request publication for destination {destination} with status {status['publication_status_id']}",
         )
 
     def approve_project_publication(self, project_id):
         statuses = get_all_project_publication_statuses(self.request, project_id)
+        active_destinations = [
+            plugin.get_destination_name()
+            for plugin in p.PluginImplementations(p.IPublisher)
+        ]
+        errors = []
+        global_success = True
         for status in statuses:
-            if status["destination"] != "climmob":
-                self._approve_repository(project_id, status["destination"])
+            if (
+                status["destination"] != "climmob"
+                and status["destination"] in active_destinations
+            ):
+                success, msg = self._approve_repository(
+                    project_id, status["destination"]
+                )
+                if not success:
+                    global_success = False
+                    errors.append((status["destination"], msg))
+        return global_success, errors
 
     def _approve_repository(self, project_id, destination):
-        # TODO?: Check if the status is requested or rejected before saving
-        save_project_publication_status(
-            self.request,
-            project_id,
-            PublicationStatus.APPROVED,
-            self.request.user_in_session,
-            destination,
+        status = get_project_publication_status_by_destination_name(
+            self.request, project_id, destination
+        )
+        if status and is_status_approvable(status["publication_status_id"]):
+            success, msg = save_project_publication_status(
+                self.request,
+                project_id,
+                PublicationStatus.APPROVED.value,
+                self.request.user_in_session,
+                status["destination"],
+            )
+            return success, msg
+        return (
+            False,
+            f"Cannot approve publication for destination {destination} with status {status['publication_status_id']}",
         )
 
     def reject_project_publication(self, project_id):
         statuses = get_all_project_publication_statuses(self.request, project_id)
+        errors = []
+        global_success = True
         for status in statuses:
             if status["destination"] != "climmob":
-                self._reject_repository(project_id, status["destination"])
-
-        self.notification_service.notify_publication_rejection()
+                success, msg = self._reject_repository(
+                    project_id, status["destination"]
+                )
+                if not success:
+                    global_success = False
+                    errors.append((status["destination"], msg))
+        if global_success:
+            self.notification_service.notify_publication_rejection()
+        return global_success, errors
 
     def _reject_repository(self, project_id, destination):
-        # TODO?: Check if the status is requested or approved before saving
-        save_project_publication_status(
-            self.request,
-            project_id,
-            PublicationStatus.REJECTED,
-            self.request.user_in_session,
-            destination,
+        status = get_project_publication_status_by_destination_name(
+            self.request, project_id, destination
+        )
+        if status and is_status_rejectable(status["publication_status_id"]):
+            success, msg = save_project_publication_status(
+                self.request,
+                project_id,
+                PublicationStatus.REJECTED.value,
+                self.request.user_in_session,
+                destination,
+            )
+            return success, msg
+        return (
+            False,
+            f"Cannot reject publication for destination {destination} with status {status['publication_status_id']}",
         )
 
     def publish_project(self, project_id):
-        project = get_project_by_id(project_id, self.request, extra=True)
+        # TODO: take the username from the request
+        project = get_project_by_id(project_id, self.request)
+        statuses = get_all_project_publication_statuses(self.request, project_id)
         destinations = [
             destination["destination"]
-            for destination in get_project_publication_status_by_status_id(
-                self.request, project_id, PublicationStatus.APPROVED.value
-            )
+            for destination in statuses
+            if is_status_publishable(destination["publication_status_id"])
         ]
         publish_project(
             project_id,
+            project["project_cod"],
             project["owner"]["user_name"],
             project["project_curated_cropname"],
             destinations,
             self.request,
         )
-        # @celeryApp.task(base=climmobCeleryTask)
-        # def task(settings):
-        #     statuses = get_all_project_publication_statuses(self.request, project_id)
-        #
-        #     for status in statuses:
-        #         # if status["destination"] != "climmob":
-        #             success = self._publish_repository(project_id, status["destination"])
-        #             # TODO: update individual repo status
-        #
-        #     # TODO: Only if all are successfully published, notify success
-        #     self.notification_service.notify_publication_success()
-        #
-        #     # TODO: If any of the destinations fail to publish, notify failure
-        #     self.notification_service.notify_publication_failure()
-        #
-        # task.apply_async(args=(
-        #     get_settings(self.request),
-        # ),
-        # queue="ClimMob",)
 
     def _publish_repository(self, project_id, destination):
-        # TODO?: Check if the status is approved before saving
         print(f"Publishing project {project_id} to destination {destination}")
-        # publisher = get_publisher_by_destination_name(destination)
-        # success = publisher.publish()
-        #
-        # save_project_publication_status(
-        #     self.request,
-        #     project_id,
-        #     PublicationStatus.PUBLISHED,
-        #     self.request.user_in_session,
-        #     destination,
-        # )
-
-        # return success
+        status = get_project_publication_status_by_destination_name(
+            self.request, project_id, destination
+        )
+        if status and is_status_publishable(status["publication_status_id"]):
+            project = get_project_by_id(project_id, self.request)
+            publish_project(
+                project_id,
+                project["project_cod"],
+                project["owner"]["user_name"],
+                project["project_curated_cropname"],
+                [destination],
+                self.request,
+                notify=False,
+            )
+            return True, ""
+        return (
+            False,
+            f"Cannot publish to repository {destination} with status {status['publication_status_id']}",
+        )

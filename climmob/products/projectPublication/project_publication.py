@@ -5,16 +5,18 @@ from climmob.utility import get_settings
 
 def publish_project(
     project_id,
+    project_cod,
     owner_username,
     cropname,
     destinations,
     request,
+    notify=True,
 ):
     settings = get_settings(request)
     product_directory = getProductDirectory(
-        request, owner_username, project_id, "jsonresults"
+        request, owner_username, project_cod, "jsonresults"
     )
-    task = publish_project_task.apply_async(
+    publish_project_task.apply_async(
         args=(
             settings,
             request.locale_name,
@@ -24,6 +26,7 @@ def publish_project(
             owner_username,
             destinations,
             product_directory,
+            notify,
         ),
         queue="ClimMob",
     )
