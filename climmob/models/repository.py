@@ -57,6 +57,17 @@ def execute_two_sqls(sql1, sql2):
 
 @contextmanager
 def create_request(settings: dict, locale_name: str, user_in_session: str):
+    def find_service(request_, name):
+        if name == "publication":
+            from climmob.services.publication_service import PublicationService
+
+            return PublicationService(request_)
+        if name == "notification":
+            from climmob.services.notification_service import NotificationService
+
+            return NotificationService(request_)
+        return None
+
     engine = get_engine(settings)
 
     session_factory = get_session_factory(engine)
@@ -72,6 +83,7 @@ def create_request(settings: dict, locale_name: str, user_in_session: str):
         request.locale_name = locale_name
         request.user_in_session = user_in_session
         request.translate = lambda x: x
+        request.find_service = lambda name: find_service(request, name)
 
         initialize_schema()
 
