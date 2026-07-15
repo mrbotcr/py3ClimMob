@@ -141,6 +141,25 @@ class PublicationService(Service):
             f"Cannot reject publication for destination {destination} with status {status['publication_status_id']}",
         )
 
+    def handle_publication_approval(self, project_id, project_publication_approval: int):
+        # TODO: check against previous status
+        if project_publication_approval == PublicationStatus.APPROVED:
+            success, errors = self.approve_project_publication(
+                project_id
+            )
+            if not success:
+                log.error(errors)
+            else:
+                self.publish_project(project_id)
+        elif project_publication_approval == PublicationStatus.REJECTED:
+            success, errors = self.reject_project_publication(project_id)
+            if not success:
+                log.error(errors)
+        else:
+            log.error(
+                f"Invalid project publication approval status: {project_publication_approval}"
+            )
+
     def publish_project(self, project_id):
         # TODO: take the username from the request
         project = get_project_by_id(project_id, self.request)

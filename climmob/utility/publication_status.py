@@ -13,6 +13,7 @@ class PublicationStatus(IntEnum):
     REJECTED = 5
     PUBLISHED = 6
     FAILED = 7
+    # TODO: PARTIAL
 
 
 class PublicationStatusLabel(Enum):

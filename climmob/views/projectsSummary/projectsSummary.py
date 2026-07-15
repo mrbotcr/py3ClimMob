@@ -225,6 +225,7 @@ class SaveProjectRow(privateView):
                 "climmob_analytics": int(data.get("analytics")),
                 "cropname": data.get("crop"),
                 "project_checked": 1,
+                # TODO: update publication status and approval
             }
         )
 
@@ -269,6 +270,14 @@ class SaveProjectRow(privateView):
         user_project_email = user_project["user_email"]
         user_project_full_name = user_project["user_fullname"]
         project_name = psm_json["projectTitle"]
+
+        project_publication_approval = 0
+        try:
+            project_publication_approval = int(data["project_publication_approval"])
+        except ValueError:
+            pass
+        publication_service = self.request.find_service(name="publication")
+        publication_service.handle_publication_approval(project_id, project_publication_approval)
 
         self.send_email_notification(
             admin_name,
