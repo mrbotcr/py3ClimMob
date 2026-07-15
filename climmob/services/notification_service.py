@@ -2,6 +2,9 @@ from enum import auto, IntEnum
 
 from climmob.services.service import Service
 
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
+
 
 class NotificationService(Service):
     def __init__(self, request):
@@ -23,8 +26,8 @@ class NotificationService(Service):
 
     def notify_publication_success(self):
         self.set_notifier(EmailNotifier)
-        self.notifier.send_notification("A publication request has been approved.")
-        print("NotificationService: Notifying about publication approval.")
+        self.notifier.send_notification("Publication has been performed.")
+        print("NotificationService: Notifying about publication success.")
 
     def notify_publication_failure(self):
         self.set_notifier(SlackNotifier)
@@ -48,7 +51,7 @@ class EmailNotifier(Notifier):
         self._subject = subject
         self._body = ""
         self._to = ""
-        self._from = self.request.settings.get("email.from", None)
+        self._from = self.request.registry.settings.get("email.from", None)
 
     def send_notification(self, message):
         # Implement the logic to send an email notification
@@ -62,10 +65,18 @@ class EmailRecipient(IntEnum):
 
 
 class SlackNotifier(Notifier):
+    channel = "#climmob-notifications"
+
     def __init__(self, request):
         super().__init__(request)
+        self.client = WebClient(
+            token=request.registry.settings.get("slack.token", None)
+        )
 
     def send_notification(self, message):
         # Implement the logic to send a Slack notification
-        print(f"SlackNotifier: Sending Slack notification with message: {message}")
-        pass
+        response = self.client.chat_postMessage(
+            channel=self.channel,
+            text="¡Hola desde mi bot de Slack!",
+        )
+        # TODO: Handle the response and any errors
