@@ -85,6 +85,8 @@ def get_global_project_publication_status_id(request, project_id: str) -> int:
             if status.destination != "climmob":
                 global_status = PublicationStatusEnum.PUBLISHED
                 break
+            else:
+                global_status = PublicationStatusEnum.REQUESTED
         if status.publication_status_id == PublicationStatusEnum.APPROVED:
             global_status = PublicationStatusEnum.APPROVED
             break
