@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard.jinja2' %}
 
 {% block title %}
-    <title>{{ _("ClimMob | Upload to Databricks") }}</title>
+    <title>{{ _("ClimMob | Publication request") }}</title>
 {% endblock title %}
 
 {% block css %}
@@ -14,7 +14,7 @@
 {% endblock css %}
 
 {% block pageheading %}
-    {% set _title= _("Upload to Databricks") %}
+    {% set _title= _("Publication request") %}
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
@@ -42,24 +42,38 @@
     {% if redirect == False %}
         {% block upload_message %}
             <div class="row flex flex-col align-i-center">
-                <div class="ibox col-md-6">
+                <div class="ibox col-md-5">
+                    <div class="ibox-title">
+                        <h5>{{ _("Publication request") }}</h5>
+                    </div>
                     <div class="ibox-content">
                         <div class="flex flex-col align-i-center">
-                            <h2 class="font-bold text text-center">{{ _("You are going to publish all collected data to the selected destinations") }}</h2>
-                            <p>
-                            <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
-                                <h3>{{ _("Please read the following information carefully before continuing:") }}</h3>
-                                <p style="width: 50%; text-align: justify;">
-                                    {{ _("You are responsible for selecting which questions in
-                                your form should be marked as sensitive. Only the questions explicitly marked as
-                                sensitive will have identifying details removed or transformed; questions not marked
-                                as sensitive will remain in their original form. If personal, private, or sensitive
-                                information appears in questions you did not mark as sensitive, that data will not be
-                                automatically protected. It is your sole responsibility to ensure that all sensitive
-                                questions are properly flagged before submission. ClimMob is not liable for any
-                                disclosure of sensitive information resulting from incorrect or incomplete sensitivity
-                                 settings. By continuing, you acknowledge that you understand and agree to these terms
-                                  and accept full responsibility for your anonymization choices.") }}</p>
+                            <div class="panel panel-warning">
+                                <div class="panel-heading">
+                                    <i class="fa fa-warning"></i> {{ _("Privacy & responsibility") }}
+                                </div>
+                                <div class="panel-body">
+                                    <span style="display: inline-block">
+                                        {{ _("By submitting this request, you confirm that:") }}
+                                    </span>
+
+                                    <ul>
+                                        <li>{{ _("you own the data or have permission to publish it") }}</li>
+                                        <li>{{ _("your custom questions do not expose Personally Identifiable Information(PII)") }}</li>
+                                        <li>{{ _("only participant-level shareable data will be exported") }}</li>
+                                        <li>{{ _("media files and system logs are excluded automatically") }}</li>
+                                    </ul>
+
+                                    <span style="display: inline-block">
+                                        {{ _("Your request will be reviewed by the 1000FARMS administrators before publication.") }}
+                                    </span>
+                                    <span style="display: inline-block">
+                                        {{ _("Learn more in the") }}
+                                        <a style="text-decoration: underline; color: inherit; font-weight: bold">
+                                            {{ _("Publishing data chapter in the tricot e-book") }}
+                                        </a>.
+                                    </span>
+                                </div>
                             </div>
                             <form id="request-project-publication-form" role="form" method="post"
                                   class="flex flex-col align-i-center"
@@ -69,23 +83,24 @@
                                 <label>
                                     Usage rights:
                                 </label>
-                                    {% for license in licenses %}
-                                        <label>
-                                            <input type="radio" id="license-{{ license.publication_license_id  }}"
-                                                   name="license" value="{{ license.publication_license_id }}"
-                                                    {% if license.publication_license_id == project_license_id %}
-                                                        checked
-                                                    {% endif %}
-                                                    {% if project_license_id %}
-                                                        disabled
-                                                    {% endif %}
-                                                >
-                                            {{ license.publication_license_name }}
-                                            {% if license.publication_license_id == 1 %} {# CC0 #}
-                                                (Recommended)
-                                            {% endif %}
-                                        </label><br>
-                                    {% endfor %}
+
+                                {% for license in licenses %}
+                                    <label>
+                                        <input type="radio" id="license-{{ license.publication_license_id }}"
+                                               name="license" value="{{ license.publication_license_id }}"
+                                                {% if license.publication_license_id == project_license_id %}
+                                               checked
+                                                {% endif %}
+                                                {% if project_license_id %}
+                                               disabled
+                                                {% endif %}
+                                        >
+                                        {{ license.publication_license_name }}
+                                        {% if license.publication_license_id == 1 %} {# CC0 #}
+                                            (Recommended)
+                                        {% endif %}
+                                    </label><br>
+                                {% endfor %}
                                 <section class="flex flex-col">
                                     <h3>Select destinations:</h3>
                                     {% for destination, label, disabled, checked, status in destinations %}
