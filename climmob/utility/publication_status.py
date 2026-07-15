@@ -59,3 +59,22 @@ def get_publication_status_options():
         }
         options.append(option)
     return options
+
+
+def is_status_requestable(status_id):
+    return status_id == PublicationStatus.INITIAL
+
+
+def is_status_approvable(status_id):
+    return (
+        status_id == PublicationStatus.REQUESTED
+        or status_id == PublicationStatus.REJECTED
+    )
+
+
+def is_status_rejectable(status_id):
+    return status_id == PublicationStatus.REQUESTED
+
+
+def is_status_publishable(status_id):
+    return status_id == PublicationStatus.APPROVED
