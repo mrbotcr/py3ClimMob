@@ -272,6 +272,7 @@
 
                 $.each(projects, function(index, project) {
                     let row = '<tr>';
+                    let is_curated = project.affiliation !== null && project.cropname !== null && project.climmob_analytics !== null;
                     $.each(tableStructure, function(colIndex, col) {
                         let cellContent = '';
                         let value = project[col.key];
@@ -339,8 +340,13 @@
                                 optionsHtml += `<option value="${option.value}" ${selectable === false ? 'disabled' : ''} ${option.value === value ? 'selected="selected"' : ''}>${label}</option>`;
                             });
                             cellContent = `<div style="display: flex; align-items: center; gap: 1em;">`;
-                            cellContent += `<select ${canEdit === false ? 'disabled' : ''} class="Select2_simple form-control select2-hidden-accessible" style="width: 150px">${optionsHtml}</select>`;
+                            cellContent += `<select ${canEdit === false || is_curated === false? 'disabled' : ''} class="Select2_simple form-control select2-hidden-accessible" style="width: 150px">${optionsHtml}</select>`;
                             // TODO: Create download link
+
+                            cellContent += `<i class="fa fa-info-circle"
+                                style="${canEdit === true && is_curated === false ? '' : 'display:none'}"
+                                title="{{ _("Project must be curated in order to approve or reject publication") }}"></i>`;
+
                             cellContent += `</div>`;
                             let filterValue = '';
                             $.each(col.options, function(key, id) {
@@ -360,8 +366,7 @@
                                     title += `${id.destination_label} - ${id.publication_status_name}\n`
                                 });
                                 cellContent += `<i class="fa fa-info-circle" style="${value === 1 ? 'display:none' : ''}"
-                                        title="${title}">`
-                                cellContent +=`</i>`;
+                                        title="${title}"></i>`;
                             }
                             cellContent += `</div>`;
                             row += `<td data-column="${col.key}">${cellContent}</td>`;
