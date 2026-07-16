@@ -1,4 +1,9 @@
 {% macro licenses_container() %}
+    {% from 'snippets/project/publishing/license_logos.jinja2' import license_logos with context %}
+    {% from 'snippets/project/publishing/license_description.jinja2' import license_description with context %}
+
+    <h4>{{ _("License") }}</h4>
+    <p>{{ _("Select the license that defines how others may reuse your dataset.") }}</p>
     <div id="licenses" class="flex flex-col" style="gap: 1em;">
         {% for license in licenses %}
             <div class="row" style="margin-inline: 0;">
@@ -35,9 +40,7 @@
                         </div>
                     </div>
                     <div class="ibox-content">
-                        <p>
-                            {{ _("You can request the publication of your project to make it available to other users.") }}
-                        </p>
+                        {{ license_description(license.publication_license_id) }}
                     </div>
                 </div>
             </div>

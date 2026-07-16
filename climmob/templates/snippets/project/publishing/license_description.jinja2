@@ -1,0 +1,37 @@
+{% macro license_description(licence) %}
+    <style>
+        .license-description {
+            text-align: justify;
+        }
+    </style>
+    <p class="license-description">
+        {% if licence == 1 %} {# CC0 #}
+        <span style="font-weight: bold">
+            {{ _("Public Domain Dedication. ") }}
+        </span>
+        {{ _("You waive all copyright and allow anyone to freely reuse, modify, and share your dataset for any purpose, including commercial use, without requiring legal attribution. This is the gold standard for open scientific data to maximize interoperability.") }}
+        <a href="#"
+           style="text-decoration: underline; color: inherit;">
+            {{ _("Read the full CC0 1.0 Legal Code.") }}
+        </a>
+        {% elif licence == 2 %} {# CC-BY #}
+        <span style="font-weight: bold">
+            {{ _("Attribution. ") }}
+        </span>
+        {{ _("Others can share, copy, and adapt your dataset for any purpose, even commercially, as long as they give appropriate credit to you as the original creator and indicate if changes were made.") }}
+        <a href="#"
+           style="text-decoration: underline; color: inherit;">
+            {{ _("Read the full CC BY 4.0 Legal Code.") }}
+        </a>
+        {% elif licence == 3 %} {# CC-BY-SA #}
+        <span style="font-weight: bold">
+            {{ _("Attribution-sharealike. ") }}
+        </span>
+        {{ _("Others can share and adapt your dataset, even commercially, provided they give you proper credit and distribute their contributions under the exact same license as the original.") }}
+        <a href="#"
+           style="text-decoration: underline; color: inherit;">
+            {{ _("Read the full CC BY-SA 4.0 Legal Code.") }}
+        </a>
+        {% endif %}
+    </p>
+{% endmacro %}
