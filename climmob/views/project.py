@@ -1177,11 +1177,11 @@ class RequestProjectPublicationView(privateView):
             checked = disabled
             status = None
             for r in res:
-                if r.destination == plugin.get_destination_name():
+                if r["destination"] == plugin.get_destination_name():
                     checked = True
                     disabled = True
                     status = PublicationStatusLabel[
-                        PublicationStatus(r.publication_status_id).name
+                        PublicationStatus(r["publication_status_id"]).name
                     ].value
                     break
             destinations.insert(
