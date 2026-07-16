@@ -1,0 +1,29 @@
+{% macro license_logos(licence) %}
+    <style>
+        .license-logo {
+            max-width: 1.3em;
+            max-height: 1.3em;
+            margin-left: .2em;
+        }
+    </style>
+    <span class="license-logos">
+        {% if licence == 1 %} {# CC0 #}
+            <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt=""
+                 class="license-logo">
+            <img src="https://mirrors.creativecommons.org/presskit/icons/zero.svg" alt=""
+                 class="license-logo">
+        {% elif licence == 2 %} {# CC-BY #}
+            <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt=""
+                 class="license-logo">
+            <img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt=""
+                 class="license-logo">
+        {% elif licence == 3 %} {# CC-BY-SA #}
+            <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt=""
+                 class="license-logo">
+            <img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt=""
+                 class="license-logo">
+            <img src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" alt=""
+                 class="license-logo">
+        {% endif %}
+    </span>
+{% endmacro %}
