@@ -27,6 +27,7 @@ class GenesysPublisher(SingletonPlugin):
     destination_name = "genesys"
     label = "Genesys"
     disabled = False
+    index = 3
 
     def get_destination_name(self):
         return self.destination_name
