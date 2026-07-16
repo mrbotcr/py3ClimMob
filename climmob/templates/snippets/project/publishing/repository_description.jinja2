@@ -1,0 +1,35 @@
+{% macro repository_description(repository) %}
+    <style>
+        .license-description {
+            text-align: justify;
+        }
+    </style>
+    <p class="license-description">
+        {% if repository == "climmob" %}
+            {{ _("Publishes your shareable data to the internal 1000FARMS network. This allows other network scientists and project managers to discover, collaborate, and gain insights from your trial within the ClimMob ecosystem.") }}
+        {% elif repository == "databricks" %}
+            {{ _("A collaborative agricultural research platform built on FAIR principles (Findable, Accessible, Interoperable, Reusable). It connects CGIAR research with global data ecosystems to increase your data's visibility, quality, and readiness for advanced analysis.") }}
+            <a href="https://hdl.handle.net/10568/178289"
+               target="_blank"
+               style="text-decoration: underline; color: inherit;">
+                {{ _("Visit Fairgrounds.") }}
+            </a>
+        {% elif repository == "zenodo" %}
+            {{ _("A general-purpose, open-access repository developed by CERN and OpenAIRE. It allows researchers from all disciplines to share, curate, and publish datasets, software, and research artefacts with guaranteed long-term preservation and automatic DOI assignment.") }}
+            <a href="https://zenodo.org/"
+               target="_blank"
+               style="text-decoration: underline; color: inherit;">
+                {{ _("Visit Zenodo.") }}
+            </a>
+        {% elif repository == "genesys" %}
+            {{ _("A global online platform for plant genetic resources. It centralizes and shares information about Plant Genetic Resources for Food and Agriculture (PGRFA) conserved in genebanks worldwide to support global food security.") }}
+            <a href="https://www.genesys-pgr.org/"
+               target="_blank"
+               style="text-decoration: underline; color: inherit;">
+                {{ _("Visit Genesys.") }}
+            </a>
+
+
+        {% endif %}
+    </p>
+{% endmacro %}
