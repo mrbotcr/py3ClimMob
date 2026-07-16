@@ -1,0 +1,51 @@
+{% macro repositories_container() %}
+    {% from 'snippets/project/publishing/repository_logo.jinja2' import repository_logo with context %}
+
+    <h4>{{ _("Repositories") }}</h4>
+    <p>{{ _("Select one or more repositories where your shareable dataset will be published.") }}</p>
+    <div id="repositories" class="flex flex-col" style="gap: 1em;">
+        {% for destination, label, disabled, checked, status in destinations %}
+            <div class="row" style="margin-inline: 0;">
+                <div class="ibox collapsed"
+                     style="outline: 2px solid #e7eaec; outline-offset: -1px; padding: 0; margin-bottom: 0; border-radius: 5px">
+                    <div class="ibox-title flex"
+                         style="justify-content: space-between; padding-block: 0; align-items: center;">
+
+                        <div class="i-checks inline">
+                            <label class="flex"
+                                   style="gap: 1em;align-items: center; margin-bottom: 0;">
+                                <input type="checkbox" id="{{ destination }}-chk" name="destination"
+                                       value="{{ destination }}"
+                                        {% if disabled %}
+                                       disabled
+                                        {% endif %}
+                                        {% if checked %}
+                                       checked
+                                        {% endif %}
+                                />
+
+                                {{ repository_logo(destination) }}
+                                <label style="margin-bottom: 0;">
+                                    {{ label }}
+                                    {% if status %}
+                                        - {{ status }}
+                                    {% endif %}
+                                </label>
+                            </label>
+                        </div>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <p>
+                            {{ _("You can request the publication of your project to make it available to other users.") }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endmacro %}

@@ -1,0 +1,22 @@
+{% macro repository_logo(repository) %}
+    <style>
+        .repository-logo {
+            max-width: 1.3em;
+            max-height: 1.3em;
+            margin-left: .2em;
+        }
+    </style>
+    {% if repository == "climmob" %}
+        <img src="https://placehold.co/20" alt=""
+             class="repository-logo">
+    {% elif repository == "databricks" %}
+        <img src="https://placehold.co/20" alt=""
+             class="repository-logo">
+    {% elif repository == "zenodo" %}
+        <img src="https://placehold.co/20" alt=""
+             class="repository-logo">
+    {% elif repository == "genesys" %}
+        <img src="https://placehold.co/20" alt=""
+             class="repository-logo">
+    {% endif %}
+{% endmacro %}

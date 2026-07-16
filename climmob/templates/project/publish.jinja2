@@ -19,8 +19,9 @@
     {% include 'snippets/menuheading.jinja2' %}
 {% endblock %}
 
-{% from 'snippets/project/publishing/license_logos.jinja2' import license_logos with context %}
 {% from 'snippets/project/publishing/licenses.jinja2' import licenses_container with context %}
+
+{% from 'snippets/project/publishing/repositories.jinja2' import repositories_container with context %}
 
 {% block pagecontent %}
     <style>
@@ -42,139 +43,48 @@
     </style>
 
     {% if redirect == False %}
-        {% block upload_message %}
-            <div class="ibox col-md-5">
-                <div class="ibox-title">
-                    <h5>{{ _("Publication request") }}</h5>
-                </div>
-                <div class="ibox-content" style="padding: 1em 3em;">
-                    <div class="panel panel-warning">
-                        <div class="panel-heading">
-                            <i class="fa fa-warning"></i> {{ _("Privacy & responsibility") }}
-                        </div>
-                        <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="ibox col-md-5">
+                    <div class="ibox-title">
+                        <h5>{{ _("Publication request") }}</h5>
+                    </div>
+                    <div class="ibox-content" style="padding: 1em 3em;">
+                        <div class="panel panel-warning">
+                            <div class="panel-heading">
+                                <i class="fa fa-warning"></i> {{ _("Privacy & responsibility") }}
+                            </div>
+                            <div class="panel-body">
                                 <span style="display: inline-block">
                                     {{ _("By submitting this request, you confirm that:") }}
                                 </span>
 
-                            <ul>
-                                <li>{{ _("you own the data or have permission to publish it") }}</li>
-                                <li>{{ _("your custom questions do not expose Personally Identifiable Information(PII)") }}</li>
-                                <li>{{ _("only participant-level shareable data will be exported") }}</li>
-                                <li>{{ _("media files and system logs are excluded automatically") }}</li>
-                            </ul>
+                                <ul>
+                                    <li>{{ _("you own the data or have permission to publish it") }}</li>
+                                    <li>{{ _("your custom questions do not expose Personally Identifiable Information(PII)") }}</li>
+                                    <li>{{ _("only participant-level shareable data will be exported") }}</li>
+                                    <li>{{ _("media files and system logs are excluded automatically") }}</li>
+                                </ul>
 
-                            <span style="display: inline-block">
+                                <span style="display: inline-block">
                                     {{ _("Your request will be reviewed by the 1000FARMS administrators before publication.") }}
                                 </span>
-                            <span style="display: inline-block">
+                                <span style="display: inline-block">
                                     {{ _("Learn more in the") }}
                                     <a style="text-decoration: underline; color: inherit; font-weight: bold">
                                         {{ _("Publishing data chapter in the tricot e-book") }}
                                     </a>.
                                 </span>
+                            </div>
                         </div>
+                        <hr class="hr-line-solid">
+                        {{ licenses_container() }}
+                        <hr class="hr-line-solid">
+                        {{ repositories_container() }}
                     </div>
-                    {{ licenses_container() }}
-                    {#                        <div class="flex flex-col align-i-center">#}
-                    {#                            <div class="panel panel-warning">#}
-                    {#                                <div class="panel-heading">#}
-                    {#                                    <i class="fa fa-warning"></i> {{ _("Privacy & responsibility") }}#}
-                    {#                                </div>#}
-                    {#                                <div class="panel-body">#}
-                    {#                                    <span style="display: inline-block">#}
-                    {#                                        {{ _("By submitting this request, you confirm that:") }}#}
-                    {#                                    </span>#}
-                    {##}
-                    {#                                    <ul>#}
-                    {#                                        <li>{{ _("you own the data or have permission to publish it") }}</li>#}
-                    {#                                        <li>{{ _("your custom questions do not expose Personally Identifiable Information(PII)") }}</li>#}
-                    {#                                        <li>{{ _("only participant-level shareable data will be exported") }}</li>#}
-                    {#                                        <li>{{ _("media files and system logs are excluded automatically") }}</li>#}
-                    {#                                    </ul>#}
-                    {##}
-                    {#                                    <span style="display: inline-block">#}
-                    {#                                        {{ _("Your request will be reviewed by the 1000FARMS administrators before publication.") }}#}
-                    {#                                    </span>#}
-                    {#                                    <span style="display: inline-block">#}
-                    {#                                        {{ _("Learn more in the") }}#}
-                    {#                                        <a style="text-decoration: underline; color: inherit; font-weight: bold">#}
-                    {#                                            {{ _("Publishing data chapter in the tricot e-book") }}#}
-                    {#                                        </a>.#}
-                    {#                                    </span>#}
-                    {#                                </div>#}
-                    {#                            </div>#}
-                    {#                            <form id="request-project-publication-form" role="form" method="post"#}
-                    {#                                  class="flex flex-col align-i-center"#}
-                    {#                                  style="gap: 1em;"#}
-                    {#                                  action="{{ request.path }}">#}
-                    {#                                <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">#}
-                    {#                                <label>#}
-                    {#                                    Usage rights:#}
-                    {#                                </label>#}
-                    {##}
-                    {#                                {% for license in licenses %}#}
-                    {#                                    <label>#}
-                    {#                                        <input type="radio" id="license-{{ license.publication_license_id }}"#}
-                    {#                                               name="license" value="{{ license.publication_license_id }}"#}
-                    {#                                                {% if license.publication_license_id == project_license_id %}#}
-                    {#                                               checked#}
-                    {#                                                {% endif %}#}
-                    {#                                                {% if project_license_id %}#}
-                    {#                                               disabled#}
-                    {#                                                {% endif %}#}
-                    {#                                        >#}
-                    {#                                        {{ license.publication_license_name }}#}
-                    {#                                        {% if license.publication_license_id == 1 %} {# CC0 #}
-                    {#                                            (Recommended)#}
-                    {#                                        {% endif %}#}
-                    {#                                    </label><br>#}
-                    {#                                {% endfor %}#}
-                    {#                                <section class="flex flex-col">#}
-                    {#                                    <h3>Select destinations:</h3>#}
-                    {#                                    {% for destination, label, disabled, checked, status in destinations %}#}
-                    {#                                        <label>#}
-                    {#                                            <input type="checkbox" id="{{ destination }}-chk" name="destination"#}
-                    {#                                                   value="{{ destination }}"#}
-                    {#                                                    {% if disabled %}#}
-                    {#                                                   disabled#}
-                    {#                                                    {% endif %}#}
-                    {#                                                    {% if checked %}#}
-                    {#                                                   checked#}
-                    {#                                                    {% endif %}#}
-                    {#                                            />#}
-                    {#                                            {{ label }}#}
-                    {#                                            {% if status %}#}
-                    {#                                                - {{ status }}#}
-                    {#                                            {% endif %}#}
-                    {#                                        </label>#}
-                    {#                                    {% endfor %}#}
-                    {##}
-                    {#                                </section>#}
-                    {##}
-                    {#                                <a class="btn btn-primary btn-rounded btn-block"#}
-                    {#                                   data-title="{{ _('Do you want to publish the project') }}?"#}
-                    {#                                   data-text="{{ _("By clicking OK, you are accepting the publication terms and conditions.") }}"#}
-                    {#                                   onclick="swal({ html: true,#}
-                    {#                                           title: this.getAttribute('data-title'),#}
-                    {#                                           text: this.getAttribute('data-text'),#}
-                    {#                                           type: 'warning',#}
-                    {#                                           showCancelButton: true,#}
-                    {#                                           cancelButtonText: '{{ _('Cancel') }}',#}
-                    {#                                           confirmButtonText: '{{ _('OK') }}',#}
-                    {#                                           customClass: 'wide-swal'#}
-                    {#                                           }, function(isConfirm) {if (isConfirm) {document.getElementById('request-project-publication-form').submit();}});return false;">#}
-                    {#                                    {{ _('Request publication') }}#}
-                    {#                                </a>#}
-                    {#                                <a class="btn btn-primary btn-rounded btn-block btn-outline"#}
-                    {#                                   href="{{ request.route_url('dashboard') }}">#}
-                    {#                                    {{ _("Go back to project overview") }}#}
-                    {#                                </a>#}
-                    {#                            </form>#}
-                    {#                        </div>#}
                 </div>
             </div>
-        {% endblock upload_message %}
+        </div>
     {% endif %}
 {% endblock %}
 
