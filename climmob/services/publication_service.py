@@ -141,12 +141,12 @@ class PublicationService(Service):
             f"Cannot reject publication for destination {destination} with status {status['publication_status_id']}",
         )
 
-    def handle_publication_approval(self, project_id, project_publication_approval: int):
+    def handle_publication_approval(
+        self, project_id, project_publication_approval: int
+    ):
         # TODO: check against previous status
         if project_publication_approval == PublicationStatus.APPROVED:
-            success, errors = self.approve_project_publication(
-                project_id
-            )
+            success, errors = self.approve_project_publication(project_id)
             if not success:
                 log.error(errors)
             else:

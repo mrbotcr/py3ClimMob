@@ -277,7 +277,9 @@ class SaveProjectRow(privateView):
         except ValueError:
             pass
         publication_service = self.request.find_service(name="publication")
-        publication_service.handle_publication_approval(project_id, project_publication_approval)
+        publication_service.handle_publication_approval(
+            project_id, project_publication_approval
+        )
 
         self.send_email_notification(
             admin_name,
