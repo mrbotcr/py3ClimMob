@@ -78,28 +78,32 @@
                             </div>
                         </div>
                         <hr class="hr-line-solid">
-                        {{ licenses_container() }}
-                        <hr class="hr-line-solid">
-                        {{ repositories_container() }}
-                        <br>
-                        <a class="btn btn-primary btn-rounded btn-block"
-                           data-title="{{ _('Do you want to publish the project') }}?"
-                           data-text="{{ _("By clicking OK, you are accepting the publication terms and conditions.") }}"
-                           onclick="swal({ html: true,
-                                   title: this.getAttribute('data-title'),
-                                   text: this.getAttribute('data-text'),
-                                   type: 'warning',
-                                   showCancelButton: true,
-                                   cancelButtonText: '{{ _('Cancel') }}',
-                                   confirmButtonText: '{{ _('OK') }}',
-                                   customClass: 'wide-swal'
-                                   }, function(isConfirm) {if (isConfirm) {document.getElementById('request-project-publication-form').submit();}});return false;">
-                            {{ _('Request publication') }}
-                        </a>
-                        <a class="btn btn-primary btn-rounded btn-block btn-outline"
-                           href="{{ request.route_url('dashboard') }}">
-                            {{ _("Go back to project overview") }}
-                        </a>
+                        <form id="request-project-publication-form" role="form" method="post"
+                              action="{{ request.path }}">
+                            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}">
+                            {{ licenses_container() }}
+                            <hr class="hr-line-solid">
+                            {{ repositories_container() }}
+                            <br>
+                            <a class="btn btn-primary btn-rounded btn-block"
+                               data-title="{{ _('Do you want to publish the project') }}?"
+                               data-text="{{ _("By clicking OK, you are accepting the publication terms and conditions.") }}"
+                               onclick="swal({ html: true,
+                                       title: this.getAttribute('data-title'),
+                                       text: this.getAttribute('data-text'),
+                                       type: 'warning',
+                                       showCancelButton: true,
+                                       cancelButtonText: '{{ _('Cancel') }}',
+                                       confirmButtonText: '{{ _('OK') }}',
+                                       customClass: 'wide-swal'
+                                       }, function(isConfirm) {if (isConfirm) {document.getElementById('request-project-publication-form').submit();}});return false;">
+                                {{ _('Request publication') }}
+                            </a>
+                            <a class="btn btn-primary btn-rounded btn-block btn-outline"
+                               href="{{ request.route_url('dashboard') }}">
+                                {{ _("Go back to project overview") }}
+                            </a>
+                        </form>
                     </div>
                 </div>
             </div>
