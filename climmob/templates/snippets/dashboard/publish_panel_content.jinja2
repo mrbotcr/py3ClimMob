@@ -1,0 +1,19 @@
+{% macro publish_panel_content() %}
+    {% if activeProject.project_status != ProjectStatus.FINALIZED %}
+        <strong>{{ _("This project is not yet ready for publication.") }}</strong> {{ _("Publication requests are available only after the project is closed and the trial documentation is complete.") }}
+    {% elif publication_status == PublicationStatus.NOT_REQUESTED %}
+        {{ _("Your project is ready for publication. Submit a publication request for review by a 1000FARMS administrator.") }}
+    {% elif publication_status == PublicationStatus.REQUESTED %}
+        {{ _("A publication request has been submitted and is awaiting review by a 1000FARMS administrator. You can view the publication details and request publication to additional repositories if needed.") }}
+    {% elif publication_status == PublicationStatus.APPROVED %}
+        {{ _("Your publication request has been approved. Publication is being processed automatically. You can view the publication details.") }}
+    {% elif publication_status == PublicationStatus.REJECTED %}
+        {{ _("Your publication request was rejected by a 1000FARMS administrator.") }}
+    {% elif publication_status == PublicationStatus.PUBLISHED %}
+        {{ _("Your dataset has been published to the selected repositories. You can view the publication details and request publication to additional repositories if needed.") }}
+    {% elif publication_status == PublicationStatus.FAILED %}
+        {{ _("The publication process could not be completed. You can view the publication details to review the status of each repository.") }}
+    {% elif publication_status == PublicationStatus.PARTIAL %}
+        {{ _("Your dataset has been published to some selected repositories. You can view the publication details and request publication to additional repositories if needed.") }}
+    {% endif %}
+{% endmacro %}

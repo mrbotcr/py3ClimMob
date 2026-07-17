@@ -1,0 +1,9 @@
+{% macro publish_panel_button_text() %}
+    {% if activeProject.project_status != ProjectStatus.FINALIZED %}
+        {{ _("Request publication") }}
+    {% elif publication_status == PublicationStatus.NOT_REQUESTED %}
+        {{ _("Request publication") }}
+    {% else %}
+        {{ _("View publication") }}
+    {% endif %}
+{% endmacro %}

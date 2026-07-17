@@ -1,19 +1,25 @@
+{% from 'snippets/dashboard/publish_panel_content.jinja2' import publish_panel_content with context %}
+{% from 'snippets/dashboard/publish_panel_button_text.jinja2' import publish_panel_button_text with context %}
+
 <div>
     <div class="ibox float-e-margins">
-        <div class="ibox-title">
-            <h5>{{ _("Publish data") }}</h5>
-        </div>
-        <div class="ibox-content">
-            <br>
-            <h3> {{ _("Lorem ipsum") }}</h3>
-            <br>
-            <button class="btn btn-success btn-rounded btn-block"
-                    {% if activeProject.project_status != 3 %} title={{ _("Project must be finalized in order to publish it") }} disabled {% endif %}
-               style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
-               onclick="location.href = '{{ request.route_url('project_publish',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'">
-                <i class="fa fa-upload"></i>
-                {{ _("Publish") }}
-            </button>
-        </div>
+        {% if publication_status == 1 %}
+            <div class="ibox-title">
+                <h5>{{ _("Publish data") }}</h5>
+            </div>
+            <div class="ibox-content">
+                <p>{{ publish_panel_content() }}</p>
+                <br>
+                <button class="btn btn-success btn-rounded btn-block"
+                        {% if activeProject.project_status != ProjectStatus.FINALIZED %}
+                            title={{ _("Project must be finalized in order to publish it") }} disabled
+                        {% endif %}
+                        style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
+                        onclick="location.href = '{{ request.route_url('project_publish',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'">
+                    <i class="fa fa-upload"></i>
+                    {{ publish_panel_button_text() }}
+                </button>
+            </div>
+        {% endif %}
     </div>
 </div>
