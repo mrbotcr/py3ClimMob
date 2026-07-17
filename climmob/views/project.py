@@ -60,9 +60,9 @@ from climmob.processes import (
     get_collaborators_in_project,
     get_all_project_publication_statuses,
     get_project_publication_license_id,
-    save_project_publication_license,
 )
 from climmob.processes.db.publication_license import get_publication_licenses
+from climmob.services import PublicationService
 from climmob.services.email_service import EmailService
 from climmob.utility import PublicationStatusLabel, PublicationStatus
 from climmob.utility.email import (
@@ -1218,34 +1218,27 @@ class RequestProjectPublicationView(privateView):
         project_id = project["project_id"]
         project_cod = self.request.project
         cropname = project["project_curated_cropname"]
-        # TODO: must be a list
         destinations = body.get("destination", [])
+        if isinstance(destinations, str):
+            destinations = [destinations]
         license = body.get("license")
 
-        project_license_id = get_project_publication_license_id(
-            self.context.active_project_id, self.request
+        publication_service: PublicationService = self.request.find_service(
+            name="publication"
         )
-        if not project_license_id:
-            if not license:
-                self.request.session.flash(
-                    self._("Please select a license before requesting publication."),
-                    queue="error",
+
+        success, msg = publication_service.request_project_publication(
+            project_id, license, destinations
+        )
+
+        if not success:
+            self.request.session.flash(msg, queue="error")
+            return HTTPFound(
+                location=self.request.route_url(
+                    "project_publish", project=project_cod, user=user_owner
                 )
-                return HTTPFound(
-                    location=self.request.route_url(
-                        "project_publish", project=project_cod, user=user_owner
-                    )
-                )
-            save_project_publication_license(
-                project["project_id"], license, self.request
             )
 
-        self.email_service.send_publication_request_notification(project, self.user)
-
-        self.request.session.flash(
-            self._("Publication requested successfully."),
-            queue="success",
-        )
         return HTTPFound(
             location=self.request.route_url(
                 "project_publish", project=project_cod, user=user_owner

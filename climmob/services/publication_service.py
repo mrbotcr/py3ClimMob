@@ -7,7 +7,7 @@ from climmob.processes import (
     save_project_publication_license,
     get_project_publication_status_by_destination_name,
     get_project_by_id,
-    get_project_publication_status_by_status_id,
+    get_project_publication_license_id,
 )
 from climmob.products.projectPublication.project_publication import publish_project
 from climmob.services.notification_service import NotificationService
@@ -31,24 +31,38 @@ class PublicationService(Service):
         )
 
     def request_project_publication(self, project_id, license, destinations):
-        save_project_publication_license(project_id, license, self.request)
+        project_license_id = get_project_publication_license_id(
+            project_id, self.request
+        )
+        if not project_license_id:
+            if not license:
+                return False, self._(
+                    "Please select a license before requesting publication."
+                )
+            save_project_publication_license(project_id, license, self.request)
 
-        success, msg = self._request_repository(project_id, "climmob")
-        if success:
-            success, msg = self._approve_repository(project_id, "climmob")
-        if success:
-            success, msg = self._publish_repository(project_id, "climmob")
+        status = get_project_publication_status_by_destination_name(
+            self.request, project_id, "climmob"
+        )
+        if not status:
+            success, msg = self._request_repository(project_id, "climmob")
+            if success:
+                success, msg = self._approve_repository(project_id, "climmob")
+            if success:
+                success, msg = self._publish_repository(project_id, "climmob")
             if not success:
                 self.notification_service.notify_publication_failure()
-
-        # TODO: Check if the project is already requested for publication
-        #  if it is, match the status accordingly
-        #  if it is not, request each destination
-
-        for destination in destinations:
-            self._request_repository(project_id, destination)
+        #
+        # # TODO: Check if the project is already requested for publication
+        # #  if it is, match the status accordingly
+        # #  if it is not, request each destination
+        #
+        # for destination in destinations:
+        #     self._request_repository(project_id, destination)
 
         self.notification_service.notify_publication_request()
+
+        return True, ""
 
     def _request_repository(self, project_id, destination):
         status = get_project_publication_status_by_destination_name(
@@ -60,7 +74,7 @@ class PublicationService(Service):
                 project_id,
                 PublicationStatus.REQUESTED.value,
                 self.request.user_in_session,
-                status["destination"],
+                destination,
             )
             return success, msg
         return (
