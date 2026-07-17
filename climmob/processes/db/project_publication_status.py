@@ -56,7 +56,7 @@ def get_global_project_publication_status_name(request, project_id: str) -> str:
 def get_project_publication_approval_status_id(request, project_id: str) -> int:
     status_id = get_global_project_publication_status_id(request, project_id)
     status_map = {
-        PublicationStatusEnum.INITIAL: -1,
+        PublicationStatusEnum.NOT_REQUESTED: -1,
         PublicationStatusEnum.REQUESTED: 0,
         PublicationStatusEnum.APPROVED: PublicationStatusEnum.APPROVED.value,
         PublicationStatusEnum.REJECTED: PublicationStatusEnum.REJECTED.value,
@@ -73,9 +73,9 @@ def get_global_project_publication_status_id(request, project_id: str) -> int:
         .all()
     )
     if not res:
-        return PublicationStatusEnum.INITIAL.value
+        return PublicationStatusEnum.NOT_REQUESTED.value
 
-    global_status = PublicationStatusEnum.INITIAL
+    global_status = PublicationStatusEnum.NOT_REQUESTED
 
     for status in res:
         if status.publication_status_id == PublicationStatusEnum.FAILED:

@@ -6,24 +6,23 @@ def _(x):
 
 
 class PublicationStatus(IntEnum):
-    INITIAL = 1
+    NOT_REQUESTED = 1
     REQUESTED = 2
-    # TODO: update alembic revision
-    APPROVED = 4
-    REJECTED = 5
-    PUBLISHED = 6
-    FAILED = 7
-    # TODO: PARTIAL
+    APPROVED = 3
+    REJECTED = 4
+    PUBLISHED = 5
+    FAILED = 6
+    PARTIAL = 7
 
 
 class PublicationStatusLabel(Enum):
-    INITIAL = "Initial"
+    NOT_REQUESTED = "Not Requested"
     REQUESTED = "Requested"
     APPROVED = "Approved"
     REJECTED = "Rejected"
     PUBLISHED = "Published"
     FAILED = "Failed"
-
+    PARTIAL = "Partial"
 
 class PublicationStatusOption(Enum):
     APPROVED = PublicationStatus.APPROVED
@@ -63,7 +62,7 @@ def get_publication_status_options():
 
 
 def is_status_requestable(status_id):
-    return status_id == PublicationStatus.INITIAL
+    return status_id == PublicationStatus.NOT_REQUESTED
 
 
 def is_status_approvable(status_id):
