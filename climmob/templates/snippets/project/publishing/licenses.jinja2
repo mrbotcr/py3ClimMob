@@ -26,10 +26,10 @@
                                 >
                                 <label style="margin-bottom: 0;">
                                     {{ license.publication_license_name }}
-                                    {% if license.publication_license_id == 1 %} {# CC0 #}
-                                        ({{ _("Recommended") }})
-                                    {% endif %}
                                     {{ license_logos(license.publication_license_id) }}
+                                    {% if license.publication_license_id == 1 %} {# CC0 #}
+                                        <i>({{ _("Recommended") }})</i>
+                                    {% endif %}
                                 </label>
                             </label>
                         </div>
