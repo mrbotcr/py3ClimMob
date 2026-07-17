@@ -16,14 +16,10 @@ def publish_project_task(
     project_id,
     owner_username,
     destinations,
-    product_directory,
+    file_path,
     notify=False,
 ):
-
     with create_request(settings, locale, user_in_session) as request:
-        formatted = "{}-{}.json".format(cropname, project_id)
-        file_path = os.path.join(product_directory, "outputs", formatted)
-
         p.load_all(settings)
         results = {True: [], False: []}
         for plugin in p.PluginImplementations(p.IPublisher):

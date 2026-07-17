@@ -653,7 +653,6 @@ class generateProductView(privateView):
         if productid == "jsonresults":
             create_json_results(
                 userapikey=self.user.apikey,
-                locale=self.request.locale_name,
                 userOwner=activeProjectData["owner"]["user_name"],
                 projectId=activeProjectData["project_id"],
                 projectCod=activeProjectData["project_cod"],

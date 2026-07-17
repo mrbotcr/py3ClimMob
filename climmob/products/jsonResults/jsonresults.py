@@ -8,30 +8,25 @@ from climmob.utility import get_settings
 
 def create_json_results(
     userapikey,
-    locale,
-    user_in_session,
     userOwner,
     projectId,
     projectCod,
     cropname,
-    destinations,
     request,
 ):
-    settings = get_settings(request)
-
     path = createProductDirectory(request, userOwner, projectCod, "jsonresults")
+
+    formatted = "{}-{}.json".format(cropname, projectId)
+    file_path = os.path.join(path, "outputs", formatted)
+
     task = create_report_json_results.apply_async(
         args=(
-            settings,
             userapikey,
-            locale,
-            user_in_session,
             userOwner,
             projectId,
             projectCod,
             cropname,
-            path,
-            destinations,
+            file_path,
         ),
         queue="ClimMob",
     )

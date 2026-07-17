@@ -1,26 +1,26 @@
 import json
 import os
 import shutil as sh
+from pathlib import Path
 
 import climmob.plugins as p
 from climmob.config.celery_app import celeryApp
 from climmob.models.repository import create_request
 from climmob.plugins.utilities import climmobCeleryTask
 
-# TODO: Este se TIENE que ejecutar al hacer le request
+
 @celeryApp.task(base=climmobCeleryTask)
 def create_report_json_results(
-    settings,
     userapikey,
-    locale,
-    user_in_session,
     userOwner,
     projectId,
     projectCod,
     cropname,
-    path,
-    destinations,
+    file_path,  # {user}/{project_cod}/products/jsonresults/outputs/{crop_name}-{project_id}.json
 ):
+    path = Path(file_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+
     data = {
         "agricultural_record": {
             "farm": {
@@ -36,22 +36,13 @@ def create_report_json_results(
         }
     }
 
-    # TODO: run R script
+    try:
+        # TODO: run R script
 
-    if os.path.exists(path):
-        sh.rmtree(path)
-    os.makedirs(path)
-    pathout = os.path.join(path, "outputs")
-    os.makedirs(pathout)
+        with open(file_path, "w") as outfile:
+            print(f"WRITING INTO {file_path}")
+            json.dump(data, outfile, indent=4)
+    except Exception as e:
+        return False, e
 
-    file_path = os.path.join(pathout, "{}-{}.json".format(cropname, projectId))
-    with open(file_path, "w") as outfile:
-        json.dump(data, outfile, indent=4)
-
-    with create_request(settings, locale, user_in_session) as request:
-        p.load_all(settings)
-        for plugin in p.PluginImplementations(p.IPublisher):
-            if plugin.get_destination_name() in destinations:
-                plugin.publish(settings, request, file_path, projectId, cropname)
-
-    return ""
+    return True, ""
