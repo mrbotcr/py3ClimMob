@@ -2,6 +2,7 @@ import os
 import sys
 
 import climmob.plugins as p
+from climmob.utility import add_enums_to_context
 
 if (
     os.environ.get("CLIMMOB_PYTEST_RUNNING", "false") == "false"
@@ -24,7 +25,7 @@ import sentry_sdk
 from sentry_sdk.integrations.pyramid import PyramidIntegration
 
 from climmob.services import notification_factory, publication_factory
-
+from pyramid.events import BeforeRender
 
 def main(global_config, **settings):
 
@@ -80,6 +81,8 @@ def main(global_config, **settings):
     config.include("pyramid_services")
     config.register_service_factory(notification_factory, name="notification")
     config.register_service_factory(publication_factory, name="publication")
+
+    config.add_subscriber(add_enums_to_context, BeforeRender)
 
     config.include(".models")
     # Load and configure the host application
