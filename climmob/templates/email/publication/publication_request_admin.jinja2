@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            text-align: center;
+        !important;
+        }
+
+        .email-container {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 30px;
+            border-radius: 6px;
+            margin: 0 auto;
+            width: 600px;
+            display: inline-block;
+        !important;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    {% block email_body %}
+        {% block email_hello %}
+            <p style="margin-bottom: 15px;"><strong>{{ _('Dear Administrator') }},</strong></p>
+        {% endblock email_hello %}
+
+        {% block email_message %}
+            <p style="margin-bottom: 15px;">
+                {{ _('A new project publication request has been submitted and is awaiting your review and validation. Please review the trial data compliance and repository destination settings.') }}.
+            </p>
+            {{ _('Publication request details') }}:
+            <ul>{{ _('Project ID') }}: <strong>{{ project["project_cod"] }}</strong></ul>
+            <ul>{{ _('Project name') }}: <strong>{{ project["project_name"] }}</strong></ul>
+            <ul>{{ _('Project principal investigator') }}: <strong>{{ project["project_pi"] }}</strong></ul>
+            <ul>{{ _('Country') }}: <strong>{{ project["Country"].cnty_name }}</strong></ul>
+            <ul>{{ _('Target repositories') }}: <strong>{{ repositories }}</strong></ul>
+            <ul>{{ _('Selected license') }}: <strong>{{ license }}</strong></ul>
+
+            <p style="margin-bottom: 15px;">{{ _('Please log into the administration panel to review, validate, and authorize this formal publication release.') }}</p>
+        {% endblock email_message %}
+
+        {% block email_goodbye %}
+            <p>{{ _('Best regards,') }}<p>
+            <p style="margin-bottom: 0;">{{ _('The ClimMob team') }}</p>
+            <br>
+            <img src="{{ logo }}" style="width:45%; max-width:100px; height:auto;" >
+        {% endblock email_goodbye %}
+    {% endblock email_body %}
+</div>
+</body>
+</html>
