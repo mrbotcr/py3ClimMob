@@ -27,6 +27,7 @@ from sentry_sdk.integrations.pyramid import PyramidIntegration
 from climmob.services import notification_factory, publication_factory
 from pyramid.events import BeforeRender
 
+
 def main(global_config, **settings):
 
     apppath = os.path.dirname(os.path.abspath(__file__))

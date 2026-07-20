@@ -1,6 +1,9 @@
 import os
 
 from climmob.plugins.utilities import getProductDirectory
+from climmob.products.climmob_products import (
+    registerProductInstance,
+)
 from climmob.products.projectPublication.celerytasks import publish_project_task
 from climmob.utility import get_settings
 
@@ -20,7 +23,7 @@ def publish_project(
     )
     formatted = "{}-{}.json".format(cropname, project_id)
     file_path = os.path.join(product_directory, "outputs", formatted)
-    publish_project_task.apply_async(
+    task = publish_project_task.apply_async(
         args=(
             settings,
             request.locale_name,
@@ -34,3 +37,15 @@ def publish_project(
         ),
         queue="ClimMob",
     )
+
+    if destinations == ["climmob"]:
+        registerProductInstance(
+            project_id,
+            "jsonresults",
+            "{}-{}.json".format(cropname, project_id),
+            "application/json",
+            "jsonresults",
+            task.id,
+            request,
+            newTask=False,
+        )

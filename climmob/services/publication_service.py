@@ -8,6 +8,7 @@ from climmob.processes import (
     get_project_publication_status_by_destination_name,
     get_project_by_id,
     get_project_publication_license_id,
+    get_global_project_publication_status_id,
 )
 from climmob.products.projectPublication.project_publication import publish_project
 from climmob.services.notification_service import NotificationService
@@ -52,13 +53,29 @@ class PublicationService(Service):
                 success, msg = self._publish_repository(project_id, "climmob")
             if not success:
                 self.notification_service.notify_publication_failure()
-        #
-        # # TODO: Check if the project is already requested for publication
-        # #  if it is, match the status accordingly
-        # #  if it is not, request each destination
-        #
-        # for destination in destinations:
-        #     self._request_repository(project_id, destination)
+
+        global_status = get_global_project_publication_status_id(
+            self.request, project_id
+        )
+
+        if (
+            global_status in [PublicationStatus.NOT_REQUESTED, PublicationStatus.REQUESTED]
+        ):
+            for destination in destinations:
+                self._request_repository(project_id, destination)
+        elif global_status in [
+            PublicationStatus.APPROVED,
+            PublicationStatus.PUBLISHED,
+            PublicationStatus.FAILED,
+            PublicationStatus.PARTIAL,
+        ]:
+            for destination in destinations:
+                self._request_repository(project_id, destination)
+                self._approve_repository(project_id, destination)
+                self._publish_repository(project_id, destination)
+        elif global_status == PublicationStatus.REJECTED:
+            for destination in destinations:
+                self._reject_repository(project_id, destination)
 
         self.notification_service.notify_publication_request()
 

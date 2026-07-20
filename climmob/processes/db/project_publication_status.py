@@ -11,6 +11,7 @@ __all__ = [
 ]
 
 from sqlalchemy import and_
+from sqlalchemy.exc import NoResultFound
 
 from climmob.models import mapFromSchema
 from climmob.models.climmobv4 import ProjectPublicationStatus, PublicationStatus
@@ -66,6 +67,8 @@ def get_project_publication_approval_status_id(request, project_id: str) -> int:
     return status_map[PublicationStatusEnum(status_id)]
 
 
+# TODO: how to detect approval if only climmob is selected?
+#  should we make it obligatory to select more repos?
 def get_global_project_publication_status_id(request, project_id: str) -> int:
     res = (
         request.dbsession.query(ProjectPublicationStatus)
@@ -79,7 +82,14 @@ def get_global_project_publication_status_id(request, project_id: str) -> int:
 
     for status in res:
         if status.publication_status_id == PublicationStatusEnum.FAILED:
-            global_status = PublicationStatusEnum.FAILED
+            if any(
+                s.publication_status_id == PublicationStatusEnum.PUBLISHED
+                and s.destination != "climmob"
+                for s in res
+            ):
+                global_status = PublicationStatusEnum.PARTIAL
+            else:
+                global_status = PublicationStatusEnum.FAILED
             break
         if status.publication_status_id == PublicationStatusEnum.PUBLISHED:
             if status.destination != "climmob":
@@ -88,8 +98,9 @@ def get_global_project_publication_status_id(request, project_id: str) -> int:
             else:
                 global_status = PublicationStatusEnum.REQUESTED
         if status.publication_status_id == PublicationStatusEnum.APPROVED:
-            global_status = PublicationStatusEnum.APPROVED
-            break
+            if status.destination != "climmob":
+                global_status = PublicationStatusEnum.APPROVED
+                break
         if status.publication_status_id == PublicationStatusEnum.REJECTED:
             global_status = PublicationStatusEnum.REJECTED
             break
@@ -126,14 +137,17 @@ def get_all_project_publication_statuses(
 
 def get_project_publication_status_by_destination_name(
     request, project_id: str, destination_name: str
-) -> ProjectPublicationStatus:
-    query = (
-        request.dbsession.query(ProjectPublicationStatus)
-        .filter(ProjectPublicationStatus.project_id == project_id)
-        .filter(ProjectPublicationStatus.destination == destination_name)
-    )
-    result = mapFromSchema(query.one())
-    return result
+) -> ProjectPublicationStatus | None:
+    try:
+        query = (
+            request.dbsession.query(ProjectPublicationStatus)
+            .filter(ProjectPublicationStatus.project_id == project_id)
+            .filter(ProjectPublicationStatus.destination == destination_name)
+        )
+        result = mapFromSchema(query.one())
+        return result
+    except NoResultFound:
+        return None
 
 
 def get_project_publication_status_by_status_id(

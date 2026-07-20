@@ -24,6 +24,7 @@ class PublicationStatusLabel(Enum):
     FAILED = "Failed"
     PARTIAL = "Partial"
 
+
 class PublicationStatusOption(Enum):
     APPROVED = PublicationStatus.APPROVED
     REJECTED = PublicationStatus.REJECTED

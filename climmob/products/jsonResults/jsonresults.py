@@ -1,9 +1,10 @@
+import os
+
 from climmob.products.climmob_products import (
     registerProductInstance,
     createProductDirectory,
 )
 from climmob.products.jsonResults.celerytasks import create_report_json_results
-from climmob.utility import get_settings
 
 
 def create_json_results(

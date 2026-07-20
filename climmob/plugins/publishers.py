@@ -1,6 +1,7 @@
 from pyutilib.component.core import implements
 
 from climmob.plugins import SingletonPlugin, IPublisher
+from climmob.products.jsonResults import create_report_json_results
 
 
 class ClimMobPublisher(SingletonPlugin):
@@ -18,8 +19,17 @@ class ClimMobPublisher(SingletonPlugin):
 
     def publish(self, settings, request, path, project_id, crop_name):
         print(
-            f"ClimmobPublisher: Publishing project {project_id} to {self.get_destination_name()}"
+            f"ClimmobPublisher: Publishing project {project_id} to {self.get_destination_name()} from {path}"
         )
+        success, msg = create_report_json_results(
+            None,
+            "userOwner",
+            project_id,
+            "projectCod",
+            crop_name,
+            path,
+        )
+        return success, msg
 
 
 class GenesysPublisher(SingletonPlugin):
@@ -37,5 +47,5 @@ class GenesysPublisher(SingletonPlugin):
 
     def publish(self, settings, request, path, project_id, crop_name):
         print(
-            f"GenesysPublisher: Publishing project {project_id} to {self.get_destination_name()}"
+            f"GenesysPublisher: Publishing project {project_id} to {self.get_destination_name()} from {path}"
         )
