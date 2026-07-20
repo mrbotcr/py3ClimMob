@@ -1238,6 +1238,10 @@ class RequestProjectPublicationView(privateView):
                     "project_publish", project=project_cod, user=user_owner
                 )
             )
+        if msg == "requested":
+            self.request.session.flash("", queue="success")
+        elif msg == "updated":
+            self.request.session.flash("", queue="success")
 
         return HTTPFound(
             location=self.request.route_url(

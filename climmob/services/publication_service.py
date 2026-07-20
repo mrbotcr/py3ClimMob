@@ -19,6 +19,8 @@ from climmob.utility import (
     is_status_requestable,
     is_status_publishable,
     is_status_rejectable,
+    PublicationLicenseLabel,
+    PublicationLicense,
 )
 
 log = logging.getLogger("climmob")
@@ -50,17 +52,18 @@ class PublicationService(Service):
             if success:
                 success, msg = self._approve_repository(project_id, "climmob")
             if success:
-                success, msg = self._publish_repository(project_id, "climmob")
-            if not success:
-                self.notification_service.notify_publication_failure()
+                self._publish_repository(project_id, "climmob")
+
+        statuses = get_all_project_publication_statuses(self.request, project_id)
 
         global_status = get_global_project_publication_status_id(
             self.request, project_id
         )
 
-        if (
-            global_status in [PublicationStatus.NOT_REQUESTED, PublicationStatus.REQUESTED]
-        ):
+        if global_status in [
+            PublicationStatus.NOT_REQUESTED,
+            PublicationStatus.REQUESTED,
+        ]:
             for destination in destinations:
                 self._request_repository(project_id, destination)
         elif global_status in [
@@ -77,7 +80,21 @@ class PublicationService(Service):
             for destination in destinations:
                 self._reject_repository(project_id, destination)
 
-        self.notification_service.notify_publication_request()
+        project = get_project_by_id(project_id, self.request)
+        license_name = PublicationLicenseLabel[
+            PublicationLicense(project_license_id or license).name
+        ].value
+        repositories = ", ".join([status["destination_label"] for status in statuses])
+        print(f"incoming: {destinations}\tcurrent: {repositories}")
+        # TODO: notify only if there are changes
+        self.notification_service.notify_publication_request(
+            {
+                "project": project,
+                "repositories": repositories,
+                "license": license_name,
+                "_": self._,
+            }
+        )
 
         return True, ""
 
