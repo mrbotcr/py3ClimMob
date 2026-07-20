@@ -1,7 +1,7 @@
 import os
 
 import climmob.products as p
-from climmob.processes import addTask
+from climmob.processes.db.celery import addTask
 
 
 def createProductDirectory(request, userID, projectID, product):

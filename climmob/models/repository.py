@@ -16,6 +16,7 @@ from climmob.models import (
     get_tm_session,
     initialize_schema,
 )
+from climmob.products.climmob_products import register_products
 
 
 def sql_fetch_one(sql):
@@ -54,6 +55,7 @@ def execute_two_sqls(sql1, sql2):
     engine.dispose()
     return res2
 
+import climmob.products as prd
 
 @contextmanager
 def create_request(settings: dict, locale_name: str, user_in_session: str):
@@ -75,6 +77,9 @@ def create_request(settings: dict, locale_name: str, user_in_session: str):
         dbsession = get_tm_session(session_factory, transaction.manager)
         modules_allowed = ["climmob.models.climmobv4"]
         add_modules_to_schema(modules_allowed)
+
+        for product in register_products(None):
+            prd.addProduct(product)
 
         request = requests.Session()
         request.dbsession = dbsession
