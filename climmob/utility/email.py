@@ -56,46 +56,18 @@ class EmailRecipient(TypedDict):
 
 
 class EmailBuilder:
-    def __init__(self, settings):
+    def __init__(
+        self, settings, recipients: list[EmailRecipient], subject, template, context
+    ):
         self._mail_from = settings.get("email.from", None)
-        self._recipients: list[tuple] | None = None
-        self._subject: str | None = None
-        self._template: str | None = None
-        self._context: dict | None = None
-
-    def recipients(self, recipients: list[EmailRecipient]):
-        self._recipients = []
+        self._recipients: list[tuple] = []
         for user in recipients:
             self._recipients.append((user["user_fullname"], user["user_email"]))
-        return self
-
-    def subject(self, subject):
-        self._subject = subject
-        return self
-
-    def template(self, template):
-        # TODO: Validate template existence
-        self._template = template
-        return self
-
-    def context(self, context):
-        self._context = context
-        return self
+        self._subject: str = subject
+        self._template: str = template
+        self._context: dict = context
 
     def build(self):
-        if not self._recipients:
-            log.warning("Email didn't send. No recipients found.")
-            return
-        if not self._subject:
-            log.warning("Email didn't send. No subject found.")
-            return
-        if not self._template:
-            log.warning("Email didn't send. No template found.")
-            return
-        if not self._context:
-            log.warning("Email didn't send. No context found.")
-            return
-
         try:
             text = render_template(self._template, self._context)
         except Exception as e:
