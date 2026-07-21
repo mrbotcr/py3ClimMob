@@ -3,23 +3,21 @@
 
 <div>
     <div class="ibox float-e-margins">
-        {% if publication_status == 1 %}
-            <div class="ibox-title">
-                <h5>{{ _("Publish data") }}</h5>
-            </div>
-            <div class="ibox-content">
-                <p>{{ publish_panel_content() }}</p>
-                <br>
-                <button class="btn btn-success btn-rounded btn-block"
-                        {% if activeProject.project_status != ProjectStatus.FINALIZED %}
-                            title={{ _("Project must be finalized in order to publish it") }} disabled
-                        {% endif %}
-                        style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
-                        onclick="location.href = '{{ request.route_url('project_publish',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'">
-                    <i class="fa fa-upload"></i>
-                    {{ publish_panel_button_text() }}
-                </button>
-            </div>
-        {% endif %}
+        <div class="ibox-title">
+            <h5>{{ _("Publish data") }}</h5>
+        </div>
+        <div class="ibox-content">
+            <p>{{ publish_panel_content() }}</p>
+            <br>
+            <button class="btn btn-success btn-rounded btn-block"
+                    {% if activeProject.project_status != ProjectStatus.FINALIZED %}
+                    title={{ _("Project must be finalized in order to publish it") }} disabled
+                    {% endif %}
+                    style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
+                    onclick="location.href = '{{ request.route_url('project_publish',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'">
+                <i class="fa fa-upload"></i>
+                {{ publish_panel_button_text() }}
+            </button>
+        </div>
     </div>
 </div>
