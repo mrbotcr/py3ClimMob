@@ -18,9 +18,11 @@ def publish_project(
     notify=True,
 ):
     settings = get_settings(request)
+
     product_directory = getProductDirectory(
         request, owner_username, project_cod, "jsonresults"
     )
+
     formatted = "{}-{}.json".format(cropname, project_id)
     file_path = os.path.join(product_directory, "outputs", formatted)
     task = publish_project_task.apply_async(
@@ -45,6 +47,18 @@ def publish_project(
             "{}-{}.json".format(cropname, project_id),
             "application/json",
             "jsonresults",
+            task.id,
+            request,
+            newTask=False,
+        )
+
+    if "genesys" in destinations:
+        registerProductInstance(
+            project_id,
+            "genesys_results",
+            "{}-{}.json".format(cropname, project_id),
+            "application/json",
+            "genesys_results",
             task.id,
             request,
             newTask=False,

@@ -1,9 +1,11 @@
 from celery.contrib.abortable import AbortableAsyncResult
 
-from climmob.processes import (
+from climmob.processes.db.products import (
     addProductInstance,
-    getRunningTasksByProcess,
     deleteProducts,
+)
+from climmob.processes.db.celery import (
+    getRunningTasksByProcess,
 )
 
 __all__ = [

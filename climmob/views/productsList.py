@@ -37,6 +37,7 @@ from climmob.products.errorLogDocument.errorLogDocument import create_error_log_
 from climmob.products.fieldagents.fieldagents import create_fieldagents_report
 from climmob.products.forms.form import create_document_form
 from climmob.products.generalReport.generalReport import create_general_report
+from climmob.products.genesysResults.genesysresults import create_genesys_results
 from climmob.products.packages.packages import create_packages_excell
 from climmob.products.qrpackages.qrpackages import create_qr_packages
 
@@ -658,6 +659,12 @@ class generateProductView(privateView):
                 projectCod=activeProjectData["project_cod"],
                 cropname=activeProjectData["project_curated_cropname"],
                 request=self.request,
+            )
+
+        if productid == "genesys_results":
+            create_genesys_results(
+                activeProjectData["project_id"],
+                self.request,
             )
 
         self.returnRawViewResult = True

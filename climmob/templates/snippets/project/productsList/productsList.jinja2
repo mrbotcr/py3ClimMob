@@ -65,7 +65,10 @@
                 <td style="vertical-align: middle;">
                     {% if product.product_id == "qrpackage" %}
                         {{ _("List of packages with QR for the participant registration form") }}
-
+                    {% elif product.product_id == "jsonresults" %}
+                        {{ _("JSON Results") }}
+                    {% elif product.product_id == "genesys_results" %}
+                        {{ _("JSON Results for Genesys") }}
                     {% elif product.product_id == "datacsv-shareable" %}
                         {% if product.process_name == "create_data-shareable_Report_" %}
                             {% if changes.update({'projectDataCollectedCSV-shareable': false }) %}{% endif %}
