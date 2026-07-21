@@ -36,7 +36,7 @@ class NotificationService(Service):
 
     def notify_publication_failure(self):
         self.set_notifier(SlackNotifier)
-        self.notifier.send_notification("A publication request has failed.")
+        self.notifier.notify_publication_failure()
         print("NotificationService: Notifying about publication failure.")
 
 
@@ -48,6 +48,9 @@ class Notifier:
         """"""
 
     def notify_publication_request(self, context: dict):
+        """"""
+
+    def notify_publication_failure(self):
         """"""
 
 
@@ -107,3 +110,6 @@ class SlackNotifier(Notifier):
             text="¡Hola desde mi bot de Slack!",
         )
         # TODO: Handle the response and any errors
+
+    def notify_publication_failure(self):
+        self.send_notification()
