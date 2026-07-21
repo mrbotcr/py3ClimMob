@@ -10,11 +10,11 @@ __all__ = [
     "get_project_publication_status_by_status_id",
 ]
 
-from sqlalchemy import and_
 from sqlalchemy.exc import NoResultFound
 
 from climmob.models import mapFromSchema
 from climmob.models.climmobv4 import ProjectPublicationStatus, PublicationStatus
+from climmob.models.repository import sql_fetch_one, sql_execute
 from climmob.utility import (
     PublicationStatus as PublicationStatusEnum,
     PublicationStatusLabel,
@@ -24,26 +24,36 @@ import climmob.plugins as p
 
 
 def save_project_publication_status(
-    request, project_id: str, status: int, user_name: str, destination: str
+    project_id: str, status: int, user_name: str, destination: str
 ):
-    res = request.dbsession.query(ProjectPublicationStatus).filter(
-        and_(
-            ProjectPublicationStatus.project_id == project_id,
-            ProjectPublicationStatus.destination == destination,
-        )
-    )
     try:
-        if res.first() is None:
-            project_publication_status = ProjectPublicationStatus(
-                publication_status_id=status,
-                project_id=project_id,
-                last_updated_by=user_name,
-                last_updated_at=datetime.datetime.now(),
-                destination=destination,
-            )
-            request.dbsession.add(project_publication_status)
+        sql = f"""
+            SELECT * FROM project_publication_status
+            WHERE project_id = "{project_id}" AND destination = "{destination}"
+        """
+
+        result = sql_fetch_one(sql)
+
+        if result is None:
+            sql = f"""
+                    INSERT INTO project_publication_status VALUES
+                    ({status},
+                    "{project_id}",
+                    "{destination}",
+                    "{user_name}",
+                    "{datetime.datetime.now()}");
+    
+                """
         else:
-            res.update({"publication_status_id": status})
+            sql = f"""
+                    UPDATE project_publication_status
+                    SET
+                        publication_status_id = {status}
+                    WHERE project_id = "{project_id}" AND destination = "{destination}";
+                """
+
+        sql_execute(sql)
+
         return True, ""
     except Exception as e:
         return False, str(e)

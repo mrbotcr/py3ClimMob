@@ -34,11 +34,7 @@ def publish_project_task(
                     PublicationStatus.PUBLISHED if success else PublicationStatus.FAILED
                 )
                 success, msg = save_project_publication_status(
-                    request,
-                    project_id,
-                    status.value,
-                    user_in_session,
-                    destination_name,
+                    project_id, status.value, user_in_session, destination_name
                 )
                 if success:
                     print(f"SUCCESS: Published to {plugin.get_destination_name()}")

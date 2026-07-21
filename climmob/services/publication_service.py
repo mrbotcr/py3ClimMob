@@ -48,11 +48,8 @@ class PublicationService(Service):
             self.request, project_id, "climmob"
         )
         if not status:
-            success, msg = self._request_repository(project_id, "climmob")
-            if success:
-                success, msg = self._approve_repository(project_id, "climmob")
-            if success:
-                self._publish_repository(project_id, "climmob")
+            print("_publish_repository")
+            self._publish_repository(project_id, "climmob")
 
         statuses = get_all_project_publication_statuses(self.request, project_id)
 
@@ -73,8 +70,6 @@ class PublicationService(Service):
             PublicationStatus.PARTIAL,
         ]:
             for destination in destinations:
-                self._request_repository(project_id, destination)
-                self._approve_repository(project_id, destination)
                 self._publish_repository(project_id, destination)
         elif global_status == PublicationStatus.REJECTED:
             for destination in destinations:
@@ -82,7 +77,7 @@ class PublicationService(Service):
 
         project = get_project_by_id(project_id, self.request)
         license_name = PublicationLicenseLabel[
-            PublicationLicense(project_license_id or license).name
+            PublicationLicense(project_license_id or int(license)).name
         ].value
         repositories = ", ".join([status["destination_label"] for status in statuses])
         print(f"incoming: {destinations}\tcurrent: {repositories}")
@@ -99,22 +94,13 @@ class PublicationService(Service):
         return True, ""
 
     def _request_repository(self, project_id, destination):
-        status = get_project_publication_status_by_destination_name(
-            self.request, project_id, destination
+        success, msg = save_project_publication_status(
+            project_id,
+            PublicationStatus.REQUESTED.value,
+            self.request.user_in_session,
+            destination,
         )
-        if not status or is_status_requestable(status["publication_status_id"]):
-            success, msg = save_project_publication_status(
-                self.request,
-                project_id,
-                PublicationStatus.REQUESTED.value,
-                self.request.user_in_session,
-                destination,
-            )
-            return success, msg
-        return (
-            False,
-            f"Cannot request publication for destination {destination} with status {status['publication_status_id']}",
-        )
+        return success, msg
 
     def approve_project_publication(self, project_id):
         statuses = get_all_project_publication_statuses(self.request, project_id)
@@ -138,22 +124,13 @@ class PublicationService(Service):
         return global_success, errors
 
     def _approve_repository(self, project_id, destination):
-        status = get_project_publication_status_by_destination_name(
-            self.request, project_id, destination
+        success, msg = save_project_publication_status(
+            project_id,
+            PublicationStatus.APPROVED.value,
+            self.request.user_in_session,
+            destination,
         )
-        if status and is_status_approvable(status["publication_status_id"]):
-            success, msg = save_project_publication_status(
-                self.request,
-                project_id,
-                PublicationStatus.APPROVED.value,
-                self.request.user_in_session,
-                status["destination"],
-            )
-            return success, msg
-        return (
-            False,
-            f"Cannot approve publication for destination {destination} with status {status['publication_status_id']}",
-        )
+        return success, msg
 
     def reject_project_publication(self, project_id):
         statuses = get_all_project_publication_statuses(self.request, project_id)
@@ -172,22 +149,13 @@ class PublicationService(Service):
         return global_success, errors
 
     def _reject_repository(self, project_id, destination):
-        status = get_project_publication_status_by_destination_name(
-            self.request, project_id, destination
+        success, msg = save_project_publication_status(
+            project_id,
+            PublicationStatus.REJECTED.value,
+            self.request.user_in_session,
+            destination,
         )
-        if status and is_status_rejectable(status["publication_status_id"]):
-            success, msg = save_project_publication_status(
-                self.request,
-                project_id,
-                PublicationStatus.REJECTED.value,
-                self.request.user_in_session,
-                destination,
-            )
-            return success, msg
-        return (
-            False,
-            f"Cannot reject publication for destination {destination} with status {status['publication_status_id']}",
-        )
+        return success, msg
 
     def handle_publication_approval(
         self, project_id, project_publication_approval: int
@@ -228,22 +196,13 @@ class PublicationService(Service):
 
     def _publish_repository(self, project_id, destination):
         print(f"Publishing project {project_id} to destination {destination}")
-        status = get_project_publication_status_by_destination_name(
-            self.request, project_id, destination
-        )
-        if status and is_status_publishable(status["publication_status_id"]):
-            project = get_project_by_id(project_id, self.request)
-            publish_project(
-                project_id,
-                project["project_cod"],
-                project["owner"]["user_name"],
-                project["project_curated_cropname"],
-                [destination],
-                self.request,
-                notify=False,
-            )
-            return True, ""
-        return (
-            False,
-            f"Cannot publish to repository {destination} with status {status['publication_status_id']}",
+        project = get_project_by_id(project_id, self.request)
+        publish_project(
+            project_id,
+            project["project_cod"],
+            project["owner"]["user_name"],
+            project["project_curated_cropname"],
+            [destination],
+            self.request,
+            notify=False,
         )
