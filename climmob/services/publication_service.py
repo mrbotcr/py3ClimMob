@@ -94,27 +94,27 @@ class PublicationService(Service):
         return True, ""
 
     def _request_repository(self, project_id, destination):
-        success, msg = save_project_publication_status(
-            project_id,
-            PublicationStatus.REQUESTED.value,
-            self.request.user_in_session,
-            destination,
-        )
-        return success, msg
-
-    def approve_project_publication(self, project_id):
-        statuses = get_all_project_publication_statuses(self.request, project_id)
         active_destinations = [
             plugin.get_destination_name()
             for plugin in p.PluginImplementations(p.IPublisher)
         ]
+        if destination in active_destinations:
+            success, msg = save_project_publication_status(
+                project_id,
+                PublicationStatus.REQUESTED.value,
+                self.request.user_in_session,
+                destination,
+            )
+            return success, msg
+        else:
+            return False, f"Repository {destination} is not active"
+
+    def approve_project_publication(self, project_id):
+        statuses = get_all_project_publication_statuses(self.request, project_id)
         errors = []
         global_success = True
         for status in statuses:
-            if (
-                status["destination"] != "climmob"
-                and status["destination"] in active_destinations
-            ):
+            if status["destination"] != "climmob":
                 success, msg = self._approve_repository(
                     project_id, status["destination"]
                 )
@@ -124,13 +124,20 @@ class PublicationService(Service):
         return global_success, errors
 
     def _approve_repository(self, project_id, destination):
-        success, msg = save_project_publication_status(
-            project_id,
-            PublicationStatus.APPROVED.value,
-            self.request.user_in_session,
-            destination,
-        )
-        return success, msg
+        active_destinations = [
+            plugin.get_destination_name()
+            for plugin in p.PluginImplementations(p.IPublisher)
+        ]
+        if destination in active_destinations:
+            success, msg = save_project_publication_status(
+                project_id,
+                PublicationStatus.APPROVED.value,
+                self.request.user_in_session,
+                destination,
+            )
+            return success, msg
+        else:
+            return False, f"Repository {destination} is not active"
 
     def reject_project_publication(self, project_id):
         statuses = get_all_project_publication_statuses(self.request, project_id)
@@ -149,13 +156,20 @@ class PublicationService(Service):
         return global_success, errors
 
     def _reject_repository(self, project_id, destination):
-        success, msg = save_project_publication_status(
-            project_id,
-            PublicationStatus.REJECTED.value,
-            self.request.user_in_session,
-            destination,
-        )
-        return success, msg
+        active_destinations = [
+            plugin.get_destination_name()
+            for plugin in p.PluginImplementations(p.IPublisher)
+        ]
+        if destination in active_destinations:
+            success, msg = save_project_publication_status(
+                project_id,
+                PublicationStatus.REJECTED.value,
+                self.request.user_in_session,
+                destination,
+            )
+            return success, msg
+        else:
+            return False, f"Repository {destination} is not active"
 
     def handle_publication_approval(
         self, project_id, project_publication_approval: int
@@ -196,13 +210,20 @@ class PublicationService(Service):
 
     def _publish_repository(self, project_id, destination):
         print(f"Publishing project {project_id} to destination {destination}")
-        project = get_project_by_id(project_id, self.request)
-        publish_project(
-            project_id,
-            project["project_cod"],
-            project["owner"]["user_name"],
-            project["project_curated_cropname"],
-            [destination],
-            self.request,
-            notify=False,
-        )
+        active_destinations = [
+            plugin.get_destination_name()
+            for plugin in p.PluginImplementations(p.IPublisher)
+        ]
+        if destination in active_destinations:
+            project = get_project_by_id(project_id, self.request)
+            publish_project(
+                project_id,
+                project["project_cod"],
+                project["owner"]["user_name"],
+                project["project_curated_cropname"],
+                [destination],
+                self.request,
+                notify=False,
+            )
+        else:
+            return False, f"Repository {destination} is not active"
