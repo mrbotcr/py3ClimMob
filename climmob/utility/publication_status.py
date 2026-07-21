@@ -78,4 +78,6 @@ def is_status_rejectable(status_id):
 
 
 def is_status_publishable(status_id):
-    return status_id == PublicationStatus.APPROVED
+    return (
+        status_id == PublicationStatus.APPROVED or status_id == PublicationStatus.FAILED
+    )

@@ -228,6 +228,7 @@ setup(
             "configure_tests = climmob.scripts.configuretests:main",
             "generate_project_summary_table = climmob.scripts.generate_project_summary_table:main",
             "anonymize_project = climmob.scripts.anonymize_project:main",
+            "publish_project_in_repository = climmob.scripts.publish_project_in_repository:main",
         ],
     },
 )

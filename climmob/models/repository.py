@@ -55,7 +55,9 @@ def execute_two_sqls(sql1, sql2):
     engine.dispose()
     return res2
 
+
 import climmob.products as prd
+
 
 @contextmanager
 def create_request(settings: dict, locale_name: str, user_in_session: str):
@@ -78,8 +80,11 @@ def create_request(settings: dict, locale_name: str, user_in_session: str):
         modules_allowed = ["climmob.models.climmobv4"]
         add_modules_to_schema(modules_allowed)
 
-        for product in register_products(None):
-            prd.addProduct(product)
+        try:
+            for product in register_products(None):
+                prd.addProduct(product)
+        except Exception as e:
+            print(e)
 
         request = requests.Session()
         request.dbsession = dbsession
