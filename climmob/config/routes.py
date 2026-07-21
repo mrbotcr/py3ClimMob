@@ -260,6 +260,7 @@ from climmob.views.projectsSummary.projectsSummary import (
     SaveProjectRow,
     ProjectSummaryRecentView,
     ProjectSummaryPublishedView,
+    GetPublicationPackageView,
 )
 from climmob.views.question import (
     qlibrary_view,
@@ -1441,6 +1442,15 @@ def loadRoutes(config):
             "downloadProjectsSummary",
             "/download/downloadProjectsSummary",
             DownloadProjectsSummaryView,
+            None,
+        )
+    )
+
+    routes.append(
+        addRoute(
+            "getPublicationPackage",
+            "/user/{user}/project/{project}/publicationPackage",
+            GetPublicationPackageView,
             None,
         )
     )

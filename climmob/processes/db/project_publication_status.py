@@ -12,6 +12,8 @@ __all__ = [
     "save_project_publication_approved",
 ]
 
+import logging
+
 from sqlalchemy.exc import NoResultFound
 
 from climmob.models import mapFromSchema
@@ -27,6 +29,8 @@ from climmob.utility import (
 )
 
 import climmob.plugins as p
+
+log = logging.getLogger("climmob")
 
 
 def save_project_publication_status(
@@ -101,7 +105,8 @@ def save_project_publication_approved(request, project_id: str, status: int):
             Project.project_id == project_id
         ).update({"project_publication_approved": status})
         return True, ""
-    except:
+    except Exception as e:
+        log.error(e)
         return False, ""
 
 

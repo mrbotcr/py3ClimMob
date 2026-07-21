@@ -1,10 +1,13 @@
 import datetime
+import io
 import json
 import logging
 import os
+import zipfile
+from pathlib import Path
 
 from pyramid.httpexceptions import HTTPFound
-from pyramid.response import FileResponse
+from pyramid.response import FileResponse, Response
 
 from climmob.processes import (
     getProductData,
@@ -18,8 +21,11 @@ from climmob.processes import (
     get_project_id_row,
     getProjectUserAndOwner,
     get_all_affiliations,
+    getTheProjectIdForOwner,
+    get_project_by_id,
 )
 from climmob.products import product_found
+from climmob.products.climmob_products import getProductDirectory
 from climmob.products.projectsSummary import (
     create_json_exel_file,
     process_with_project_for_analytics,
@@ -401,3 +407,43 @@ class ProjectSummaryPublishedView(privateView):
             "sectionActive": "projectsSummaryPublished",
             "list_of_affiliation": get_all_affiliations(self.request),
         }
+
+
+class GetPublicationPackageView(privateView):
+    def get(self):
+        project_id = getTheProjectIdForOwner(
+            self.request.user, self.request.project, self.request
+        )
+        cropname = get_project_by_id(project_id, self.request)[
+            "project_curated_cropname"
+        ]
+
+        report_path = getProductDirectory(
+            self.request, self.request.user, self.request.project, "reports"
+        )
+        jsonresults_path = getProductDirectory(
+            self.request, self.request.user, self.request.project, "jsonresults"
+        )
+
+        report_file_name = "Report_" + self.request.project + ".docx"
+        jsonresults_file_name = cropname + "-" + project_id + ".json"
+
+        report_path = Path(report_path) / "outputs" / report_file_name
+        jsonresults_path = Path(jsonresults_path) / "outputs" / jsonresults_file_name
+
+        zip_buffer = io.BytesIO()
+
+        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+            zip_file.write(report_path, arcname=report_file_name)
+            zip_file.write(jsonresults_path, arcname=jsonresults_file_name)
+
+        zip_buffer.seek(0)
+
+        response = Response(body=zip_buffer.getvalue())
+
+        response.content_type = "application/zip"
+        response.content_disposition = (
+            f'attachment; filename="{self.request.user}_{self.request.project}.zip"'
+        )
+        self.returnRawViewResult = True
+        return response

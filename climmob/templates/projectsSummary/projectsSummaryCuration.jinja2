@@ -351,6 +351,13 @@
                                 style="${canEdit === true && is_curated === false ? '' : 'display:none'}"
                                 title="{{ _("Project must be curated in order to approve or reject publication") }}"></i>`;
 
+                            let link = "{{ request.route_url('getPublicationPackage', user="__user__", project="__project__") }}"
+                            link = link.replace(/__project__/, project.project_cod);
+                            link = link.replace(/__user__/, project.user_owner)
+                            cellContent += `<a href="${link}"><i class="fa fa-download"
+                                style="${canEdit === true && is_curated === true ? '' : 'display:none'}"
+                                title="{{ _("Download publication package") }}"></i></a>`;
+
                             cellContent += `</div>`;
                             let filterValue = '';
                             $.each(col.options, function(key, id) {
