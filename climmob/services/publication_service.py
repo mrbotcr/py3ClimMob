@@ -223,7 +223,7 @@ class PublicationService(Service):
                 project["project_curated_cropname"],
                 [destination],
                 self.request,
-                notify=False,
+                notify_success=False,
             )
         else:
             return False, f"Repository {destination} is not active"

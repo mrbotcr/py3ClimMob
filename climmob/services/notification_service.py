@@ -14,7 +14,7 @@ log = logging.getLogger("climmob")
 class NotificationService(Service):
     def __init__(self, request):
         super().__init__(request)
-        self.notifier = None
+        self.notifier: Notifier | None = None
 
     def set_notifier(self, notifier_type):
         self.notifier = notifier_type(self.request)
@@ -26,17 +26,17 @@ class NotificationService(Service):
 
     def notify_publication_rejection(self):
         self.set_notifier(EmailNotifier)
-        self.notifier.send_notification("A publication request has been rejected.")
+        self.notifier.notify_publication_rejection({})
         print("NotificationService: Notifying about publication rejection.")
 
-    def notify_publication_success(self):
+    def notify_publication_success(self, context: dict):
         self.set_notifier(EmailNotifier)
-        self.notifier.send_notification("Publication has been performed.")
+        self.notifier.notify_publication_success(context)
         print("NotificationService: Notifying about publication success.")
 
-    def notify_publication_failure(self):
+    def notify_publication_failure(self, context: dict):
         self.set_notifier(SlackNotifier)
-        self.notifier.notify_publication_failure()
+        self.notifier.notify_publication_failure(context)
         print("NotificationService: Notifying about publication failure.")
 
 
@@ -50,7 +50,13 @@ class Notifier:
     def notify_publication_request(self, context: dict):
         """"""
 
-    def notify_publication_failure(self):
+    def notify_publication_rejection(self, context: dict):
+        """"""
+
+    def notify_publication_success(self, context: dict):
+        """"""
+
+    def notify_publication_failure(self, context: dict):
         """"""
 
 
@@ -88,6 +94,16 @@ class EmailNotifier(Notifier):
 
         self.send_notification()
 
+    def notify_publication_success(self, context: dict):
+        self._template = "email/publication/publication_success.jinja2"
+        self._context = context
+        self._subject = (
+            f'Publication completed for: {context["project"]["project_name"]}'
+        )
+        self._to: list = getAllUserAdmin(self.request)
+
+        self.send_notification()
+
 
 class EmailRecipient(IntEnum):
     ADMIN = auto()
@@ -111,5 +127,5 @@ class SlackNotifier(Notifier):
         )
         # TODO: Handle the response and any errors
 
-    def notify_publication_failure(self):
+    def notify_publication_failure(self, context: dict):
         self.send_notification()

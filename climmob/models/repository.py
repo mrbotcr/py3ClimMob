@@ -7,6 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
 
 from climmob.config.celery_app import get_ini_value
+from climmob.config.jinja_extensions import initialize
 from climmob.models import (
     add_modules_to_schema,
 )
@@ -76,6 +77,7 @@ def create_request(settings: dict, locale_name: str, user_in_session: str):
 
     session_factory = get_session_factory(engine)
     with transaction.manager:
+        initialize("climmob/templates")
         dbsession = get_tm_session(session_factory, transaction.manager)
         modules_allowed = ["climmob.models.climmobv4"]
         add_modules_to_schema(modules_allowed)

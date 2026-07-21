@@ -15,7 +15,7 @@ def publish_project(
     cropname,
     destinations,
     request,
-    notify=True,
+    notify_success=True,
 ):
     settings = get_settings(request)
 
@@ -32,10 +32,9 @@ def publish_project(
             request.user_in_session,
             cropname,
             project_id,
-            owner_username,
             destinations,
             file_path,
-            notify,
+            notify_success,
         ),
         queue="ClimMob",
     )

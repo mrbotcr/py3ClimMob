@@ -2,9 +2,17 @@ import climmob.plugins as p
 from climmob.config.celery_app import celeryApp
 from climmob.models.repository import create_request
 from climmob.plugins.utilities import climmobCeleryTask
-from climmob.processes import save_project_publication_status
+from climmob.processes import (
+    save_project_publication_status,
+    get_project_by_id,
+    get_project_publication_license_id,
+)
 from climmob.services.notification_service import NotificationService
-from climmob.utility import PublicationStatus
+from climmob.utility import (
+    PublicationStatus,
+    PublicationLicenseLabel,
+    PublicationLicense,
+)
 
 
 @celeryApp.task(base=climmobCeleryTask)
@@ -14,10 +22,9 @@ def publish_project_task(
     user_in_session,
     cropname,
     project_id,
-    owner_username,
     destinations,
     file_path,
-    notify=False,
+    notify_success=False,
 ):
     with create_request(settings, locale, user_in_session) as request:
         p.load_all(settings)
@@ -42,11 +49,23 @@ def publish_project_task(
                     print(
                         f"FAILURE: Failed to publish to {plugin.get_destination_name()}"
                     )
-
-        if notify:
-            notification_service: NotificationService = request.find_service(
-                "notification"
+        print(f"Success: {results[True]}")
+        print(f"Failure: {results[False]}")
+        notification_service: NotificationService = request.find_service("notification")
+        if notify_success:
+            project_license_id = get_project_publication_license_id(project_id, request)
+            license_name = PublicationLicenseLabel[
+                PublicationLicense(project_license_id).name
+            ].value
+            notification_service.notify_publication_success(
+                {
+                    "project": get_project_by_id(project_id, request),
+                    "repositories": destinations,
+                    "license": license_name,
+                    "_": request.translate,  # TODO: check translation effectiveness
+                }
             )
-            notification_service.notify_publication_failure()
+        if results[False]:
+            notification_service.notify_publication_failure({})
 
     return ""

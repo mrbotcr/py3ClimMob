@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            text-align: center;
+        !important;
+        }
+
+        .email-container {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 30px;
+            border-radius: 6px;
+            margin: 0 auto;
+            width: 600px;
+            display: inline-block;
+        !important;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    {% block email_body %}
+        {% block email_hello %}
+            <p style="margin-bottom: 15px;"><strong>{{ _('Dear') }} {{ project["owner"]["user_name"] }},</strong></p>
+        {% endblock email_hello %}
+
+        {% block email_message %}
+            <p style="margin-bottom: 15px;">
+                {{ _('Your project') }} {{ project["project_cod"] }} – {{ project["project_name"] }} {{ _('has been successfully published to the selected repositories.') }}.
+            </p>
+            {{ _('Publication details') }}:
+            <ul>{{ _('Project name') }}: <strong>{{ project["project_name"] }}</strong></ul>
+            <ul>{{ _('Published repositories') }}: <strong>{{ repositories }}</strong></ul>
+            <ul>{{ _('License') }}: <strong>{{ license }}</strong></ul>
+            <ul>{{ _('Status') }}: <strong>{{ _("Published") }}</strong></ul>
+
+            <p style="margin-bottom: 15px;">{{ _('Thank you for contributing shareable data through ClimMob. Your published dataset is now available through the selected repositories.') }}</p>
+        {% endblock email_message %}
+
+        {% block email_goodbye %}
+            <p>{{ _('Best regards,') }}<p>
+            <p style="margin-bottom: 0;">{{ _('The ClimMob team') }}</p>
+            <br>
+            <img src="{{ logo }}" style="width:45%; max-width:100px; height:auto;" >
+        {% endblock email_goodbye %}
+    {% endblock email_body %}
+</div>
+</body>
+</html>
