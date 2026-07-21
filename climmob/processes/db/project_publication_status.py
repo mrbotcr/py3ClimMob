@@ -8,12 +8,18 @@ __all__ = [
     "get_project_publication_approval_status_id",
     "get_project_publication_status_by_destination_name",
     "get_project_publication_status_by_status_id",
+    "get_project_publication_approved",
+    "save_project_publication_approved",
 ]
 
 from sqlalchemy.exc import NoResultFound
 
 from climmob.models import mapFromSchema
-from climmob.models.climmobv4 import ProjectPublicationStatus, PublicationStatus
+from climmob.models.climmobv4 import (
+    ProjectPublicationStatus,
+    PublicationStatus,
+    Project,
+)
 from climmob.models.repository import sql_fetch_one, sql_execute
 from climmob.utility import (
     PublicationStatus as PublicationStatusEnum,
@@ -77,8 +83,31 @@ def get_project_publication_approval_status_id(request, project_id: str) -> int:
     return status_map[PublicationStatusEnum(status_id)]
 
 
+def get_project_publication_approved(request, project_id: str) -> int | None:
+    try:
+        res = (
+            request.dbsession.query(Project.project_publication_approved)
+            .filter(Project.project_id == project_id)
+            .one()
+        )
+        return res[0]
+    except NoResultFound:
+        return None
+
+
+def save_project_publication_approved(request, project_id: str, status: int):
+    try:
+        request.dbsession.query(Project).filter(
+            Project.project_id == project_id
+        ).update({"project_publication_approved": status})
+        return True, ""
+    except:
+        return False, ""
+
+
 # TODO: how to detect approval if only climmob is selected?
 #  should we make it obligatory to select more repos?
+#  use Project.project_publication_approved
 def get_global_project_publication_status_id(request, project_id: str) -> int:
     res = (
         request.dbsession.query(ProjectPublicationStatus)

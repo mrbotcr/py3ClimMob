@@ -225,5 +225,6 @@ class PublicationService(Service):
                 self.request,
                 notify_success=False,
             )
+            return True, ""
         else:
             return False, f"Repository {destination} is not active"

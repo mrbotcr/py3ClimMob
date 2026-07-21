@@ -327,16 +327,20 @@
 
                         }else if (col.type === "dropdown_publication_approval") {
                             let optionsHtml = ``;
-                            let canEdit = true;
+                            let canEdit = false;
                             $.each(col.options, function(key, option) {
-                                if (value === 0 && option.value === -1) {
+                                let selectable = option.selectable === true || option.value === value;
+                                let label = option.label;
+                                if (project.project_publication_status.status_id === 1) {
+                                    optionsHtml += `<option value="${option.value}" ${selectable === false ? 'disabled' : ''} ${option.value === value ? 'selected="selected"' : ''}>${label}</option>`;
+                                    return false// Skip other options
+                                }
+                                if (project.project_publication_status.status_id > 1 && option.value === -1) {
                                     return // Skip the empty option
                                 }
                                 if (option.value === value) {
                                     canEdit = option.editable;
                                 }
-                                let selectable = option.selectable === true || option.value === value;
-                                let label = option.label;
                                 optionsHtml += `<option value="${option.value}" ${selectable === false ? 'disabled' : ''} ${option.value === value ? 'selected="selected"' : ''}>${label}</option>`;
                             });
                             cellContent = `<div style="display: flex; align-items: center; gap: 1em;">`;

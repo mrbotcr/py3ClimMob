@@ -724,6 +724,8 @@ class Project(Base):
     project_template_used = Column(ForeignKey("project.project_id"), nullable=True)
     project_checked = Column(Integer, server_default=text("'0'"))
 
+    project_publication_approved = Column(Integer, server_default=text("'0'"))
+
     country = relationship("Country")
 
 

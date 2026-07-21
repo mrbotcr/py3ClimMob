@@ -27,4 +27,7 @@ def main(raw_args=None):
         )
         publication_service._request_repository(args.project_id, args.destination)
         publication_service._approve_repository(args.project_id, args.destination)
-        publication_service._publish_repository(args.project_id, args.destination)
+        success, msg = publication_service._publish_repository(
+            args.project_id, args.destination
+        )
+        print(f"success: {success}\nmsg:{msg}")

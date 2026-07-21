@@ -25,9 +25,9 @@ class PublicationStatusLabel(Enum):
     PARTIAL = "Partial"
 
 
-class PublicationStatusOption(Enum):
-    APPROVED = PublicationStatus.APPROVED
-    REJECTED = PublicationStatus.REJECTED
+class PublicationApproved(IntEnum):
+    APPROVED = 1
+    REJECTED = 2
 
 
 class PublicationStatusOptionsEnabled(Enum):
@@ -51,7 +51,7 @@ def get_publication_status_options():
         },
     ]
 
-    for status in PublicationStatusOption:
+    for status in PublicationApproved:
         option = {
             "value": status.value,
             "label": PublicationStatusLabel[status.name].value,

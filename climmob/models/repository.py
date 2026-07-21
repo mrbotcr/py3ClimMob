@@ -58,6 +58,7 @@ def execute_two_sqls(sql1, sql2):
 
 
 import climmob.products as prd
+import climmob.plugins as p
 
 
 @contextmanager
@@ -77,6 +78,7 @@ def create_request(settings: dict, locale_name: str, user_in_session: str):
 
     session_factory = get_session_factory(engine)
     with transaction.manager:
+        p.load_all(settings)
         initialize("climmob/templates")
         dbsession = get_tm_session(session_factory, transaction.manager)
         modules_allowed = ["climmob.models.climmobv4"]

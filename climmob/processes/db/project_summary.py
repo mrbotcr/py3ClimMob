@@ -23,7 +23,8 @@ __all__ = [
 from climmob.processes.db.project_publication_status import (
     get_global_project_publication_status_name,
     get_all_project_publication_statuses,
-    get_project_publication_approval_status_id,
+    get_project_publication_approved,
+    get_global_project_publication_status_id,
 )
 
 
@@ -75,11 +76,14 @@ def add_publication_values(project, request):
         "status": get_global_project_publication_status_name(
             request, project["project_id"]
         ),
+        "status_id": get_global_project_publication_status_id(
+            request, project["project_id"]
+        ),
         "repos": get_all_project_publication_statuses(request, project["project_id"]),
     }
     project["psm_json"][
         "project_publication_approval"
-    ] = get_project_publication_approval_status_id(request, project["project_id"])
+    ] = get_project_publication_approved(request, project["project_id"])
 
 
 def get_all_project_summary(request):
