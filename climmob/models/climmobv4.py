@@ -1564,7 +1564,6 @@ class ProjectPublicationStatus(Base):
     publication_status_id = Column(
         Integer,
         ForeignKey("publication_status.publication_status_id"),
-        primary_key=True,
         nullable=False,
     )
     project_id = Column(
