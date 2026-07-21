@@ -9,18 +9,17 @@ from climmob.processes import (
     get_project_by_id,
     get_project_publication_license_id,
     get_global_project_publication_status_id,
+    save_project_publication_approved,
+    get_project_publication_approved,
 )
 from climmob.products.projectPublication.project_publication import publish_project
 from climmob.services.notification_service import NotificationService
 from climmob.services.service import Service
 from climmob.utility import (
     PublicationStatus,
-    is_status_approvable,
-    is_status_requestable,
-    is_status_publishable,
-    is_status_rejectable,
     PublicationLicenseLabel,
     PublicationLicense,
+    PublicationApproved,
 )
 
 log = logging.getLogger("climmob")
@@ -110,6 +109,12 @@ class PublicationService(Service):
             return False, f"Repository {destination} is not active"
 
     def approve_project_publication(self, project_id):
+        success, msg = save_project_publication_approved(
+            self.request, project_id, PublicationApproved.APPROVED.value
+        )
+        if not success:
+            return False, [msg]
+
         statuses = get_all_project_publication_statuses(self.request, project_id)
         errors = []
         global_success = True
@@ -140,6 +145,12 @@ class PublicationService(Service):
             return False, f"Repository {destination} is not active"
 
     def reject_project_publication(self, project_id):
+        success, msg = save_project_publication_approved(
+            self.request, project_id, PublicationApproved.REJECTED.value
+        )
+        if not success:
+            return False, [msg]
+
         statuses = get_all_project_publication_statuses(self.request, project_id)
         errors = []
         global_success = True
@@ -174,14 +185,16 @@ class PublicationService(Service):
     def handle_publication_approval(
         self, project_id, project_publication_approval: int
     ):
-        # TODO: check against previous status
-        if project_publication_approval == PublicationStatus.APPROVED:
+        approved = get_project_publication_approved(self.request, project_id)
+        if approved == project_publication_approval:
+            return
+        if project_publication_approval == PublicationApproved.APPROVED:
             success, errors = self.approve_project_publication(project_id)
             if not success:
                 log.error(errors)
             else:
                 self.publish_project(project_id)
-        elif project_publication_approval == PublicationStatus.REJECTED:
+        elif project_publication_approval == PublicationApproved.REJECTED:
             success, errors = self.reject_project_publication(project_id)
             if not success:
                 log.error(errors)
@@ -197,7 +210,7 @@ class PublicationService(Service):
         destinations = [
             destination["destination"]
             for destination in statuses
-            if is_status_publishable(destination["publication_status_id"])
+            if destination["destination"] != "climmob"
         ]
         publish_project(
             project_id,
