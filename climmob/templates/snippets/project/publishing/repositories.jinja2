@@ -1,14 +1,27 @@
 {% macro repositories_container() %}
     {% from 'snippets/project/publishing/repository_logo.jinja2' import repository_logo with context %}
+    {% from 'snippets/project/publishing/repository_access_link.jinja2' import repository_access_link with context %}
     {% from 'snippets/project/publishing/repository_description.jinja2' import repository_description with context %}
-
+    <style>
+        .repo-row {
+            margin-inline: 0;
+            align-items: center;
+        }
+        .repo-row-box {
+            width: 100%;
+            outline: 2px solid #e7eaec;
+            outline-offset: -1px;
+            padding: 0;
+            margin-bottom: 0;
+            border-radius: 5px
+        }
+    </style>
     <h4>{{ _("Repositories") }}</h4>
     <p>{{ _("Select one or more repositories where your shareable dataset will be published.") }}</p>
     <div id="repositories" class="flex flex-col" style="gap: 1em;">
         {% for destination, label, disabled, checked, status in destinations %}
-            <div class="row" style="margin-inline: 0;">
-                <div class="ibox collapsed"
-                     style="outline: 2px solid #e7eaec; outline-offset: -1px; padding: 0; margin-bottom: 0; border-radius: 5px">
+            <div class="row flex repo-row">
+                <div class="ibox collapsed repo-row-box">
                     <div class="ibox-title flex"
                          style="justify-content: space-between; padding-block: 0; align-items: center; border: none; ">
                         <div class="i-checks inline">
@@ -32,7 +45,7 @@
                         </div>
                         <div class="ibox-tools">
                             {% if status %}
-                                <i>{{ status }}</i>
+                                <i>{{ _(status.label) }}</i>
                             {% endif %}
                             <a class="collapse-link">
                                 <i class="fa fa-chevron-up"></i>
@@ -43,6 +56,18 @@
                         {{ repository_description(destination) }}
                     </div>
                 </div>
+                {% if project_publication_status != PublicationStatus.NOT_REQUESTED %}
+                    <div style="margin: 1em;
+                            visibility:
+                            {% if status.id == PublicationStatus.PUBLISHED %}
+                                visible
+                            {% else %}
+                                hidden
+                            {% endif %}
+                            ">
+                        {{ repository_access_link(destination, status.id == PublicationStatus.PUBLISHED) }}
+                    </div>
+                {% endif %}
             </div>
         {% endfor %}
     </div>

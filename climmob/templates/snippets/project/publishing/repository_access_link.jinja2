@@ -1,0 +1,43 @@
+{% macro repository_access_link(repository, visible) %}
+    {% if repository == "climmob" %}
+        <a class="repository-access-link"
+            {% if visible == True %}
+                href="{{ request.route_url("productList", _query={"product1":"jsonresults"}) }}"
+            {% else %}
+                href="#"
+            {% endif %}
+        >
+            <i class="fa fa-external-link"></i>
+        </a>
+    {% elif repository == "databricks" %}
+        <a class="repository-access-link"
+            {% if visible == True %}
+                href="https://placehold.co/20"
+            {% else %}
+                href="#"
+            {% endif %}
+        >
+            <i class="fa fa-external-link"></i>
+        </a>
+    {% elif repository == "zenodo" %}
+        <a class="repository-access-link"
+            {% if visible == True %}
+                href="https://placehold.co/20"
+            {% else %}
+                href="#"
+            {% endif %}
+        >
+            <i class="fa fa-external-link"></i>
+        </a>
+    {% elif repository == "genesys" %}
+        <a class="repository-access-link"
+            {% if visible == True %}
+                href="{{ request.route_url("productList", _query={"product1":"genesys_results"}) }}"
+            {% else %}
+                href="#"
+            {% endif %}
+        >
+            <i class="fa fa-external-link"></i>
+        </a>
+    {% endif %}
+{% endmacro %}

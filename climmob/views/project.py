@@ -60,6 +60,7 @@ from climmob.processes import (
     get_collaborators_in_project,
     get_all_project_publication_statuses,
     get_project_publication_license_id,
+    get_global_project_publication_status_id,
 )
 from climmob.processes.db.publication_license import get_publication_licenses
 from climmob.services import PublicationService
@@ -1180,9 +1181,12 @@ class RequestProjectPublicationView(privateView):
                 if r["destination"] == plugin.get_destination_name():
                     checked = True
                     disabled = True
-                    status = PublicationStatusLabel[
-                        PublicationStatus(r["publication_status_id"]).name
-                    ].value
+                    status = {
+                        "label": PublicationStatusLabel[
+                            PublicationStatus(r["publication_status_id"]).name
+                        ].value,
+                        "id": r["publication_status_id"],
+                    }
                     break
             destinations.insert(
                 getattr(plugin, "index", 1),
@@ -1204,6 +1208,9 @@ class RequestProjectPublicationView(privateView):
             "destinations": destinations,
             "licenses": licenses,
             "project_license_id": project_license_id,
+            "project_publication_status": get_global_project_publication_status_id(
+                self.request, self.context.active_project_id
+            ),
         }
 
     def post(self):
