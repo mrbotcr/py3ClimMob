@@ -22,22 +22,18 @@ class NotificationService(Service):
     def notify_publication_request(self, context: dict):
         self.set_notifier(EmailNotifier)
         self.notifier.notify_publication_request(context)
-        print("NotificationService: Notifying about publication request.")
 
     def notify_publication_rejection(self):
         self.set_notifier(EmailNotifier)
         self.notifier.notify_publication_rejection({})
-        print("NotificationService: Notifying about publication rejection.")
 
     def notify_publication_success(self, context: dict):
         self.set_notifier(EmailNotifier)
         self.notifier.notify_publication_success(context)
-        print("NotificationService: Notifying about publication success.")
 
     def notify_publication_failure(self, context: dict):
         self.set_notifier(SlackNotifier)
         self.notifier.notify_publication_failure(context)
-        print("NotificationService: Notifying about publication failure.")
 
 
 class Notifier:
@@ -118,14 +114,41 @@ class SlackNotifier(Notifier):
         self.client = WebClient(
             token=request.registry.settings.get("slack.token", None)
         )
+        self.text = None
+        self.blocks = None
+        self.attachments = None
 
     def send_notification(self):
-        # Implement the logic to send a Slack notification
-        response = self.client.chat_postMessage(
-            channel=self.channel,
-            text="¡Hola desde mi bot de Slack!",
-        )
-        # TODO: Handle the response and any errors
+        try:
+            self.client.chat_postMessage(
+                channel=self.channel,
+                text=self.text,
+                attachments=self.attachments,
+            )
+        except SlackApiError as e:
+            error_type = e.response["error"]
+            log.error(f"Slack API Rejected Request: {error_type}")
+        except Exception as e:
+            log.error(f"An unexpected Python error occurred: {e}")
 
     def notify_publication_failure(self, context: dict):
+        self.text = "Project publication failure!"
+        repository_list = f'\n\t• '.join(context['repositories'])
+        self.blocks = [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": f"Project {context['project']['owner']['user_name']}_{context['project']['project_cod']}"
+                            f"({context['project']['project_id']}) "
+                            f"failed to publish on the following repositories:\n\t• {repository_list}"
+                }
+            }
+        ]
+        self.attachments = [
+            {
+                "color": "#D00000",
+                "blocks": self.blocks
+            }
+        ]
         self.send_notification()
