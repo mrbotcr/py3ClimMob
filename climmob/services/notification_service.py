@@ -4,6 +4,7 @@ from enum import auto, IntEnum
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
+from climmob.config.auth import getUserData
 from climmob.processes import getAllUserAdmin
 from climmob.services.service import Service
 from climmob.utility import EmailSender, EmailBuilder
@@ -23,9 +24,9 @@ class NotificationService(Service):
         self.set_notifier(EmailNotifier)
         self.notifier.notify_publication_request(context)
 
-    def notify_publication_rejection(self):
+    def notify_publication_rejection(self, context):
         self.set_notifier(EmailNotifier)
-        self.notifier.notify_publication_rejection({})
+        self.notifier.notify_publication_rejection(context)
 
     def notify_publication_success(self, context: dict):
         self.set_notifier(EmailNotifier)
@@ -67,6 +68,7 @@ class EmailNotifier(Notifier):
         self.sender = EmailSender(request.registry.settings)
 
     def send_notification(self):
+        print(f"sending {self._template} as {self._subject}")
         builder = EmailBuilder(
             self.request.registry.settings,
             self._to,
@@ -90,13 +92,25 @@ class EmailNotifier(Notifier):
 
         self.send_notification()
 
+    def notify_publication_rejection(self, context: dict):
+        self._template = "email/publication/publication_rejection.jinja2"
+        self._context = context
+        self._subject = (
+            f'Publication request rejected for: {context["project"]["project_name"]}'
+        )
+        user = getUserData(context["project"]["owner"]["user_name"], self.request)
+        self._to: list = [{"user_fullname": user.login, "user_email": user.email}]
+
+        self.send_notification()
+
     def notify_publication_success(self, context: dict):
         self._template = "email/publication/publication_success.jinja2"
         self._context = context
         self._subject = (
             f'Publication completed for: {context["project"]["project_name"]}'
         )
-        self._to: list = getAllUserAdmin(self.request)
+        user = getUserData(context["project"]["owner"]["user_name"], self.request)
+        self._to: list = [{"user_fullname": user.login, "user_email": user.email}]
 
         self.send_notification()
 
@@ -133,22 +147,17 @@ class SlackNotifier(Notifier):
 
     def notify_publication_failure(self, context: dict):
         self.text = "Project publication failure!"
-        repository_list = f'\n\t• '.join(context['repositories'])
+        repository_list = f"\n\t• ".join(context["repositories"])
         self.blocks = [
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
                     "text": f"Project {context['project']['owner']['user_name']}_{context['project']['project_cod']}"
-                            f"({context['project']['project_id']}) "
-                            f"failed to publish on the following repositories:\n\t• {repository_list}"
-                }
+                    f"({context['project']['project_id']}) "
+                    f"failed to publish on the following repositories:\n\t• {repository_list}",
+                },
             }
         ]
-        self.attachments = [
-            {
-                "color": "#D00000",
-                "blocks": self.blocks
-            }
-        ]
+        self.attachments = [{"color": "#D00000", "blocks": self.blocks}]
         self.send_notification()

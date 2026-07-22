@@ -284,7 +284,7 @@ class SaveProjectRow(privateView):
             pass
         publication_service = self.request.find_service(name="publication")
         publication_service.handle_publication_approval(
-            project_id, project_publication_approval
+            project_id, project_publication_approval, admin_message
         )
 
         self.send_email_notification(

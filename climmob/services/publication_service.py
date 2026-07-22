@@ -144,7 +144,7 @@ class PublicationService(Service):
         else:
             return False, f"Repository {destination} is not active"
 
-    def reject_project_publication(self, project_id):
+    def reject_project_publication(self, project_id, admin_message):
         success, msg = save_project_publication_approved(
             self.request, project_id, PublicationApproved.REJECTED.value
         )
@@ -163,7 +163,25 @@ class PublicationService(Service):
                     global_success = False
                     errors.append((status["destination"], msg))
         if global_success:
-            self.notification_service.notify_publication_rejection()
+            project = get_project_by_id(project_id, self.request)
+            project_license_id = get_project_publication_license_id(
+                project_id, self.request
+            )
+            license_name = PublicationLicenseLabel[
+                PublicationLicense(project_license_id).name
+            ].value
+            repositories = ", ".join(
+                [status["destination_label"] for status in statuses]
+            )
+            self.notification_service.notify_publication_rejection(
+                {
+                    "project": project,
+                    "repositories": repositories,
+                    "license": license_name,
+                    "admin_message": admin_message,
+                    "_": self._,
+                }
+            )
         return global_success, errors
 
     def _reject_repository(self, project_id, destination):
@@ -183,7 +201,7 @@ class PublicationService(Service):
             return False, f"Repository {destination} is not active"
 
     def handle_publication_approval(
-        self, project_id, project_publication_approval: int
+        self, project_id, project_publication_approval: int, admin_message
     ):
         approved = get_project_publication_approved(self.request, project_id)
         if approved == project_publication_approval:
@@ -195,7 +213,7 @@ class PublicationService(Service):
             else:
                 self.publish_project(project_id)
         elif project_publication_approval == PublicationApproved.REJECTED:
-            success, errors = self.reject_project_publication(project_id)
+            success, errors = self.reject_project_publication(project_id, admin_message)
             if not success:
                 log.error(errors)
         else:
