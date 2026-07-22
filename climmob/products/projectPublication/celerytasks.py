@@ -6,6 +6,7 @@ from climmob.processes import (
     save_project_publication_status,
     get_project_by_id,
     get_project_publication_license_id,
+    get_all_project_publication_statuses,
 )
 from climmob.services.notification_service import NotificationService
 from climmob.utility import (
@@ -52,20 +53,28 @@ def publish_project_task(
         print(f"Success: {results[True]}")
         print(f"Failure: {results[False]}")
         notification_service: NotificationService = request.find_service("notification")
-        if notify_success:
+        if results[False]:
+            notification_service.notify_publication_failure({})
+        elif notify_success:
             project_license_id = get_project_publication_license_id(project_id, request)
             license_name = PublicationLicenseLabel[
                 PublicationLicense(project_license_id).name
             ].value
+            statuses = get_all_project_publication_statuses(request, project_id)
+            repositories = ", ".join(
+                [
+                    status["destination_label"]
+                    for status in statuses
+                    if status["destination"] in destinations
+                ]
+            )
             notification_service.notify_publication_success(
                 {
                     "project": get_project_by_id(project_id, request),
-                    "repositories": destinations,
+                    "repositories": repositories,
                     "license": license_name,
                     "_": request.translate,  # TODO: check translation effectiveness
                 }
             )
-        if results[False]:
-            notification_service.notify_publication_failure({})
 
     return ""
