@@ -54,10 +54,12 @@ def publish_project_task(
         print(f"Failure: {results[False]}")
         notification_service: NotificationService = request.find_service("notification")
         if results[False]:
-            notification_service.notify_publication_failure({
-                "repositories": results[False],
-                "project": get_project_by_id(project_id, request)
-            })
+            notification_service.notify_publication_failure(
+                {
+                    "repositories": results[False],
+                    "project": get_project_by_id(project_id, request),
+                }
+            )
         elif notify_success:
             project_license_id = get_project_publication_license_id(project_id, request)
             license_name = PublicationLicenseLabel[

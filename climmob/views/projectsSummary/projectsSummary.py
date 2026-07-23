@@ -232,7 +232,9 @@ class SaveProjectRow(privateView):
                 "climmob_analytics": int(data.get("analytics")),
                 "cropname": data.get("crop"),
                 "project_checked": 1,
-                "project_publication_approval": data.get("project_publication_approval")
+                "project_publication_approval": data.get(
+                    "project_publication_approval"
+                ),
             }
         )
 
@@ -288,9 +290,11 @@ class SaveProjectRow(privateView):
             project_id, project_publication_approval, admin_message
         )
 
-        if (dataworking["project_curated_cropname"] != prev_crop or
-                dataworking["project_affiliation"] != prev_affiliation or
-                int(dataworking["climmob_analytics"]) != prev_analytics):
+        if (
+            dataworking["project_curated_cropname"] != prev_crop
+            or dataworking["project_affiliation"] != prev_affiliation
+            or int(dataworking["climmob_analytics"]) != prev_analytics
+        ):
             self.send_email_notification(
                 admin_name,
                 admin_email,
