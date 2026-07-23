@@ -225,13 +225,14 @@ class SaveProjectRow(privateView):
         psm_json = get_project_id_row(request, project_id)["psm_json"]
         prev_affiliation = psm_json["affiliation"]
         prev_crop = psm_json["cropname"]
+        prev_analytics = psm_json["climmob_analytics"]
         psm_json.update(
             {
                 "affiliation": data.get("affiliation"),
                 "climmob_analytics": int(data.get("analytics")),
                 "cropname": data.get("crop"),
                 "project_checked": 1,
-                # TODO: update publication status and approval
+                "project_publication_approval": data.get("project_publication_approval")
             }
         )
 
@@ -287,20 +288,23 @@ class SaveProjectRow(privateView):
             project_id, project_publication_approval, admin_message
         )
 
-        self.send_email_notification(
-            admin_name,
-            admin_email,
-            user_project_full_name,
-            user_project_email,
-            project_name,
-            project_id,
-            admin_message,
-            dataworking["project_curated_cropname"],
-            dataworking["project_affiliation"],
-            dataworking["climmob_analytics"],
-            prev_affiliation,
-            prev_crop,
-        )
+        if (dataworking["project_curated_cropname"] != prev_crop or
+                dataworking["project_affiliation"] != prev_affiliation or
+                int(dataworking["climmob_analytics"]) != prev_analytics):
+            self.send_email_notification(
+                admin_name,
+                admin_email,
+                user_project_full_name,
+                user_project_email,
+                project_name,
+                project_id,
+                admin_message,
+                dataworking["project_curated_cropname"],
+                dataworking["project_affiliation"],
+                dataworking["climmob_analytics"],
+                prev_affiliation,
+                prev_crop,
+            )
 
         return {
             "status": 200,
