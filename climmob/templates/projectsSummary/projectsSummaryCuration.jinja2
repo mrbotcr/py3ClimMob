@@ -101,6 +101,11 @@
             display: none !important;
         }
 
+        .save-btn:disabled {
+          cursor: default !important; /* Forces the normal arrow cursor */
+          pointer-events: none;       /* Prevents any clicks or hover states entirely */
+        }
+
     </style>
 
 {% endblock css %}
@@ -271,6 +276,7 @@
                 const tableBody = $('#curation-table-body');
 
                 $.each(projects, function(index, project) {
+                    const projectString = JSON.stringify(project).replace(/"/g, '&quot;');
                     let row = '<tr>';
                     let is_curated = project.affiliation !== null && project.cropname !== null && project.climmob_analytics !== null;
                     $.each(tableStructure, function(colIndex, col) {
@@ -315,7 +321,7 @@
                             $.each(col.options, function(key, id) {
                                 optionsHtml += `<option value="${id}" ${id === value ? 'selected="selected"' : ''}>${key}</option>`;
                             });
-                            cellContent = `<select class="Select2_simple form-control select2-hidden-accessible" style="width: 150px">${optionsHtml}</select>`;
+                            cellContent = `<select onchange="verifyState(${projectString}, this)" class="Select2_simple form-control select2-hidden-accessible" style="width: 150px">${optionsHtml}</select>`;
                             let filterValue = '';
                             $.each(col.options, function(key, id) {
                                 if (id === value) {
@@ -344,7 +350,7 @@
                                 optionsHtml += `<option value="${option.value}" ${selectable === false ? 'disabled' : ''} ${option.value === value ? 'selected="selected"' : ''}>${label}</option>`;
                             });
                             cellContent = `<div style="display: flex; align-items: center; gap: 1em;">`;
-                            cellContent += `<select ${canEdit === false || is_curated === false? 'disabled' : ''} class="Select2_simple form-control select2-hidden-accessible" style="width: 150px">${optionsHtml}</select>`;
+                            cellContent += `<select onchange="verifyState(${projectString}, this)" ${canEdit === false || is_curated === false? 'disabled' : ''} class="Select2_simple form-control select2-hidden-accessible" style="width: 150px">${optionsHtml}</select>`;
                             // TODO: Create download link
 
                             cellContent += `<i class="fa fa-info-circle"
@@ -395,7 +401,7 @@
                             if (!isSelectedExisting && value) {
                                 optionsHtml += `<option value="${value}" selected>{{ _("New") }}: ${value}</option>`;
                             }
-                            cellContent = `<select class="form-control Select2 js-affiliation-tags" style="width: 200px;">${optionsHtml}</select>`;
+                            cellContent = `<select onchange="verifyState(${projectString}, this)" class="form-control Select2 js-affiliation-tags" style="width: 200px;">${optionsHtml}</select>`;
                             row += `<td data-column="${col.key}">${cellContent}</td>`;
 
                         } else if (col.type === "dropdown_crop") {
@@ -412,15 +418,16 @@
                             if (!isSelectedExisting && value) {
                                 optionsHtml += `<option value="${value}" selected>{{ _("New") }}:${value}</option>`;
                             }
-                            cellContent = `<select class="Select2 form-control js-affiliation-tags" style="width: 200px;">${optionsHtml}</select>`;
+                            cellContent = `<select onchange="verifyState(${projectString}, this)" class="Select2 form-control js-affiliation-tags" style="width: 200px;">${optionsHtml}</select>`;
                             row += `<td data-column="${col.key}">${cellContent}</td>`;
                         }
                     })
 
                     if(editMode==="true")
                     {
-                        row += `<td data-column="admin_msj"><textarea placeholder="Use this field to send a message to the project user." maxlength="500" style="width: 200px; height: 50px;"></textarea></td>`;
-                        row += `<td data-column="save"><button class="btn btn-primary pull-right" onclick="checkInputs('${project.project_id}', this)">Save</button></td>`;
+
+                        row += `<td data-column="admin_msj"><textarea required placeholder="Use this field to send a message to the project user." maxlength="500" style="width: 200px; height: 50px;"></textarea></td>`;
+                        row += `<td data-column="save"><button disabled title="" id="save-btn-${project.project_id}" class="btn btn-primary pull-right save-btn" onclick="checkInputs(${projectString}, this)">Save</button></td>`;
                     }
 
                     row += '</tr>';
@@ -525,7 +532,78 @@
         $('#footable-wrapper').show();
         })
 
-        async function checkInputs(project_id, button) {
+        function getFormDataFromRow(row) {
+            const fieldAffiliation = row.querySelector('[data-column="affiliation"] select');
+            const fieldCrop = row.querySelector('[data-column="cropname"] select');
+            const fieldAnalytics = row.querySelector('[data-column="climmob_analytics"] select');
+            const adminMessage = row.querySelector('[data-column="admin_msj"] textarea');
+            const publicationApproval = row.querySelector('[data-column="project_publication_approval"] select');
+            return {
+                affiliation: fieldAffiliation.value.trim(),
+                crop: fieldCrop.value.trim(),
+                analytics: parseInt(fieldAnalytics.value),
+                admin_message: adminMessage.value,
+                project_publication_approval: parseInt(publicationApproval.value),
+                csrf_token: "{{ request.session.get_csrf_token() }}"
+            }
+        }
+
+        function verifyState(project, element) {
+            const button = document.getElementById(`save-btn-${project.project_id}`)
+            const row = button.closest('tr');
+            const formData = getFormDataFromRow(row)
+
+            if (formData.affiliation === "") {
+                formData.affiliation = null;
+            }
+            if (formData.crop === "") {
+                formData.crop = null;
+            }
+            if (isNaN(formData.analytics)) {
+                formData.analytics = null;
+            }
+            button.disabled =
+                (formData.project_publication_approval === project.project_publication_approval ||
+                    formData.project_publication_approval === -1
+                ) &&
+                formData.affiliation === project.affiliation &&
+                formData.crop === project.cropname &&
+                formData.analytics === project.climmob_analytics;
+        }
+
+        function validatePublicationApproval(row, project) {
+            const adminMessage = row.querySelector('[data-column="admin_msj"] textarea');
+            const publicationApproval = row.querySelector('[data-column="project_publication_approval"] select');
+            const publicationApprovalValue = parseInt(publicationApproval.value);
+            adminMessage.setCustomValidity('');
+
+            if (publicationApprovalValue === 0) {
+                return true;
+            }
+
+            if (publicationApprovalValue === project.project_publication_approval) {
+                return true
+            }
+
+            if (publicationApprovalValue === {{ PublicationApproved.REJECTED.value }}) {
+                if (adminMessage.value === "") {
+                    adminMessage.setCustomValidity('{{ _("Please indicate rejection reason") }}');
+                    adminMessage.reportValidity();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function afterFetchSuccess(publicationApproval) {
+            const publicationApprovalValue = parseInt(publicationApproval.value);
+            if (publicationApprovalValue === {{ PublicationApproved.APPROVED.value }}) {
+                publicationApproval.disabled = true;
+            }
+        }
+
+        async function checkInputs(project, button) {
+            const project_id = project.project_id;
             if (button.disabled) return;
             button.disabled = true;
             const row = button.closest('tr');
@@ -535,6 +613,11 @@
             const fieldAnalytics = row.querySelector('[data-column="climmob_analytics"] select');
             const adminMessage = row.querySelector('[data-column="admin_msj"] textarea');
             const publicationApproval = row.querySelector('[data-column="project_publication_approval"] select');
+
+            if (validatePublicationApproval(row, project) === false) {
+                button.disabled = false;
+                return;
+            }
 
             let error = [];
 
@@ -584,6 +667,7 @@
                             throw new Error(data.message || "Unknown error");
                         }
                         swal("{{ _('Successful update') }}", data.message, "success");
+                        afterFetchSuccess(publicationApproval);
                     })
                     .catch(error => {
                         swal("{{ _('Error') }}", error.message, "error");
