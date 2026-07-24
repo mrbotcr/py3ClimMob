@@ -317,6 +317,9 @@ class TestSaveProjectRow(ViewBaseTest):
             "analytics": MagicMock(int, name="analytics", return_value=1),
             "admin_message": MagicMock(str, name="admin_message"),
             "csrf_token": MagicMock(str, name="csrf_token"),
+            "project_publication_approval": MagicMock(
+                int, name="project_publication_approval"
+            ),
         }
 
         self.last_project_patcher = patch(
@@ -470,6 +473,12 @@ class TestSaveProjectRow(ViewBaseTest):
             self.view.request.POST["analytics"],
             "old_affiliation",
             "old_crop",
+        )
+        self.request.find_service.assert_called_once_with(name="publication")
+        self.request.find_service.return_value.handle_publication_approval.assert_called_once_with(
+            self.view.request.POST["project_id"],
+            int(self.view.request.POST["project_publication_approval"]),
+            self.view.request.POST["admin_message"],
         )
 
 
