@@ -45,7 +45,12 @@
                         </div>
                         <div class="ibox-tools">
                             {% if status %}
-                                <i>{{ _(status.label) }}</i>
+                                <i
+                                        {% if status.id == PublicationStatus.FAILED %}
+                                            style="text-decoration: underline;"
+                                            title="{{ _("Could not be published. ClimMob team is looking into it.") }}"
+                                        {% endif %}
+                                >{{ _(status.label) }}</i>
                             {% endif %}
                             <a class="collapse-link">
                                 <i class="fa fa-chevron-up"></i>
