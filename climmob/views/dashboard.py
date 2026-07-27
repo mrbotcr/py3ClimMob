@@ -16,6 +16,7 @@ from climmob.processes import (
     seeProgress,
     getTheProjectIdForOwner,
     get_global_project_publication_status_id,
+    is_publication_allowed,
 )
 from climmob.views.classes import privateView, publicView
 from climmob.views.validators.project.ProjectOpenValidator import ProjectOpenValidator
@@ -104,6 +105,9 @@ class dashboard_view(privateView):
                     ),
                     "publication_status": get_global_project_publication_status_id(
                         self.request, activeProjectId
+                    ),
+                    "is_publication_allowed": is_publication_allowed(
+                        activeProjectId, self.request
                     ),
                 }
                 for plugin in p.PluginImplementations(p.IDashBoard):

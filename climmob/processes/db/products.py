@@ -1,8 +1,12 @@
 import datetime
+import os
+from pathlib import Path
 
 from climmob.models import Products, Tasks, finishedTasks
 
-__all__ = ["addProductInstance", "deleteProducts"]
+__all__ = ["addProductInstance", "deleteProducts", "product_file_exists"]
+
+from climmob.products.climmob_products import getProductDirectory
 
 
 def addProductInstance(
@@ -63,3 +67,18 @@ def deleteProducts(request, projectId, processName="ALL"):
         request.dbsession.query(Products).filter(
             Products.project_id == projectId
         ).filter(Products.process_name == processName).delete()
+
+
+def product_file_exists(request, owner_username, project_cod, product):
+    product_directory = getProductDirectory(
+        request, owner_username, project_cod, product
+    )
+
+    if product == "reports":
+        product_filename = "Report_" + project_cod + ".docx"
+    else:
+        raise NotImplementedError
+
+    product_directory = Path(product_directory) / "outputs" / product_filename
+
+    return os.path.exists(product_directory)

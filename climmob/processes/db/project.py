@@ -29,6 +29,7 @@ from climmob.models import (
 from climmob.models.repository import sql_fetch_all, sql_fetch_one
 from climmob.processes.db.enumerator import countEnumeratorsOfAllCollaborators
 from climmob.processes.db.prjlang import getPrjLangInProject
+from climmob.processes.db.products import product_file_exists
 from climmob.processes.db.project_location_unit_objective import (
     get_project_objectives_by_project_id,
 )
@@ -70,6 +71,7 @@ __all__ = [
     "get_project_cod_by_id",
     "get_project_status",
     "get_project_by_id",
+    "is_publication_allowed",
 ]
 
 
@@ -651,7 +653,7 @@ def getLastRegistrySubmissionDate(userName, projectCode, request):
     _ = request.translate
     path = os.path.join(
         request.registry.settings["user.repository"],
-        *[userName, projectCode, "data", "reg", "*"]
+        *[userName, projectCode, "data", "reg", "*"],
     )
     files = glob.glob(path)
     if files:
@@ -665,7 +667,7 @@ def getLastAssessmentSubmissionDate(userName, projectCode, assessment, request):
     _ = request.translate
     path = os.path.join(
         request.registry.settings["user.repository"],
-        *[userName, projectCode, "data", "ass", assessment, "*"]
+        *[userName, projectCode, "data", "ass", assessment, "*"],
     )
     files = glob.glob(path)
     if files:
@@ -1013,3 +1015,33 @@ def get_project_status(project_id, request):
     )
     result = mapFromSchema(result)
     return result["project_status"]
+
+
+def is_project_curated(project_id, request):
+    project = get_project_by_id(project_id, request)
+    curated = True
+    curated &= project["project_affiliation"] not in ["", None]
+    curated &= project["climmob_analytics"] not in ["", None]
+    curated &= project["project_curated_cropname"] not in ["", None]
+    return curated
+
+
+def is_publication_allowed(project_id, request):
+    project = get_project_by_id(project_id, request)
+    progress, _ = getProjectProgress(
+        project["owner"]["user_name"],
+        project["project_cod"],
+        project["project_id"],
+        request,
+    )
+    allowed = True
+
+    allowed &= progress["metadata"] is True
+
+    allowed &= is_project_curated(project_id, request)
+
+    allowed &= product_file_exists(
+        request, project["owner"]["user_name"], project["project_cod"], "reports"
+    )
+
+    return allowed

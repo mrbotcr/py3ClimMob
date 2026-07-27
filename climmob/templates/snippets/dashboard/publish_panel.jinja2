@@ -11,7 +11,9 @@
             <br>
             <button class="btn btn-success btn-rounded btn-block"
                     {% if activeProject.project_status != ProjectStatus.FINALIZED %}
-                    title={{ _("Project must be finalized in order to publish it") }} disabled
+                    title="{{ _("Project must be finalized in order to publish it") }}" disabled
+                    {% elif not is_publication_allowed %}
+                    title="{{ _("Project must be curated in order to publish it") }}" disabled
                     {% endif %}
                     style="width: 100%; overflow: hidden;text-overflow: ellipsis;"
                     onclick="location.href = '{{ request.route_url('project_publish',user=activeProject["owner"].user_name, project=activeProject.project_cod) }}'">

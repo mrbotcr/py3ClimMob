@@ -25,6 +25,7 @@ from climmob.views.validators.project.ProjectOpenValidator import ProjectOpenVal
 from climmob.views.validators.project import (
     CanEditProjectValidator,
     HasAccessToProjectValidator,
+    ProjectPublicationAllowedValidator,
 )
 
 from climmob.views.validators.question.QuestionMinMaxValidator import (
@@ -172,6 +173,35 @@ class TestHasAccessToProjectValidatorRun(unittest.TestCase):
     def test_run_invalid(self):
         self.view.context.access_type = None
         with self.assertRaises(HTTPForbidden):
+            self.validator.run()
+
+
+class TestProjectPublicationAllowedValidatorRun(unittest.TestCase):
+    def setUp(self):
+        self.request = MagicMock()
+        self.view = MagicMock()
+        self.view.request = self.request
+
+        self.validator = ProjectPublicationAllowedValidator(self.view)
+
+    @patch(
+        "climmob.views.validators.project.project_publication_allowed_validator.is_publication_allowed",
+        return_value=True,
+    )
+    def test_run_valid(self, mock_is_publication_allowed):
+        self.view.context.active_project_id = MagicMock(str)
+        self.validator.run()
+        mock_is_publication_allowed.assert_called_once_with(
+            self.view.context.active_project_id, self.request
+        )
+
+    @patch(
+        "climmob.views.validators.project.project_publication_allowed_validator.is_publication_allowed",
+        return_value=False,
+    )
+    def test_run_invalid(self, mock_is_publication_allowed):
+        self.view.context.access_type = None
+        with self.assertRaises(HTTPNotFound):
             self.validator.run()
 
 

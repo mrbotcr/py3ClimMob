@@ -78,6 +78,7 @@ from climmob.views.validators.ActionOnlyForProjectOwnerValidator import (
 from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
 from climmob.views.validators.project import IsProjectFinalizedValidator
 from climmob.views.validators.project import ProjectOpenValidator
+from climmob.views.validators.project import ProjectPublicationAllowedValidator
 from climmob.views.validators.project.IsProjectOwnerValidator import (
     IsProjectOwnerValidator,
 )
@@ -1160,6 +1161,7 @@ class RequestProjectPublicationView(privateView):
         ProjectExistsValidator,
         IsProjectOwnerValidator,
         IsProjectFinalizedValidator,
+        ProjectPublicationAllowedValidator,
     )
 
     def __init__(self, request):
