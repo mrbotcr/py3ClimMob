@@ -120,24 +120,6 @@
     <script>
         {% if redirect == True %}
             window.top.location.href = "{{ request.route_url('dashboard') }}";
-        {% else %}
-            function toggle_confirmation(element) {
-                const form = element.closest('form');
-                if (!form) return;
-
-                const confirm = form.querySelector('#databricks-confirm');
-                const button = form.querySelector('#databricks-upload-btn');
-                button.disabled = !confirm.checked;
-            }
-
-            function toggle_destiny(element, destiny) {
-                const form = element.closest('form');
-                if (!form) return;
-
-                const confirm = form.querySelector('#databricks-confirm');
-                const button = form.querySelector('#databricks-upload-btn');
-                button.disabled = !confirm.checked;
-            }
         {% endif %}
     </script>
 {% endblock %}
