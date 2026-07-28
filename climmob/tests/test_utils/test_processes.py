@@ -16,6 +16,8 @@ class SessionMock:
         self.mock.one.return_value = return_value
         self.mock.all.return_value = return_value
         self.return_value = return_value
+        # self.mock.update ?
+        # TODO: implement stack for processes with multiple queries?
 
     def attach_to(self, request_mock):
         request_mock.dbsession = self.mock
@@ -26,6 +28,7 @@ class SessionMock:
     def set_final_return_value(self, return_value):
         self.mock.first.return_value = return_value
         self.mock.one.return_value = return_value
+        self.mock.all.return_value = return_value
         self.return_value = return_value
 
     def assert_call_sequence(self, *steps):
