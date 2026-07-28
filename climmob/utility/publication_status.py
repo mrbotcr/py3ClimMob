@@ -16,26 +16,35 @@ class PublicationStatus(IntEnum):
 
 
 class PublicationStatusLabel(Enum):
-    NOT_REQUESTED = "Not Requested"
-    REQUESTED = "Requested"
-    APPROVED = "Approved"
-    REJECTED = "Rejected"
-    PUBLISHED = "Published"
-    FAILED = "Failed"
-    PARTIAL = "Partial"
+    NOT_REQUESTED = _("Not Requested")
+    REQUESTED = _("Requested")
+    APPROVED = _("Approved")
+    REJECTED = _("Rejected")
+    PUBLISHED = _("Published")
+    FAILED = _("Failed")
+    PARTIAL = _("Partial")
 
 
 class PublicationApproved(IntEnum):
+    DEFAULT = 0
     APPROVED = 1
     REJECTED = 2
 
 
+class PublicationStatusOptionLabel(Enum):
+    DEFAULT = _("Choose an option")
+    APPROVED = _("Approved")
+    REJECTED = _("Rejected")
+
+
 class PublicationStatusOptionsEnabled(Enum):
+    DEFAULT = True
     APPROVED = False
     REJECTED = True
 
 
 class PublicationStatusOptionSelectable(Enum):
+    DEFAULT = True
     APPROVED = True
     REJECTED = True
 
@@ -43,18 +52,12 @@ class PublicationStatusOptionSelectable(Enum):
 def get_publication_status_options():
     options = [
         {"value": -1, "label": _("---"), "selectable": True, "editable": False},
-        {
-            "value": 0,
-            "label": _("Choose an option"),
-            "selectable": True,
-            "editable": True,
-        },
     ]
 
     for status in PublicationApproved:
         option = {
             "value": status.value,
-            "label": PublicationStatusLabel[status.name].value,
+            "label": PublicationStatusOptionLabel[status.name].value,
             "selectable": PublicationStatusOptionSelectable[status.name].value,
             "editable": PublicationStatusOptionsEnabled[status.name].value,
         }
