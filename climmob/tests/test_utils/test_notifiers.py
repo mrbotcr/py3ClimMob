@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock, patch
-from slack_sdk import errors
+
+import slack_sdk
 
 from climmob.services.notification_service import EmailNotifier, SlackNotifier
 from climmob.tests.test_utils.common import BaseTest
@@ -138,18 +139,15 @@ class TestEmailNotifier(NotifierBaseTest):
 class TestSlackNotifier(NotifierBaseTest):
     notifier_class = SlackNotifier
 
-    @patch('climmob.services.notification_service.WebClient')
+    @patch("climmob.services.notification_service.slack_sdk.WebClient")
     def setUp(self, mock_web_client):
         super().setUp()
 
-        self.request.registry.settings = {
-            "slack.token": "xoxb-dummy-token-123"
-        }
+        self.request.registry.settings = {"slack.token": "xoxo-dummy-token-123"}
 
         self.mock_client = mock_web_client.return_value
 
     def test_init_configures_client_and_properties(self):
-        # Assert that the constructor set up the Slack token and properties correctly
         self.assertEqual(self.notifier.channel, "#climmob-notifications")
         self.assertEqual(self.notifier.client, self.mock_client)
         self.assertIsNone(self.notifier.text)
@@ -157,84 +155,78 @@ class TestSlackNotifier(NotifierBaseTest):
         self.assertIsNone(self.notifier.attachments)
 
     def test_send_notification_success(self):
-        # Arrange
         self.notifier.text = "Hello Slack"
         self.notifier.attachments = [{"color": "#D00000"}]
 
-        # Act
         self.notifier.send_notification()
 
-        # Assert
         self.mock_client.chat_postMessage.assert_called_once_with(
             channel="#climmob-notifications",
             text="Hello Slack",
-            attachments=[{"color": "#D00000"}]
+            attachments=[{"color": "#D00000"}],
         )
 
-    @patch('climmob.services.notification_service.log')
+    @patch("climmob.services.notification_service.log")
     def test_send_notification_handles_slack_api_error(self, mock_log):
-        # Arrange
-        # Construct a real SlackApiError with a mock response payload
         mock_response = {"error": "invalid_auth"}
-        slack_error = SlackApiError(message="Slack API Error", response=mock_response)
+
+        slack_error = slack_sdk.errors.SlackApiError(
+            message="Slack API Error", response=mock_response
+        )
 
         self.mock_client.chat_postMessage.side_effect = slack_error
 
-        # Act
         self.notifier.send_notification()
 
-        # Assert
-        mock_log.error.assert_called_once_with("Slack API Rejected Request: invalid_auth")
+        mock_log.error.assert_called_once_with(
+            "Slack API Rejected Request: invalid_auth"
+        )
 
-    @patch('climmob.services.notification_service.log')
+    @patch("climmob.services.notification_service.log")
     def test_send_notification_handles_unexpected_exception(self, mock_log):
-        # Arrange
-        self.mock_client.chat_postMessage.side_effect = Exception("Connection timed out")
+        self.mock_client.chat_postMessage.side_effect = Exception(
+            "Connection timed out"
+        )
 
-        # Act
         self.notifier.send_notification()
 
-        # Assert
-        mock_log.error.assert_called_once_with("An unexpected Python error occurred: Connection timed out")
+        mock_log.error.assert_called_once_with(
+            "An unexpected Python error occurred: Connection timed out"
+        )
 
     def test_notify_publication_failure_constructs_payload_correctly(self):
-        # Arrange
-        # Spy on the send_notification call so we only test data assembly
         self.notifier.send_notification = MagicMock()
 
         dummy_context = {
             "project": {
                 "owner": {"user_name": "john_doe"},
                 "project_cod": "PRJ-99",
-                "project_id": 456
+                "project_id": 456,
             },
             "repositories": [
-                {"destination": "GitHub", "msg": "403 Forbidden"},
-                {"destination": "Zenodo", "msg": "Timeout"}
-            ]
+                {"destination": "Genesys", "msg": "File not found"},
+                {"destination": "Zenodo", "msg": "Timeout"},
+            ],
         }
 
         expected_markdown = (
             "Project john_doe_PRJ-99(456) failed to publish on the following repositories:\n"
-            "\t• GitHub: 403 Forbidden\n"
+            "\t• Genesys: File not found\n"
             "\t• Zenodo: Timeout"
         )
 
-        # Act
         self.notifier.notify_publication_failure(dummy_context)
 
-        # Assert
-        # Check text structure
         self.assertEqual(self.notifier.text, "Project publication failure!")
 
-        # Check blocks structure
         self.assertEqual(len(self.notifier.blocks), 1)
         self.assertEqual(self.notifier.blocks[0]["type"], "section")
         self.assertEqual(self.notifier.blocks[0]["text"]["type"], "mrkdwn")
         self.assertEqual(self.notifier.blocks[0]["text"]["text"], expected_markdown)
 
-        # Check attachment styling wrapper
-        self.assertEqual(self.notifier.attachments, [{"color": "#D00000", "blocks": self.notifier.blocks}])
+        self.assertEqual(
+            self.notifier.attachments,
+            [{"color": "#D00000", "blocks": self.notifier.blocks}],
+        )
 
-        # Ensure the side effect was fired off
         self.notifier.send_notification.assert_called_once()

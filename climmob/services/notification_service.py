@@ -1,8 +1,6 @@
 import logging
-from enum import auto, IntEnum
 
-from slack_sdk import WebClient
-from slack_sdk.errors import SlackApiError
+import slack_sdk
 
 from climmob.config.auth import getUserData
 from climmob.processes import getAllUserAdmin
@@ -120,7 +118,7 @@ class SlackNotifier(Notifier):
 
     def __init__(self, request):
         super().__init__(request)
-        self.client = WebClient(
+        self.client = slack_sdk.WebClient(
             token=request.registry.settings.get("slack.token", None)
         )
         self.text = None
@@ -134,7 +132,7 @@ class SlackNotifier(Notifier):
                 text=self.text,
                 attachments=self.attachments,
             )
-        except SlackApiError as e:
+        except slack_sdk.errors.SlackApiError as e:
             error_type = e.response["error"]
             log.error(f"Slack API Rejected Request: {error_type}")
         except Exception as e:
