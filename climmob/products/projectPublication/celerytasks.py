@@ -37,7 +37,7 @@ def publish_project_task(
                 success, msg = plugin.publish(
                     settings, request, file_path, project_id, cropname
                 )
-                results[success].append(destination_name)
+                results[success].append({"destination": destination_name, "msg": msg})
                 status = (
                     PublicationStatus.PUBLISHED if success else PublicationStatus.FAILED
                 )

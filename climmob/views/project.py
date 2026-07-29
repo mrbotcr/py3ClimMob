@@ -1241,16 +1241,16 @@ class RequestProjectPublicationView(privateView):
         )
 
         if not success:
-            self.request.session.flash(msg, queue="error")
-            return HTTPFound(
-                location=self.request.route_url(
-                    "project_publish", project=project_cod, user=user_owner
+            if msg == "no_license":
+                self.request.session.flash(
+                    self._("Please select a license before requesting publication."),
+                    queue="error",
                 )
-            )
-        if msg == "requested":
-            self.request.session.flash("", queue="success")
-        elif msg == "updated":
-            self.request.session.flash("", queue="success")
+        else:
+            if msg == "requested":
+                self.request.session.flash("", queue="success")
+            elif msg == "updated":
+                self.request.session.flash("", queue="success")
 
         return HTTPFound(
             location=self.request.route_url(

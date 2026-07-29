@@ -57,6 +57,7 @@ class Notifier:
         """"""
 
 
+# TODO: don't translate
 class EmailNotifier(Notifier):
     def __init__(self, request, template="", subject=""):
         super().__init__(request)
@@ -147,7 +148,11 @@ class SlackNotifier(Notifier):
 
     def notify_publication_failure(self, context: dict):
         self.text = "Project publication failure!"
-        repository_list = f"\n\t• ".join(context["repositories"])
+        repo_and_reason = [
+            f'{repo["destination"]}: {repo["msg"]}'
+            for repo in context["repositories"]
+        ]
+        repository_list = f"\n\t• ".join(repo_and_reason)
         self.blocks = [
             {
                 "type": "section",
