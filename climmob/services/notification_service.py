@@ -59,17 +59,16 @@ class Notifier:
 
 # TODO: don't translate
 class EmailNotifier(Notifier):
-    def __init__(self, request, template="", subject=""):
+    def __init__(self, request):
         super().__init__(request)
-        self._template = template
-        self._context = {}
-        self._subject = subject
-        self._to: list = []
+        self._template = None
+        self._context = None
+        self._subject = None
+        self._to = None
         self._from = self.request.registry.settings.get("email.from", None)
         self.sender = EmailSender(request.registry.settings)
 
     def send_notification(self):
-        print(f"sending {self._template} as {self._subject}")
         builder = EmailBuilder(
             self.request.registry.settings,
             self._to,
@@ -116,11 +115,6 @@ class EmailNotifier(Notifier):
         self.send_notification()
 
 
-class EmailRecipient(IntEnum):
-    ADMIN = auto()
-    OWNER = auto()
-
-
 class SlackNotifier(Notifier):
     channel = "#climmob-notifications"
 
@@ -149,8 +143,7 @@ class SlackNotifier(Notifier):
     def notify_publication_failure(self, context: dict):
         self.text = "Project publication failure!"
         repo_and_reason = [
-            f'{repo["destination"]}: {repo["msg"]}'
-            for repo in context["repositories"]
+            f'{repo["destination"]}: {repo["msg"]}' for repo in context["repositories"]
         ]
         repository_list = f"\n\t• ".join(repo_and_reason)
         self.blocks = [

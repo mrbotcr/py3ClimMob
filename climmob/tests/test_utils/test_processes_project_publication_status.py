@@ -70,7 +70,6 @@ class TestGetGlobalProjectPublicationStatusId(TestProjectPublicationStatusDBProc
 
         self.assertEqual(result, PublicationStatusEnum.FAILED.value)
 
-
     def test__approved__not_empty__returns__approved(self):
         self.get_mock(
             "get_project_publication_approved"
@@ -117,7 +116,8 @@ class TestGetGlobalProjectPublicationStatusId(TestProjectPublicationStatusDBProc
         self.session.set_final_return_value(
             [
                 ProjectPublicationStatus(
-                    publication_status_id=PublicationStatusEnum.PUBLISHED.value, destination="climmob"
+                    publication_status_id=PublicationStatusEnum.PUBLISHED.value,
+                    destination="climmob",
                 ),
             ]
         )

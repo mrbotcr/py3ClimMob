@@ -63,7 +63,7 @@ class PublicationService(Service):
                         "repositories": [
                             {
                                 "destination": destination,
-                                "msg": "ClimMob repository is in FAILED status, therefore the publication file might not exist"
+                                "msg": "ClimMob repository is in FAILED status, therefore the publication file might not exist",
                             }
                             for destination in destinations
                         ],

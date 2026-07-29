@@ -53,3 +53,12 @@ class ViewBaseTest(BaseTest):
 
     def mock_translation(self, message):
         return message
+
+
+class ServiceBaseTest(BaseTest):
+    service_class = None
+
+    def setUp(self):
+        super().setUp()
+        self.request = MagicMock()
+        self.service = self.service_class(self.request)
