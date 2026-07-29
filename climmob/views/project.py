@@ -64,7 +64,6 @@ from climmob.processes import (
 )
 from climmob.processes.db.publication_license import get_publication_licenses
 from climmob.services import PublicationService
-from climmob.services.email_service import EmailService
 from climmob.utility import PublicationStatusLabel, PublicationStatus
 from climmob.utility.email import (
     render_template,
@@ -1163,10 +1162,6 @@ class RequestProjectPublicationView(privateView):
         IsProjectFinalizedValidator,
         ProjectPublicationAllowedValidator,
     )
-
-    def __init__(self, request):
-        super().__init__(request)
-        self.email_service = EmailService(request)
 
     # TODO: test
     def get(self):
