@@ -26,6 +26,7 @@ from climmob.models.repository import sql_fetch_one, sql_execute
 from climmob.utility import (
     PublicationStatus as PublicationStatusEnum,
     PublicationStatusLabel,
+    PublicationApproved,
 )
 
 import climmob.plugins as p
@@ -66,6 +67,7 @@ def save_project_publication_status(
 
         return True, ""
     except Exception as e:
+        log.error(f"Error in save_project_publication_status: {e}")
         return False, str(e)
 
 
@@ -119,38 +121,32 @@ def get_global_project_publication_status_id(request, project_id: str) -> int:
         .filter(ProjectPublicationStatus.project_id == project_id)
         .all()
     )
+    publication_approved = get_project_publication_approved(request, project_id)
+
     if not res:
-        return PublicationStatusEnum.NOT_REQUESTED.value
+        global_status = PublicationStatusEnum.NOT_REQUESTED
 
-    global_status = PublicationStatusEnum.NOT_REQUESTED
+    elif publication_approved == PublicationApproved.REJECTED.value:
+        global_status = PublicationStatusEnum.REJECTED
 
-    for status in res:
-        if status.publication_status_id == PublicationStatusEnum.FAILED:
-            if any(
-                s.publication_status_id == PublicationStatusEnum.PUBLISHED
-                and s.destination != "climmob"
-                for s in res
-            ):
-                global_status = PublicationStatusEnum.PARTIAL
-            else:
-                global_status = PublicationStatusEnum.FAILED
-            break
-        if status.publication_status_id == PublicationStatusEnum.PUBLISHED:
-            if status.destination != "climmob":
-                global_status = PublicationStatusEnum.PUBLISHED
+    elif publication_approved == PublicationApproved.APPROVED.value:
+        global_status = PublicationStatusEnum.APPROVED
+        for status in res:
+            if status.publication_status_id == PublicationStatusEnum.FAILED:
+                if any(
+                    s.publication_status_id == PublicationStatusEnum.PUBLISHED
+                    and s.destination != "climmob"
+                    for s in res
+                ):
+                    global_status = PublicationStatusEnum.PARTIAL
+                else:
+                    global_status = PublicationStatusEnum.FAILED
                 break
-            else:
-                global_status = PublicationStatusEnum.REQUESTED
-        if status.publication_status_id == PublicationStatusEnum.APPROVED:
-            if status.destination != "climmob":
-                global_status = PublicationStatusEnum.APPROVED
-                break
-        if status.publication_status_id == PublicationStatusEnum.REJECTED:
-            global_status = PublicationStatusEnum.REJECTED
-            break
-        if status.publication_status_id == PublicationStatusEnum.REQUESTED:
-            global_status = PublicationStatusEnum.REQUESTED
-            break
+            if status.publication_status_id == PublicationStatusEnum.PUBLISHED:
+                if status.destination != "climmob":
+                    global_status = PublicationStatusEnum.PUBLISHED
+    else:
+        global_status = PublicationStatusEnum.REQUESTED
 
     return global_status.value
 
