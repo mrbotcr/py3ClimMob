@@ -35,15 +35,42 @@ class PublicationService(Service):
             for plugin in p.PluginImplementations(p.IPublisher)
         ]
 
-    def request_project_publication(self, project_id, license, destinations):
+    def _handle_license(self, project_id, license: int):
         current_project_license_id = get_project_publication_license_id(
             project_id, self.request
         )
-        if not current_project_license_id:
-            if not license:
-                return False, "no_license"
-            save_project_publication_license(project_id, license, self.request)
+        if not current_project_license_id and not license:
+            return False, "no_license", None
 
+        if not current_project_license_id:
+            save_project_publication_license(project_id, license, self.request)
+            current_project_license_id = license
+
+        return True, "", current_project_license_id
+
+    def _handle_climmob_not_published(self, project_id, destinations):
+        for destination in destinations:
+            success, msg = save_project_publication_status(
+                project_id,
+                PublicationStatus.FAILED.value,
+                self.request.user_in_session,
+                destination,
+            )
+            if not success:
+                return False, "db_error"
+        self.notification_service.notify_publication_failure(
+            project_id,
+            [
+                {
+                    "destination": destination,
+                    "msg": "ClimMob repository is in FAILED status, therefore the publication file might not exist",
+                }
+                for destination in destinations
+            ],
+        )
+        return True, ""
+
+    def _handle_climmob_status(self, project_id, destinations):
         climmob_status = get_project_publication_status_by_destination_name(
             self.request, project_id, "climmob"
         )
@@ -52,33 +79,23 @@ class PublicationService(Service):
                 climmob_status["publication_status_id"]
                 != PublicationStatus.PUBLISHED.value
             ):
-                for destination in destinations:
-                    success, msg = save_project_publication_status(
-                        project_id,
-                        PublicationStatus.FAILED.value,
-                        self.request.user_in_session,
-                        destination,
-                    )
-                    if not success:
-                        return False, "db_error"
-                self.notification_service.notify_publication_failure(
-                    {
-                        "repositories": [
-                            {
-                                "destination": destination,
-                                "msg": "ClimMob repository is in FAILED status, therefore the publication file might not exist",
-                            }
-                            for destination in destinations
-                        ],
-                        "project": get_project_by_id(project_id, self.request),
-                    }
+                success, msg = self._handle_climmob_not_published(
+                    project_id, destinations
                 )
-                return True, ""
+                return False, msg
         else:
             self._request_repository(project_id, "climmob")
             self._publish_repository(project_id, "climmob")
+        return True, ""
 
-        statuses = get_all_project_publication_statuses(self.request, project_id)
+    def request_project_publication(self, project_id, license: int, destinations):
+        success, msg, license = self._handle_license(project_id, license)
+        if not success:
+            return False, msg
+
+        success, msg = self._handle_climmob_status(project_id, destinations)
+        if not success:
+            return False, msg
 
         approved = get_project_publication_approved(self.request, project_id)
 
@@ -93,21 +110,7 @@ class PublicationService(Service):
                 self._request_repository(project_id, destination)
                 self._publish_repository(project_id, destination)
 
-        project = get_project_by_id(project_id, self.request)
-        license_name = PublicationLicenseLabel[
-            PublicationLicense(current_project_license_id or int(license)).name
-        ].value
-        repositories = ", ".join([status["destination_label"] for status in statuses])
-        # TODO: notify only if there are changes? just once?
-        # TODO: include repositories and license in the email?
-        self.notification_service.notify_publication_request(
-            {
-                "project": project,
-                "repositories": repositories,
-                "license": license_name,
-                "_": self._,
-            }
-        )
+        self.notification_service.notify_publication_request(project_id, license)
 
         return True, ""
 
@@ -175,6 +178,7 @@ class PublicationService(Service):
                     global_success = False
                     errors.append((status["destination"], msg))
         if global_success:
+            # TODO: move logic to notification service
             project = get_project_by_id(project_id, self.request)
             project_license_id = get_project_publication_license_id(
                 project_id, self.request

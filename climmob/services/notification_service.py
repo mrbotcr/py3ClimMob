@@ -3,9 +3,18 @@ import logging
 import slack_sdk
 
 from climmob.config.auth import getUserData
-from climmob.processes import getAllUserAdmin
+from climmob.processes import (
+    getAllUserAdmin,
+    get_all_project_publication_statuses,
+    get_project_by_id,
+)
 from climmob.services.service import Service
-from climmob.utility import EmailSender, EmailBuilder
+from climmob.utility import (
+    EmailSender,
+    EmailBuilder,
+    PublicationLicenseLabel,
+    PublicationLicense,
+)
 
 log = logging.getLogger("climmob")
 
@@ -18,7 +27,21 @@ class NotificationService(Service):
     def set_notifier(self, notifier_type):
         self.notifier = notifier_type(self.request)
 
-    def notify_publication_request(self, context: dict):
+    def notify_publication_request(self, project_id, license):
+        # TODO: notify only if there are changes? just once?
+        # TODO: include repositories and license in the email?
+        statuses = get_all_project_publication_statuses(self.request, project_id)
+        project = get_project_by_id(project_id, self.request)
+        license_name = PublicationLicenseLabel[
+            PublicationLicense(int(license)).name
+        ].value
+        repositories = ", ".join([status["destination_label"] for status in statuses])
+        context = {
+            "project": project,
+            "repositories": repositories,
+            "license": license_name,
+            "_": self._,
+        }
         self.set_notifier(EmailNotifier)
         self.notifier.notify_publication_request(context)
 
@@ -30,7 +53,11 @@ class NotificationService(Service):
         self.set_notifier(EmailNotifier)
         self.notifier.notify_publication_success(context)
 
-    def notify_publication_failure(self, context: dict):
+    def notify_publication_failure(self, project_id, repositories):
+        context = {
+            "repositories": repositories,
+            "project": get_project_by_id(project_id, self.request),
+        }
         self.set_notifier(SlackNotifier)
         self.notifier.notify_publication_failure(context)
 

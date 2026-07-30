@@ -61,4 +61,5 @@ class ServiceBaseTest(BaseTest):
     def setUp(self):
         super().setUp()
         self.request = MagicMock()
+        self.request.translate = lambda x: x
         self.service = self.service_class(self.request)
