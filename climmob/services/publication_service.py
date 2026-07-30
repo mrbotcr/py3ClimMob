@@ -8,7 +8,6 @@ from climmob.processes import (
     get_project_publication_status_by_destination_name,
     get_project_by_id,
     get_project_publication_license_id,
-    get_global_project_publication_status_id,
     save_project_publication_approved,
     get_project_publication_approved,
 )
@@ -31,6 +30,10 @@ class PublicationService(Service):
         self.notification_service: NotificationService = self.request.find_service(
             name="notification"
         )
+        self.active_destinations = [
+            plugin.get_destination_name()
+            for plugin in p.PluginImplementations(p.IPublisher)
+        ]
 
     def request_project_publication(self, project_id, license, destinations):
         current_project_license_id = get_project_publication_license_id(
@@ -109,11 +112,7 @@ class PublicationService(Service):
         return True, ""
 
     def _request_repository(self, project_id, destination):
-        active_destinations = [
-            plugin.get_destination_name()
-            for plugin in p.PluginImplementations(p.IPublisher)
-        ]
-        if destination in active_destinations:
+        if destination in self.active_destinations:
             success, msg = save_project_publication_status(
                 project_id,
                 PublicationStatus.REQUESTED.value,
@@ -146,11 +145,7 @@ class PublicationService(Service):
         return global_success, errors
 
     def _approve_repository(self, project_id, destination):
-        active_destinations = [
-            plugin.get_destination_name()
-            for plugin in p.PluginImplementations(p.IPublisher)
-        ]
-        if destination in active_destinations:
+        if destination in self.active_destinations:
             success, msg = save_project_publication_status(
                 project_id,
                 PublicationStatus.APPROVED.value,
@@ -202,11 +197,7 @@ class PublicationService(Service):
         return global_success, errors
 
     def _reject_repository(self, project_id, destination):
-        active_destinations = [
-            plugin.get_destination_name()
-            for plugin in p.PluginImplementations(p.IPublisher)
-        ]
-        if destination in active_destinations:
+        if destination in self.active_destinations:
             success, msg = save_project_publication_status(
                 project_id,
                 PublicationStatus.REJECTED.value,
@@ -257,12 +248,7 @@ class PublicationService(Service):
         )
 
     def _publish_repository(self, project_id, destination):
-        print(f"Publishing project {project_id} to destination {destination}")
-        active_destinations = [
-            plugin.get_destination_name()
-            for plugin in p.PluginImplementations(p.IPublisher)
-        ]
-        if destination in active_destinations:
+        if destination in self.active_destinations:
             project = get_project_by_id(project_id, self.request)
             publish_project(
                 project_id,
