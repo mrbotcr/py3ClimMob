@@ -97,8 +97,14 @@ class PublicationService(Service):
         if not success:
             return False, msg
 
-        approved = get_project_publication_approved(self.request, project_id)
+        self._handle_incoming_repositories(destinations, project_id)
 
+        self.notification_service.notify_publication_request(project_id, license)
+
+        return True, ""
+
+    def _handle_incoming_repositories(self, destinations, project_id):
+        approved = get_project_publication_approved(self.request, project_id)
         if approved == PublicationApproved.DEFAULT.value:
             for destination in destinations:
                 self._request_repository(project_id, destination)
@@ -109,10 +115,6 @@ class PublicationService(Service):
             for destination in destinations:
                 self._request_repository(project_id, destination)
                 self._publish_repository(project_id, destination)
-
-        self.notification_service.notify_publication_request(project_id, license)
-
-        return True, ""
 
     def _request_repository(self, project_id, destination):
         if destination in self.active_destinations:

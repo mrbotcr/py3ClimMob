@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, call
 
 from climmob.services import PublicationService
 from climmob.tests.test_utils.common import ServiceBaseTest
@@ -178,26 +178,71 @@ class TestPublicationService(ServiceBaseTest):
         self.assertEqual(msg, "climmob_error")
 
     @patch("climmob.services.publication_service.get_project_publication_approved")
-    def test_request_project_publication_approved_workflow(self, mock_approved):
+    def test_handle_incoming_repositories_approved(self, mock_approved):
+        mock_approved.return_value = PublicationApproved.APPROVED.value
+        destinations = ["zenodo", "genesys"]
+        expected_parameters = destinations
+        self.service._request_repository = MagicMock(name="request_repository")
+        self.service._publish_repository = MagicMock(name="publish_repository")
+
+        self.service._handle_incoming_repositories(destinations, self.project_id)
+
+        self.service._request_repository.assert_has_calls(
+            [call(self.project_id, value) for value in expected_parameters],
+            any_order=True,
+        )
+        self.service._publish_repository.assert_has_calls(
+            [call(self.project_id, value) for value in expected_parameters],
+            any_order=True,
+        )
+
+    @patch("climmob.services.publication_service.get_project_publication_approved")
+    def test_handle_incoming_repositories_default(self, mock_approved):
+        mock_approved.return_value = PublicationApproved.DEFAULT.value
+        destinations = ["zenodo", "genesys"]
+        expected_parameters = destinations
+        self.service._request_repository = MagicMock(name="request_repository")
+        self.service._publish_repository = MagicMock(name="publish_repository")
+
+        self.service._handle_incoming_repositories(destinations, self.project_id)
+
+        self.service._request_repository.assert_has_calls(
+            [call(self.project_id, value) for value in expected_parameters],
+            any_order=True,
+        )
+        self.service._publish_repository.assert_not_called()
+
+    @patch("climmob.services.publication_service.get_project_publication_approved")
+    def test_handle_incoming_repositories_rejected(self, mock_approved):
+        mock_approved.return_value = PublicationApproved.REJECTED.value
+        destinations = ["zenodo", "genesys"]
+        expected_parameters = destinations
+        self.service._reject_repository = MagicMock(name="reject_repository")
+        self.service._publish_repository = MagicMock(name="publish_repository")
+
+        self.service._handle_incoming_repositories(destinations, self.project_id)
+
+        self.service._reject_repository.assert_has_calls(
+            [call(self.project_id, value) for value in expected_parameters],
+            any_order=True,
+        )
+        self.service._publish_repository.assert_not_called()
+
+    def test_request_project_publication_success(self):
         self.service._handle_license = MagicMock(
             return_value=(True, "", self.license_id)
         )
+        destinations = ["zenodo"]
         self.service._handle_climmob_status = MagicMock(return_value=(True, ""))
-        mock_approved.return_value = PublicationApproved.APPROVED.value
-
-        self.service._request_repository = MagicMock()
-        self.service._publish_repository = MagicMock()
+        self.service._handle_incoming_repositories = MagicMock(return_value=(True, ""))
 
         success, msg = self.service.request_project_publication(
-            self.project_id, self.license_id, ["zenodo"]
+            self.project_id, self.license_id, destinations
         )
 
         self.assertTrue(success)
-        self.service._request_repository.assert_called_once_with(
-            self.project_id, "zenodo"
-        )
-        self.service._publish_repository.assert_called_once_with(
-            self.project_id, "zenodo"
+        self.service._handle_incoming_repositories.assert_called_once_with(
+            destinations, self.project_id
         )
         self.service.notification_service.notify_publication_request.assert_called_once_with(
             self.project_id, self.license_id
@@ -306,6 +351,55 @@ class TestPublicationService(ServiceBaseTest):
         )
         self.service.publish_project.assert_called_once_with(self.project_id)
 
+
+    @patch("climmob.services.publication_service.log")
+    @patch("climmob.services.publication_service.get_project_publication_approved")
+    def test_handle_publication_approval_approve_failed(self, mock_approved, mock_log):
+        mock_approved.return_value = PublicationApproved.DEFAULT.value
+        approval_errors = MagicMock(list)
+        self.service.approve_project_publication = MagicMock(return_value=(False, approval_errors))
+        self.service.publish_project = MagicMock()
+
+        self.service.handle_publication_approval(
+            self.project_id, PublicationApproved.APPROVED, "msg"
+        )
+
+        mock_log.error.assert_called_once_with(approval_errors)
+        self.service.publish_project.assert_not_called()
+
+    @patch("climmob.services.publication_service.get_project_publication_approved")
+    def test_handle_publication_approval_reject_success(self, mock_approved):
+        mock_approved.return_value = PublicationApproved.DEFAULT.value
+        self.service.approve_project_publication = MagicMock(return_value=(True, []))
+        self.service.publish_project = MagicMock()
+        self.service.reject_project_publication = MagicMock(return_value=(True, []))
+
+        self.service.handle_publication_approval(
+            self.project_id, PublicationApproved.REJECTED, "msg"
+        )
+
+        self.service.reject_project_publication.assert_called_once_with(self.project_id, "msg")
+        self.service.approve_project_publication.assert_not_called()
+        self.service.publish_project.assert_not_called()
+
+    @patch("climmob.services.publication_service.log")
+    @patch("climmob.services.publication_service.get_project_publication_approved")
+    def test_handle_publication_approval_reject_failed(self, mock_approved, mock_log):
+        mock_approved.return_value = PublicationApproved.DEFAULT.value
+        self.service.approve_project_publication = MagicMock(return_value=(True, []))
+        self.service.publish_project = MagicMock()
+        rejection_errors = MagicMock(list)
+        self.service.reject_project_publication = MagicMock(return_value=(False, rejection_errors))
+
+        self.service.handle_publication_approval(
+            self.project_id, PublicationApproved.REJECTED, "msg"
+        )
+
+        self.service.reject_project_publication.assert_called_once_with(self.project_id, "msg")
+        self.service.approve_project_publication.assert_not_called()
+        self.service.publish_project.assert_not_called()
+        mock_log.error.assert_called_once_with(rejection_errors)
+
     # ==========================================
     # Tests for publish_project & _publish_repository
     # ==========================================
@@ -346,3 +440,17 @@ class TestPublicationService(ServiceBaseTest):
         success, msg = self.service._publish_repository(self.project_id, "zenodo")
         self.assertTrue(success)
         mock_publish.assert_called_once()
+
+    @patch("climmob.services.publication_service.publish_project")
+    @patch("climmob.services.publication_service.get_project_by_id")
+    def test_publish_repository_inactive(self, mock_get_project, mock_publish):
+        mock_get_project.return_value = {
+            "project_cod": "P01",
+            "owner": {"user_name": "owner_user"},
+            "project_curated_cropname": "Maize",
+        }
+
+        success, msg = self.service._publish_repository(self.project_id, "test_inactive_repo")
+
+        self.assertFalse(success)
+        mock_publish.assert_not_called()
