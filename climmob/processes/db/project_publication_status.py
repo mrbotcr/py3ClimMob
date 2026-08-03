@@ -123,11 +123,20 @@ def get_global_project_publication_status_id(request, project_id: str) -> int:
     )
     publication_approved = get_project_publication_approved(request, project_id)
 
+    climmob_status = PublicationStatusEnum.NOT_REQUESTED
+
+    for status in res:
+        if status.destination == "climmob":
+            climmob_status = PublicationStatusEnum(status.publication_status_id)
+
     if not res:
         global_status = PublicationStatusEnum.NOT_REQUESTED
 
     elif publication_approved == PublicationApproved.REJECTED.value:
-        global_status = PublicationStatusEnum.REJECTED
+        if climmob_status == PublicationStatusEnum.FAILED:
+            global_status = PublicationStatusEnum.FAILED
+        else:
+            global_status = PublicationStatusEnum.REJECTED
 
     elif publication_approved == PublicationApproved.APPROVED.value:
         global_status = PublicationStatusEnum.APPROVED
@@ -143,10 +152,15 @@ def get_global_project_publication_status_id(request, project_id: str) -> int:
                     global_status = PublicationStatusEnum.FAILED
                 break
             if status.publication_status_id == PublicationStatusEnum.PUBLISHED:
-                if status.destination != "climmob":
+                if len(res) == 1 and status.destination == "climmob":
+                    global_status = PublicationStatusEnum.PUBLISHED
+                elif status.destination != "climmob":
                     global_status = PublicationStatusEnum.PUBLISHED
     else:
-        global_status = PublicationStatusEnum.REQUESTED
+        if climmob_status == PublicationStatusEnum.FAILED:
+            global_status = PublicationStatusEnum.FAILED
+        else:
+            global_status = PublicationStatusEnum.REQUESTED
 
     return global_status.value
 

@@ -96,7 +96,8 @@ class TestGetGlobalProjectPublicationStatusId(TestProjectPublicationStatusDBProc
         self.session.set_final_return_value(
             [
                 ProjectPublicationStatus(
-                    publication_status_id=MagicMock(int), destination="climmob"
+                    publication_status_id=PublicationStatusEnum.PUBLISHED.value,
+                    destination="climmob"
                 ),
                 ProjectPublicationStatus(
                     publication_status_id=PublicationStatusEnum.PUBLISHED.value,
@@ -135,10 +136,6 @@ class TestGetGlobalProjectPublicationStatusId(TestProjectPublicationStatusDBProc
                 ProjectPublicationStatus(
                     publication_status_id=PublicationStatusEnum.FAILED.value,
                     destination="climmob",
-                ),
-                ProjectPublicationStatus(
-                    publication_status_id=PublicationStatusEnum.PUBLISHED.value,
-                    destination=MagicMock(str),
                 ),
             ]
         )
