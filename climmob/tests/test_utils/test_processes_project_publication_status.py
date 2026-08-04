@@ -97,7 +97,7 @@ class TestGetGlobalProjectPublicationStatusId(TestProjectPublicationStatusDBProc
             [
                 ProjectPublicationStatus(
                     publication_status_id=PublicationStatusEnum.PUBLISHED.value,
-                    destination="climmob"
+                    destination="climmob",
                 ),
                 ProjectPublicationStatus(
                     publication_status_id=PublicationStatusEnum.PUBLISHED.value,

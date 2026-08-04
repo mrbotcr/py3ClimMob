@@ -351,13 +351,14 @@ class TestPublicationService(ServiceBaseTest):
         )
         self.service.publish_project.assert_called_once_with(self.project_id)
 
-
     @patch("climmob.services.publication_service.log")
     @patch("climmob.services.publication_service.get_project_publication_approved")
     def test_handle_publication_approval_approve_failed(self, mock_approved, mock_log):
         mock_approved.return_value = PublicationApproved.DEFAULT.value
         approval_errors = MagicMock(list)
-        self.service.approve_project_publication = MagicMock(return_value=(False, approval_errors))
+        self.service.approve_project_publication = MagicMock(
+            return_value=(False, approval_errors)
+        )
         self.service.publish_project = MagicMock()
 
         self.service.handle_publication_approval(
@@ -378,7 +379,9 @@ class TestPublicationService(ServiceBaseTest):
             self.project_id, PublicationApproved.REJECTED, "msg"
         )
 
-        self.service.reject_project_publication.assert_called_once_with(self.project_id, "msg")
+        self.service.reject_project_publication.assert_called_once_with(
+            self.project_id, "msg"
+        )
         self.service.approve_project_publication.assert_not_called()
         self.service.publish_project.assert_not_called()
 
@@ -389,13 +392,17 @@ class TestPublicationService(ServiceBaseTest):
         self.service.approve_project_publication = MagicMock(return_value=(True, []))
         self.service.publish_project = MagicMock()
         rejection_errors = MagicMock(list)
-        self.service.reject_project_publication = MagicMock(return_value=(False, rejection_errors))
+        self.service.reject_project_publication = MagicMock(
+            return_value=(False, rejection_errors)
+        )
 
         self.service.handle_publication_approval(
             self.project_id, PublicationApproved.REJECTED, "msg"
         )
 
-        self.service.reject_project_publication.assert_called_once_with(self.project_id, "msg")
+        self.service.reject_project_publication.assert_called_once_with(
+            self.project_id, "msg"
+        )
         self.service.approve_project_publication.assert_not_called()
         self.service.publish_project.assert_not_called()
         mock_log.error.assert_called_once_with(rejection_errors)
@@ -450,7 +457,9 @@ class TestPublicationService(ServiceBaseTest):
             "project_curated_cropname": "Maize",
         }
 
-        success, msg = self.service._publish_repository(self.project_id, "test_inactive_repo")
+        success, msg = self.service._publish_repository(
+            self.project_id, "test_inactive_repo"
+        )
 
         self.assertFalse(success)
         mock_publish.assert_not_called()
