@@ -14,7 +14,11 @@ from climmob.views.project import (
     ProjectListView,
     DeleteProjectView,
     FinishProjectView,
+    RequestProjectPublicationView,
 )
+from climmob.views.validators.ProjectExistsValidator import ProjectExistsValidator
+from climmob.views.validators.project import IsProjectFinalizedValidator, ProjectPublicationAllowedValidator
+from climmob.views.validators.project.IsProjectOwnerValidator import IsProjectOwnerValidator
 
 
 class TestGetUnitOfAnalysisByLocationView(unittest.TestCase):
@@ -1821,6 +1825,18 @@ class TestFinishProjectView(ViewBaseTest):
             self.mock_project_info.return_value
         )
         self.assertEqual(response, False)
+
+
+class TestRequestProjectPublicationView(ViewBaseTest):
+    view_class = RequestProjectPublicationView
+
+    def test_has_validators(self):
+        self.assertEqual(self.view.validators, (
+            ProjectExistsValidator,
+            IsProjectOwnerValidator,
+            IsProjectFinalizedValidator,
+            ProjectPublicationAllowedValidator,
+        ))
 
 
 if __name__ == "__main__":
